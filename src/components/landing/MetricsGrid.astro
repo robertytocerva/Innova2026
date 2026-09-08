@@ -1,0 +1,14 @@
+---
+import MetricCard from "../ui/MetricCard.astro";
+import type { Metric } from "../../types/landing";
+
+interface Props {
+  metrics: Metric[];
+}
+
+const { metrics } = Astro.props;
+---
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md mt-space-2xl">
+  {metrics.map((metric) => <MetricCard metric={metric} />)}
+</div>

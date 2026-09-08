@@ -1,0 +1,80 @@
+---
+import Icon from "../ui/Icon.astro";
+import Button from "../ui/Button.astro";
+import type { NavProps } from "../../types/landing";
+
+interface Props extends NavProps {}
+
+const { brandName, links, ctaLabel, ctaHref, ctaDataPath } = Astro.props;
+---
+
+<header class="sticky top-0 z-50 w-full bg-primary border-b border-primary-container/40 shadow-md">
+  <nav class="max-w-7xl mx-auto px-gutter-desktop h-16 flex items-center justify-between gap-space-md">
+    <a href="#inicio" data-path="inicio" class="flex items-center gap-space-xs shrink-0">
+      <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-surface-container-lowest text-primary font-extrabold text-headline-sm shadow-sm">
+        T
+      </span>
+      <span class="font-headline-sm text-headline-sm text-surface font-bold tracking-tight">{brandName}</span>
+    </a>
+
+    <ul class="hidden md:flex items-center gap-space-lg">
+      {links.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            data-path={link.dataPath}
+            class="font-label-md text-label-md text-on-primary/85 hover:text-secondary-fixed transition-colors"
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="flex items-center gap-space-sm shrink-0">
+      <button
+        type="button"
+        class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary-container text-on-primary hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-colors"
+        aria-label="Abrir menú"
+        data-nav-toggle
+      >
+        <Icon name="menu" size={22} />
+      </button>
+      <div class="hidden md:block">
+        <Button label={ctaLabel} href={ctaHref} icon="login" variant="inverted" dataPath={ctaDataPath} />
+      </div>
+    </div>
+  </nav>
+
+  <div
+    class="md:hidden hidden bg-primary border-t border-primary-container/40"
+    data-nav-menu
+  >
+    <ul class="flex flex-col px-gutter-desktop py-space-sm gap-space-xs">
+      {links.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            data-path={link.dataPath}
+            class="block py-space-xs font-label-md text-label-md text-on-primary/85 hover:text-secondary-fixed transition-colors"
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+      <li class="pt-space-xs">
+        <Button label={ctaLabel} href={ctaHref} icon="login" variant="inverted" dataPath={ctaDataPath} fullWidth />
+      </li>
+    </ul>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
+  const menu = document.querySelector<HTMLDivElement>("[data-nav-menu]");
+  if (toggle && menu) {
+    toggle.addEventListener("click", () => {
+      menu.classList.toggle("hidden");
+    });
+  }
+</script>

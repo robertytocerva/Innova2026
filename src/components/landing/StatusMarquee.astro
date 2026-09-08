@@ -1,0 +1,35 @@
+---
+interface Props {
+  liveLabel: string;
+  scanInfo: string;
+  coords: string;
+  calibration: { label: string; value: string };
+  kappa: { label: string; value: string };
+}
+
+const { liveLabel, scanInfo, coords, calibration, kappa } = Astro.props;
+---
+
+<div class="w-full bg-surface-container-low px-gutter-desktop py-space-xs flex items-center justify-between overflow-x-auto text-on-surface-variant">
+  <div class="max-w-7xl mx-auto w-full flex items-center justify-between gap-space-md text-label-sm font-label-sm">
+    <div class="flex items-center gap-space-sm whitespace-nowrap">
+      <span class="inline-flex items-center gap-1.5 font-semibold text-primary">
+        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+        {liveLabel}
+      </span>
+      <span class="text-outline-variant">|</span>
+      <span class="text-on-surface-variant">{scanInfo}</span>
+      <span class="text-outline-variant">|</span>
+      <span class="text-on-surface-variant">{coords}</span>
+    </div>
+    <div class="hidden lg:flex items-center gap-space-md whitespace-nowrap text-label-sm font-label-sm">
+      <span class="text-on-surface-variant">
+        {calibration.label}: <strong class="text-primary font-semibold">{calibration.value}</strong>
+      </span>
+      <span class="text-outline-variant">/</span>
+      <span class="text-on-surface-variant">
+        {kappa.label}: <strong class="text-on-surface font-semibold">{kappa.value}</strong>
+      </span>
+    </div>
+  </div>
+</div>

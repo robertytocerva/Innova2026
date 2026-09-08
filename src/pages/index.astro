@@ -1,11 +1,126 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Layout from "../layouts/Layout.astro";
+import NavBar from "../components/landing/NavBar.astro";
+import StatusMarquee from "../components/landing/StatusMarquee.astro";
+import Hero from "../components/landing/Hero.astro";
+import MetricsGrid from "../components/landing/MetricsGrid.astro";
+import LulcDynamics from "../components/landing/LulcDynamics.astro";
+import SpectralIndices from "../components/landing/SpectralIndices.astro";
+import UseCases from "../components/landing/UseCases.astro";
+import MapTeaser from "../components/landing/MapTeaser.astro";
+import FastActions from "../components/landing/FastActions.astro";
+import SiteFooter from "../components/landing/SiteFooter.astro";
+import {
+  heroData,
+  metricsData,
+  lulcData,
+  spectralData,
+  useCasesData,
+  mapTeaserData,
+  fastActionsData,
+  statusMarqueeData,
+  navData,
+  footerData,
+} from "../data/landing";
 ---
 
 <Layout>
-	<Welcome />
+  <NavBar
+    logo={navData.logo}
+    brandName={navData.brandName}
+    links={navData.links}
+    ctaLabel={navData.ctaLabel}
+    ctaHref={navData.ctaHref}
+    ctaDataPath={navData.ctaDataPath}
+  />
+
+  <StatusMarquee
+    liveLabel={statusMarqueeData.liveLabel}
+    scanInfo={statusMarqueeData.scanInfo}
+    coords={statusMarqueeData.coords}
+    calibration={statusMarqueeData.calibration}
+    kappa={statusMarqueeData.kappa}
+  />
+
+  <main>
+    <Hero
+      badge={heroData.badge}
+      headline={heroData.headline}
+      headlineHighlight={heroData.headlineHighlight}
+      paragraph={heroData.paragraph}
+      primaryCta={heroData.primaryCta}
+      secondaryCta={heroData.secondaryCta}
+      complianceItems={heroData.complianceItems}
+      imageUrl={heroData.imageUrl}
+      imageAlt={heroData.imageAlt}
+      imageBadge={heroData.imageBadge}
+      imageGsd={heroData.imageGsd}
+      pin={heroData.pin}
+      metaTitle={heroData.metaTitle}
+      metaTitleLabel={heroData.metaTitleLabel}
+      metaReliabilityLabel={heroData.metaReliabilityLabel}
+      metaReliabilityValue={heroData.metaReliabilityValue}
+      telemetry={heroData.telemetry}
+    />
+
+    <div class="bg-surface-container-lowest">
+      <div class="max-w-7xl mx-auto px-gutter-desktop">
+        <MetricsGrid metrics={metricsData} />
+      </div>
+    </div>
+
+    <LulcDynamics
+      kicker={lulcData.kicker}
+      title={lulcData.title}
+      description={lulcData.description}
+      periodLabel={lulcData.periodLabel}
+      periodValue={lulcData.periodValue}
+      bars={lulcData.bars}
+      alertsTitle={lulcData.alertsTitle}
+      alertsRadarLabel={lulcData.alertsRadarLabel}
+      alertsDescription={lulcData.alertsDescription}
+      alerts={lulcData.alerts}
+      alertsCtaLabel={lulcData.alertsCtaLabel}
+      methodology={lulcData.methodology}
+      matrixLinkLabel={lulcData.matrixLinkLabel}
+      matrixLinkHref={lulcData.matrixLinkHref}
+      matrixLinkDataPath={lulcData.matrixLinkDataPath}
+    />
+
+    <SpectralIndices
+      kicker={spectralData.kicker}
+      title={spectralData.title}
+      description={spectralData.description}
+      indices={spectralData.indices}
+      pipeline={spectralData.pipeline}
+    />
+
+    <UseCases
+      kicker={useCasesData.kicker}
+      title={useCasesData.title}
+      description={useCasesData.description}
+      cases={useCasesData.cases}
+    />
+
+    <MapTeaser
+      badge={mapTeaserData.badge}
+      badgeIcon={mapTeaserData.badgeIcon}
+      title={mapTeaserData.title}
+      paragraph={mapTeaserData.paragraph}
+      primaryCta={mapTeaserData.primaryCta}
+      secondaryCta={mapTeaserData.secondaryCta}
+      formats={mapTeaserData.formats}
+      imageUrl={mapTeaserData.imageUrl}
+      imageAlt={mapTeaserData.imageAlt}
+    />
+
+    <FastActions
+      icon={fastActionsData.icon}
+      title={fastActionsData.title}
+      description={fastActionsData.description}
+      cta={fastActionsData.cta}
+    />
+  </main>
+
+  <SiteFooter brand={footerData.brand} columns={footerData.columns} legal={footerData.legal} />
 </Layout>

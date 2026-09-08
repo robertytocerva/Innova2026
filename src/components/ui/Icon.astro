@@ -1,0 +1,13 @@
+---
+interface Props {
+  name: string;
+  size?: number;
+  class?: string;
+}
+
+const { name, size, class: className = "" } = Astro.props;
+const sizeClass = size ? `text-[${size}px]` : "";
+const cls = ["material-symbols-outlined", sizeClass, className].filter(Boolean).join(" ");
+---
+
+<span class={cls}>{name}</span>

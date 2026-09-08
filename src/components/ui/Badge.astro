@@ -1,0 +1,32 @@
+---
+import Icon from "./Icon.astro";
+
+type Tone = "primary" | "neutral" | "surface";
+
+interface Props {
+  label: string;
+  icon?: string;
+  tone?: Tone;
+  uppercase?: boolean;
+  class?: string;
+}
+
+const { label, icon, tone = "surface", uppercase = false, class: className = "" } = Astro.props;
+
+const base =
+  "inline-flex items-center gap-space-2xs px-space-sm py-1 rounded-full font-label-sm text-label-sm font-semibold";
+
+const toneClasses: Record<Tone, string> = {
+  primary: "bg-surface-container-low text-primary shadow-sm",
+  neutral: "bg-surface-container-low text-on-surface-variant",
+  surface: "bg-surface-container-lowest text-primary shadow-sm",
+};
+
+const caseClass = uppercase ? "tracking-wider uppercase" : "";
+const cls = [base, toneClasses[tone], caseClass, className].filter(Boolean).join(" ");
+---
+
+<span class={cls}>
+  {icon && <Icon name={icon} size={16} />}
+  <span>{label}</span>
+</span>

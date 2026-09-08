@@ -1,0 +1,36 @@
+---
+import Icon from "./Icon.astro";
+import type { Metric } from "../../types/landing";
+
+interface Props {
+  metric: Metric;
+}
+
+const { metric } = Astro.props;
+---
+
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+  <div class="flex items-center justify-between mb-space-sm">
+    <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">
+      {metric.label}
+    </span>
+    <div class={`w-9 h-9 rounded-xl ${metric.iconBg} flex items-center justify-center ${metric.iconFg}`}>
+      <Icon name={metric.icon} size={20} />
+    </div>
+  </div>
+  <div>
+    <div class={`font-headline-lg text-headline-lg font-extrabold ${metric.valueTone ?? "text-on-surface"}`}>
+      {metric.value}
+    </div>
+    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+      {metric.description}
+    </p>
+  </div>
+  <div class="mt-space-sm pt-space-xs flex items-center font-label-sm text-label-sm">
+    <span class={`flex items-center ${metric.trendTone ?? "text-on-surface-variant"}`}>
+      {metric.showPulse && <span class="w-2 h-2 rounded-full bg-error mr-1.5"></span>}
+      {metric.trendIcon && <Icon name={metric.trendIcon} size={16} />}
+      <span class={metric.trendIcon ? "ml-1" : ""}>{metric.trendText}</span>
+    </span>
+  </div>
+</div>

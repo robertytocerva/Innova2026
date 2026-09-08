@@ -1,0 +1,14 @@
+export const SATELLITE_HERO_IMG =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuBmT-6e4klNAjHTYFWi8bOijNJpXwJE2NGJ2oehNVigKUkYNhNa5QzC8tDohzzZkJncgLGTnzqKeTF_8R-Twv4yWLMr-G_D-WIc4e41qtX1JbWdQjii5wmOT3K-dCu-EB2IBle7dt_9YkuzB8xYSRilEKDQj4bVVVkXr-qwwjqlOGpUC1uB8saju5S5frQiRjTjSZzJqUFxi-BsOhLUw4nsDSfcbIpziOe2jZF-9m5oAClSYBqGV9dE";
+
+export const SATELLITE_HERO_ALT =
+  "High resolution false color composite satellite imagery of tropical forest edge meeting agricultural mosaic and winding blue river corridor with geometric infrared canopy masks";
+
+export const MAP_TEASER_IMG =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuBbpnKAQPoVoe3XXoSxbfPylgLVrESInKdBQQEQkjD8VdCkcUHo_JMnmcojAxIRCbuqBy3m4OWaTF0QgQlqAfcQ7j8trkr5ehajSXlZXTVdolvobWqDZma4KNDMDU8o0fxwXSO3NKLE26m0wxDRGHMVp4r0YARS0a9kYdrmAGKdUH6muQLUWGpLwhXpb9u34lbx_lX8W9Z7MYm-jEEIzHGIbm_21vSgRuG7sf2DYFZCqJf55TYh6VYz";
+
+export const MAP_TEASER_ALT =
+  "Dark aesthetic satellite radar terrain relief map showing topographical watershed contours with glowing green river lines and land classification matrices";
+
+export const BRAND_LOGO =
+  "https://lh3.googleusercontent.com/aida/AEtjO1XMTE7j8uxcwPnvX6D75iC9JT3X8t7xpBT-P50fKHRQ-_HtTgYRVBg9kRZqgCzpADnG5yXGxwwxZojAhhKWqfbIInWn03oZYCCifBMZp68-2j2mcCtfmw398wsXmRN200ufXJVdeNsIa2X4NEOPWCqp5jgfzeVDwOIbO08PUTDzTXBcIqTJPJ6p0uYyGZQQGAzpHYcdMuh_QW6RUfZq9q44-pSMSUcMI81VS0lasaZked7tEORpFeFFnQ";
