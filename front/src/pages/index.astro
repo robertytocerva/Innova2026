@@ -8,6 +8,7 @@ import LulcDynamics from "../components/landing/LulcDynamics.astro";
 import SpectralIndices from "../components/landing/SpectralIndices.astro";
 import UseCases from "../components/landing/UseCases.astro";
 import MapTeaser from "../components/landing/MapTeaser.astro";
+import Expedientes from "../components/landing/Expedientes.astro";
 import FastActions from "../components/landing/FastActions.astro";
 import SiteFooter from "../components/landing/SiteFooter.astro";
 import {
@@ -17,6 +18,7 @@ import {
   spectralData,
   useCasesData,
   mapTeaserData,
+  expedientesData,
   fastActionsData,
   statusMarqueeData,
   navData,
@@ -112,6 +114,16 @@ import {
       formats={mapTeaserData.formats}
       imageUrl={mapTeaserData.imageUrl}
       imageAlt={mapTeaserData.imageAlt}
+    />
+
+    <Expedientes
+      kicker={expedientesData.kicker}
+      title={expedientesData.title}
+      description={expedientesData.description}
+      normTag={expedientesData.normTag}
+      steps={expedientesData.steps}
+      items={expedientesData.items}
+      cta={expedientesData.cta}
     />
 
     <FastActions

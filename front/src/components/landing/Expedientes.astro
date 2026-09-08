@@ -1,0 +1,49 @@
+---
+import Icon from "../ui/Icon.astro";
+import Button from "../ui/Button.astro";
+import ExpedienteCard from "../ui/ExpedienteCard.astro";
+import type { ExpedientesProps } from "../../types/landing";
+
+const { kicker, title, description, normTag, steps, items, cta } = Astro.props as ExpedientesProps;
+
+const stepIcons = ["upload_file", "compare_arrows", "search", "task_alt"];
+---
+
+<section id="expedientes" class="w-full py-space-3xl px-gutter-desktop bg-surface-container">
+  <div class="max-w-7xl mx-auto flex flex-col gap-space-2xl">
+    <div class="flex flex-col gap-space-xs">
+      <span class="font-label-sm text-label-sm text-secondary tracking-widest uppercase font-semibold">{kicker}</span>
+      <h2 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">{title}</h2>
+      <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">{description}</p>
+      <div class="inline-flex items-center gap-space-2xs w-fit px-space-sm py-1 rounded-full bg-tertiary text-on-tertiary font-label-sm text-label-sm font-bold shadow-sm mt-space-xs">
+        <Icon name="gavel" size={16} />
+        <span>{normTag}</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+      {steps.map((step, i) => (
+        <div class="bg-surface-container-lowest rounded-xl p-space-md flex gap-space-sm items-start shadow-sm">
+          <div class="w-9 h-9 rounded-lg bg-tertiary text-on-tertiary flex items-center justify-center shrink-0">
+            <Icon name={stepIcons[i] ?? "task_alt"} size={20} />
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="font-label-sm text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">
+              Paso 0{i + 1}
+            </span>
+            <span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">{step.title}</span>
+            <span class="text-label-sm font-label-sm text-on-surface-variant">{step.description}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg">
+      {items.map((exp) => <ExpedienteCard expediente={exp} />)}
+    </div>
+
+    <div class="flex justify-center pt-space-xs">
+      <Button label={cta.label} href={cta.href} icon={cta.icon ?? "play_arrow"} variant="bright" dataPath={cta.dataPath} />
+    </div>
+  </div>
+</section>

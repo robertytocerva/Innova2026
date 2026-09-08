@@ -8,7 +8,7 @@ interface Props extends NavProps {}
 const { brandName, links, ctaLabel, ctaHref, ctaDataPath } = Astro.props;
 ---
 
-<header class="sticky top-0 z-50 w-full bg-primary border-b border-primary-container/40 shadow-md">
+<header class="sticky top-0 z-50 w-full bg-inverse-surface border-b border-primary/40 shadow-md">
   <nav class="max-w-7xl mx-auto px-gutter-desktop h-16 flex items-center justify-between gap-space-md">
     <a href="#inicio" data-path="inicio" class="flex items-center gap-space-xs shrink-0">
       <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-surface-container-lowest text-primary font-extrabold text-headline-sm shadow-sm">
@@ -23,7 +23,7 @@ const { brandName, links, ctaLabel, ctaHref, ctaDataPath } = Astro.props;
           <a
             href={link.href}
             data-path={link.dataPath}
-            class="font-label-md text-label-md text-on-primary/85 hover:text-secondary-fixed transition-colors"
+            class="font-label-md text-label-md text-inverse-on-surface/85 hover:text-tertiary transition-colors"
           >
             {link.label}
           </a>
@@ -34,7 +34,7 @@ const { brandName, links, ctaLabel, ctaHref, ctaDataPath } = Astro.props;
     <div class="flex items-center gap-space-sm shrink-0">
       <button
         type="button"
-        class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary-container text-on-primary hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-colors"
+        class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl bg-tertiary text-on-tertiary hover:bg-tertiary-fixed-dim transition-colors"
         aria-label="Abrir menú"
         data-nav-toggle
       >
@@ -47,7 +47,7 @@ const { brandName, links, ctaLabel, ctaHref, ctaDataPath } = Astro.props;
   </nav>
 
   <div
-    class="md:hidden hidden bg-primary border-t border-primary-container/40"
+    class="md:hidden hidden bg-inverse-surface border-t border-primary/40"
     data-nav-menu
   >
     <ul class="flex flex-col px-gutter-desktop py-space-sm gap-space-xs">
@@ -56,7 +56,7 @@ const { brandName, links, ctaLabel, ctaHref, ctaDataPath } = Astro.props;
           <a
             href={link.href}
             data-path={link.dataPath}
-            class="block py-space-xs font-label-md text-label-md text-on-primary/85 hover:text-secondary-fixed transition-colors"
+            class="block py-space-xs font-label-md text-label-md text-inverse-on-surface/85 hover:text-tertiary transition-colors"
           >
             {link.label}
           </a>

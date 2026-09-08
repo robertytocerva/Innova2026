@@ -1,0 +1,78 @@
+---
+import Icon from "./Icon.astro";
+import type { Expediente } from "../../types/landing";
+
+interface Props {
+  expediente: Expediente;
+}
+
+const { expediente } = Astro.props;
+const conforme = expediente.status === "Conforme";
+
+const metaItems = [
+  { icon: "person", label: "Titular", value: expediente.owner },
+  { icon: "location_on", label: "Ubicación", value: expediente.locality },
+  { icon: "agriculture", label: "Cultivo", value: expediente.crop },
+  { icon: "crop_square", label: "Superficie", value: expediente.areaHa },
+];
+---
+
+<div class={`bg-surface-container-lowest rounded-2xl p-space-xl shadow-sm ring-2 ${expediente.ringTone} flex flex-col gap-space-lg`}>
+  <div class="flex items-start justify-between gap-space-sm flex-wrap">
+    <div class="flex flex-col gap-0.5">
+      <div class="flex items-center gap-space-sm">
+        <span class="font-headline-sm text-headline-sm font-extrabold text-on-surface">{expediente.id}</span>
+        <span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-semibold">{expediente.cif}</span>
+      </div>
+      <span class="font-label-sm text-label-sm text-on-surface-variant">Certificación Cero Deforestación</span>
+    </div>
+    <span class={`px-space-sm py-1 rounded-full font-label-md text-label-md font-bold ${expediente.statusTone}`}>
+      {expediente.status}
+    </span>
+  </div>
+
+  <div class="grid grid-cols-2 gap-space-sm">
+    {metaItems.map((item) => (
+      <div class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low">
+        <Icon name={item.icon} size={18} class="text-secondary shrink-0" />
+        <div class="flex flex-col">
+          <span class="font-label-sm text-label-sm text-on-surface-variant">{item.label}</span>
+          <span class="font-label-md text-label-md font-bold text-on-surface leading-tight">{item.value}</span>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <div class="flex flex-col gap-space-sm">
+    <div class="flex items-center justify-between">
+      <span class="font-label-md text-label-md font-bold text-on-surface">Cobertura forestal confrontada</span>
+      <span class="font-label-sm text-label-sm text-on-surface-variant">Serie histórica</span>
+    </div>
+    <div class="flex flex-col gap-2">
+      {expediente.series.map((point) => (
+        <div class="flex items-center gap-space-sm">
+          <span class="w-10 shrink-0 font-label-sm text-label-sm text-on-surface-variant">{point.year}</span>
+          <div class="flex-1 h-2 rounded-full bg-surface-container overflow-hidden">
+            <div class={`h-full rounded-full transition-all ${point.tone}`} style={`width: ${point.coverage}%`}></div>
+          </div>
+          <span class="w-10 shrink-0 text-right font-label-md text-label-md font-bold text-on-surface">{point.coverage}%</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class={`flex flex-col gap-1 rounded-xl p-space-md ${conforme ? "bg-secondary text-on-secondary" : "bg-error-container text-on-error-container"}`}>
+    <div class="flex items-center gap-space-2xs font-label-lg text-label-lg font-bold">
+      <Icon name={conforme ? "verified" : "warning"} size={18} />
+      <span>{expediente.verdict}</span>
+    </div>
+    <p class="font-body-sm text-body-sm opacity-90">{expediente.verdictNote}</p>
+  </div>
+
+  <div class="flex items-center justify-between pt-space-xs border-t border-outline-variant/30">
+    <span class="font-label-sm text-label-sm text-on-surface-variant">{expediente.issuedAt}</span>
+    <a class="font-label-md text-label-md text-secondary font-semibold hover:underline" href="#">
+      Ver expediente completo →
+    </a>
+  </div>
+</div>
