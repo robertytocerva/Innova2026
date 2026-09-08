@@ -6,7 +6,7 @@ interface Props {
 
 export default function MapControls({ onToggleLegend }: Props): ReactElement {
   return (
-    <div className="absolute top-4 right-4 z-20 flex flex-col gap-space-xs">
+    <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-space-xs">
       <button
         type="button"
         onClick={onToggleLegend}

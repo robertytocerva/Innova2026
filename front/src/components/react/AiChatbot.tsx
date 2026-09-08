@@ -55,7 +55,7 @@ export default function AiChatbot({ open, onToggle }: Props): ReactElement {
   };
 
   return (
-    <div className="absolute bottom-4 right-4 z-20 flex flex-col items-end md:bottom-6 md:right-6">
+    <div className="absolute bottom-4 right-4 z-[1000] flex flex-col items-end md:bottom-6 md:right-6">
       {open && (
         <div className="w-80 h-96 mb-3 bg-surface-container-lowest text-on-surface rounded-2xl shadow-2xl border border-outline-variant/40 flex flex-col overflow-hidden">
           <div className="p-3 bg-primary-container text-surface flex items-center justify-between">

@@ -6,7 +6,7 @@ interface Props {
 
 export default function MapLegend({ onClose }: Props): ReactElement {
   return (
-    <div className="absolute top-24 right-4 z-20 bg-surface-container-lowest/95 backdrop-blur-md text-on-surface p-4 rounded-xl shadow-2xl border border-outline-variant/40 text-label-sm font-label-sm w-72">
+    <div className="absolute top-24 right-4 z-[1000] bg-surface-container-lowest/95 backdrop-blur-md text-on-surface p-4 rounded-xl shadow-2xl border border-outline-variant/40 text-label-sm font-label-sm w-72">
       <div className="flex items-center justify-between pb-2 border-b border-outline-variant/40 mb-2.5">
         <span className="font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1.5">
           <span className="material-symbols-outlined text-primary text-[16px]">layers</span>

@@ -79,7 +79,7 @@ export default function ParcelDrawer({ feature, open, onClose, currentYear, comp
 
   return (
     <div
-      className={`absolute top-0 right-0 h-full w-96 max-w-full bg-surface-container-lowest text-on-surface shadow-2xl z-30 transition-transform duration-300 flex flex-col border-l border-outline-variant/40 ${
+      className={`absolute top-0 right-0 h-full w-96 max-w-full bg-surface-container-lowest text-on-surface shadow-2xl z-[1100] transition-transform duration-300 flex flex-col border-l border-outline-variant/40 ${
         open ? "translate-x-0" : "translate-x-full"
       }`}
     >
