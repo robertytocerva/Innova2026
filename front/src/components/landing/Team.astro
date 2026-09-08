@@ -1,0 +1,355 @@
+---
+import Icon from "../ui/Icon.astro";
+
+const GH = "https://api.github.com/users/";
+
+const members = [
+  { name: "David Antonio Vargas Lozuna", handle: "ElDeivid10", role: "Frontend", icon: "desktop_windows", note: "Landing, componentes y experiencia de usuario" },
+  { name: "Gustavo Alexis Calderón Herrera", handle: "gustavocalderon067", role: "Frontend", icon: "desktop_windows", note: "Visualizaciones y mapas interactivos" },
+  { name: "Jaime Corza Martínez", handle: "Yormix", role: "Frontend", icon: "desktop_windows", note: "Animaciones y navegación entre pestañas" },
+  { name: "Erick Leonardo Rodríguez Rodríguez", handle: "ErickRodriguezR", role: "Backend", icon: "dns", note: "API y servicios de monitoreo satelital" },
+  { name: "José Roberto Torres Cervantes", handle: "robertytocerva", role: "Backend", icon: "dns", note: "Base de datos y expedientes" },
+];
+
+async function fetchUser(handle: string) {
+  try {
+    const res = await fetch(`${GH}${handle}`, {
+      headers: { "User-Agent": "TerraVision-site" },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return {
+      avatar: data.avatar_url as string,
+      name: (data.name as string) || handle,
+      bio: data.bio as string | null,
+      url: data.html_url as string,
+      publicRepos: data.public_repos as number,
+    };
+  } catch {
+    return null;
+  }
+}
+
+const results = await Promise.all(
+  members.map(async (m) => ({ ...m, gh: await fetchUser(m.handle) })),
+);
+---
+
+<section id="equipo" class="relative w-full py-20 px-gutter-desktop overflow-hidden" data-page="equipo">
+  <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[640px] h-[640px] rounded-full bg-gradient-to-br from-secondary-fixed/20 to-tertiary-fixed/15 blur-3xl pointer-events-none tv-aurora"></div>
+
+  <div class="max-w-4xl mx-auto relative">
+    <div class="text-center tv-reveal">
+      <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-inverse-surface text-surface font-label-sm text-label-sm tracking-widest uppercase font-semibold shadow-lg shadow-inverse-surface/30">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-fixed opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary-fixed"></span>
+        </span>
+        <Icon name="groups" size={16} /> Equipo de Desarrollo
+      </span>
+      <h2 class="font-headline-xl text-headline-xl text-on-surface font-bold mt-4 tv-shimmer-text">
+        Quiénes construyen <span class="text-secondary">TerraVision</span>
+      </h2>
+      <p class="font-body-md text-body-md text-on-surface-variant max-w-xl mx-auto mt-2">
+        Cinco integrantes trabajando en el monitoreo satelital del cinturón aguacatero de Michoacán. Perfiles de la API pública de GitHub.
+      </p>
+      <div class="flex items-center justify-center gap-2 mt-4 text-label-sm text-label-sm text-on-surface-variant">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-low border border-surface-container-high">
+          <Icon name="desktop_windows" size={14} class="text-secondary" /> 3 Frontend
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-low border border-surface-container-high">
+          <Icon name="dns" size={14} class="text-secondary" /> 2 Backend
+        </span>
+      </div>
+    </div>
+
+    <!-- Carrusel -->
+    <div class="mt-12 relative tc-carousel" data-team-carousel>
+      <!-- Tarjetas -->
+      <div class="grid" data-slides>
+        {results.map((m, i) => (
+          <article
+            class={`tc-slide ${i === 0 ? "tc-active" : ""}`}
+            data-slide
+            data-index={i}
+          >
+            <div class="tc-card relative bg-surface rounded-3xl border border-surface-container-high shadow-xl group">
+              <div class="relative h-24 bg-gradient-to-r from-secondary via-primary-container to-secondary overflow-hidden rounded-t-3xl">
+                <div class="absolute inset-0 opacity-30 tv-grid-pattern"></div>
+                <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-tertiary-fixed/20 blur-2xl"></div>
+                <div class="absolute -bottom-12 -left-10 w-44 h-44 rounded-full bg-tertiary-fixed/10 blur-2xl"></div>
+                <div class="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-tertiary-fixed to-transparent"></div>
+                <span class={`absolute top-4 right-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-on-surface font-label-sm text-label-sm font-bold shadow-md backdrop-blur-md ${m.role === "Backend" ? "bg-tertiary-fixed/90 text-on-tertiary ring-1 ring-tertiary-fixed" : "bg-surface/90 text-secondary"}`}>
+                  <Icon name={m.icon} size={14} />
+                  {m.role}
+                </span>
+                <span class="absolute top-4 left-4 inline-flex items-center gap-1 font-mono text-label-sm text-label-sm text-surface/80">
+                  <Icon name="tag" size={13} /> 0{i + 1}
+                </span>
+              </div>
+
+              <div class="absolute -top-8 left-1/2 -translate-x-1/2 z-10">
+                <div class="relative tv-glow">
+                  <span class="absolute -inset-2 rounded-full bg-tertiary-fixed/50 blur-lg"></span>
+                  <img
+                    src={m.gh?.avatar ?? `https://github.com/${m.handle}.png?size=240`}
+                    alt={m.name}
+                    class="relative w-24 h-24 rounded-full object-cover ring-4 ring-surface shadow-2xl transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                    width={96}
+                    height={96}
+                  />
+                </div>
+              </div>
+
+              <div class="pt-20 px-6 pb-7 text-center">
+                <h3 class="font-headline-lg text-headline-lg text-on-surface font-bold leading-tight">{m.name}</h3>
+                <a
+                  href={m.gh?.url ?? `https://github.com/${m.handle}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 text-secondary font-label-md text-label-md mt-1.5 hover:underline group/gh"
+                >
+                  <Icon name="alternate_email" size={15} /> @{m.handle}
+                </a>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-3">{m.note}</p>
+
+                {m.gh?.bio && <p class="font-body-sm text-body-sm text-on-surface-variant/80 mt-2 italic line-clamp-2">{m.gh.bio}</p>}
+
+                <div class="grid grid-cols-3 gap-2 mt-6">
+                  <div class="flex flex-col items-center rounded-xl bg-surface-container-low py-2.5 border border-surface-container-high/60">
+                    <Icon name="code" size={16} class="text-secondary" />
+                    <span class="font-mono font-bold text-on-surface text-label-md mt-1">{m.gh?.publicRepos ?? "—"}</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">Repos</span>
+                  </div>
+                  <div class="flex flex-col items-center rounded-xl bg-surface-container-low py-2.5 border border-surface-container-high/60">
+                    <Icon name="star" size={16} class="text-tertiary" />
+                    <span class="font-mono font-bold text-on-surface text-label-md mt-1">Terra</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">Api</span>
+                  </div>
+                  <div class="flex flex-col items-center rounded-xl bg-surface-container-low py-2.5 border border-surface-container-high/60">
+                    <Icon name="verified_user" size={16} class="text-secondary" />
+                    <span class="font-mono font-bold text-on-surface text-label-md mt-1">ok</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">Estado</span>
+                  </div>
+                </div>
+
+                <div class="mt-5">
+                  <a href={m.gh?.url ?? `https://github.com/${m.handle}`} target="_blank" rel="noopener noreferrer" class="tc-cta inline-flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-label-md font-label-md font-bold text-surface transition-all hover:scale-[1.02] active:scale-[0.99] group/btn">
+                    <span>Ver perfil en GitHub</span>
+                    <Icon name="arrow_forward" size={16} class="transition-transform duration-300 group-hover/btn:translate-x-1" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <!-- Controles: flechas -->
+      <button type="button" class="tc-arrow tc-prev absolute top-1/2 -translate-y-1/2 -left-4 md:-left-8 z-20 w-12 h-12 rounded-full bg-inverse-surface text-surface shadow-xl shadow-inverse-surface/40 flex items-center justify-center hover:bg-tertiary hover:text-on-tertiary hover:scale-110 transition-all border border-surface/10" data-prev aria-label="Anterior">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button type="button" class="tc-arrow tc-next absolute top-1/2 -translate-y-1/2 -right-4 md:-right-8 z-20 w-12 h-12 rounded-full bg-inverse-surface text-surface shadow-xl shadow-inverse-surface/40 flex items-center justify-center hover:bg-tertiary hover:text-on-tertiary hover:scale-110 transition-all border border-surface/10" data-next aria-label="Siguiente">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+
+      <!-- Dots -->
+      <div class="flex justify-center gap-2 mt-7" data-dots></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (() => {
+    const el = document.querySelector<HTMLElement>("[data-team-carousel]");
+    if (!el) return;
+    if (el.dataset.bound) return;
+    el.dataset.bound = "1";
+    const root = el as HTMLElement;
+
+    const slides = Array.from(root.querySelectorAll<HTMLElement>("[data-slide]"));
+    if (slides.length < 2) return;
+    const dotsWrap = root.querySelector("[data-dots]");
+
+    let current = 0;
+    let timer: number | undefined;
+
+    const FIRST = "tc-active", LAST = "tc-leave", ANIM = 420;
+
+    function buildDots() {
+      if (!dotsWrap) return;
+      dotsWrap.innerHTML = "";
+      slides.forEach((_, i) => {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.setAttribute("aria-label", `Ir a colaborador ${i + 1}`);
+        dot.className = `tc-dot ${i === 0 ? "tc-dot-active" : ""}`;
+        dot.addEventListener("click", () => go(i));
+        dotsWrap.appendChild(dot);
+      });
+    }
+
+    function show(idx: number) {
+      slides.forEach((s) => s.classList.remove(FIRST, LAST));
+
+      const currentEl = slides[current];
+      currentEl.classList.add(LAST);
+      currentEl.classList.remove(FIRST);
+
+      setTimeout(() => {
+        currentEl.classList.remove(LAST);
+        currentEl.style.visibility = "hidden";
+        currentEl.style.pointerEvents = "none";
+
+        current = (idx + slides.length) % slides.length;
+        const next = slides[current];
+        next.style.visibility = "visible";
+        next.style.pointerEvents = "auto";
+        next.classList.add(FIRST);
+        updateDots();
+      }, ANIM);
+    }
+
+    function updateDots() {
+      root.querySelectorAll<HTMLButtonElement>(".tc-dot").forEach((d, i) => {
+        d.classList.toggle("tc-dot-active", i === current);
+      });
+    }
+
+    function go(idx: number) {
+      if (idx === current) return;
+      show(idx);
+      restart();
+    }
+    function next() { go((current + 1) % slides.length); }
+    function prev() { go((current - 1 + slides.length) % slides.length); }
+
+    function start() {
+      stop();
+      timer = window.setInterval(() => next(), 4200);
+    }
+    function stop() {
+      if (timer) window.clearInterval(timer);
+      timer = undefined;
+    }
+    function restart() {
+      start();
+    }
+
+    root.querySelector("[data-prev]")?.addEventListener("click", () => { prev(); restart(); });
+    root.querySelector("[data-next]")?.addEventListener("click", () => { next(); restart(); });
+    root.addEventListener("mouseenter", stop);
+    root.addEventListener("mouseleave", start);
+
+    buildDots();
+    slides.forEach((s, i) => {
+      s.style.visibility = i === 0 ? "visible" : "hidden";
+      if (i !== 0) s.style.pointerEvents = "none";
+    });
+    start();
+
+    document.addEventListener("astro:page-load", stop);
+  })();
+</script>
+
+<style>
+  /* ===== Estilos del carrusel de equipo ===== */
+  .tc-slide {
+    grid-area: 1 / 1;
+  }
+
+  .tc-slide.tc-active {
+    animation: tcIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .tc-slide.tc-leave {
+    animation: tcOut 0.42s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  .tc-card {
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+  }
+  .tc-slide:hover .tc-card {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 45px -18px rgba(31, 61, 46, 0.4);
+  }
+
+  .tc-cta {
+    background: linear-gradient(90deg, var(--color-secondary), #2f5a3c, var(--color-secondary));
+    background-size: 200% 100%;
+    box-shadow: 0 12px 26px -12px rgba(31, 61, 46, 0.65);
+    position: relative;
+    overflow: hidden;
+  }
+  .tc-cta:hover {
+    background-position: 100% 0;
+  }
+  .tc-cta::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(200, 212, 90, 0.35) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+  .tc-cta:hover::after {
+    transform: translateX(100%);
+  }
+
+  .tv-grid-pattern {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .tc-cta * , .tc-cta::after, .tc-cta::before {
+    position: relative;
+    z-index: 1;
+  }
+
+  @keyframes tcIn {
+    from {
+      opacity: 0;
+      transform: translateX(48px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+  @keyframes tcOut {
+    from {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-48px) scale(0.96);
+    }
+  }
+
+  .tc-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background: var(--color-surface-container-high);
+    border: 1px solid var(--color-outline);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  .tc-dot-active {
+    width: 30px;
+    background: var(--color-secondary);
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(60, 107, 73, 0.18);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tc-slide.tc-active, .tc-slide.tc-leave {
+      animation: none;
+    }
+    .tc-card {
+      transition: none;
+    }
+  }
+</style>

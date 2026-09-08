@@ -9,13 +9,21 @@ const { kicker, title, description, normTag, steps, items, cta } = Astro.props a
 const stepIcons = ["upload_file", "compare_arrows", "search", "task_alt"];
 ---
 
-<section id="expedientes" class="w-full py-space-3xl px-gutter-desktop bg-surface-container">
-  <div class="max-w-7xl mx-auto flex flex-col gap-space-2xl">
-    <div class="flex flex-col gap-space-xs">
-      <span class="font-label-sm text-label-sm text-secondary tracking-widest uppercase font-semibold">{kicker}</span>
+<section id="expedientes" class="w-full py-space-3xl px-gutter-desktop bg-surface-container overflow-hidden relative">
+  <div class="absolute -top-32 left-[-6%] w-[520px] h-[520px] rounded-full bg-gradient-to-br from-secondary-fixed/20 to-tertiary-fixed/10 blur-3xl pointer-events-none tv-aurora"></div>
+  <div class="max-w-7xl mx-auto relative flex flex-col gap-space-2xl">
+    <div class="flex flex-col gap-space-xs tv-reveal">
+      <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-inverse-surface text-surface w-fit shadow-lg shadow-inverse-surface/30 font-label-sm text-label-sm tracking-widest uppercase font-semibold">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-fixed opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary-fixed"></span>
+        </span>
+        <Icon name="folder_copy" size={16} />
+        {kicker}
+      </span>
       <h2 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">{title}</h2>
       <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">{description}</p>
-      <div class="inline-flex items-center gap-space-2xs w-fit px-space-sm py-1 rounded-full bg-tertiary text-on-tertiary font-label-sm text-label-sm font-bold shadow-sm mt-space-xs">
+      <div class="inline-flex items-center gap-space-2xs w-fit px-space-sm py-1 rounded-full bg-tertiary text-on-tertiary font-label-sm text-label-sm font-bold shadow-sm mt-space-xs tv-pulse-ring">
         <Icon name="gavel" size={16} />
         <span>{normTag}</span>
       </div>
@@ -23,11 +31,14 @@ const stepIcons = ["upload_file", "compare_arrows", "search", "task_alt"];
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
       {steps.map((step, i) => (
-        <div class="bg-surface-container-lowest rounded-xl p-space-md flex gap-space-sm items-start shadow-sm">
-          <div class="w-9 h-9 rounded-lg bg-tertiary text-on-tertiary flex items-center justify-center shrink-0">
+        <div class="group bg-surface-container-lowest rounded-xl p-space-md flex gap-space-sm items-start shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 tv-reveal tv-reveal-d${i + 1} relative overflow-hidden">
+          <div class="absolute right-0 top-0 bottom-0 w-14 pointer-events-none flex items-start justify-center pt-3">
+            <span class="font-headline-lg text-headline-lg font-extrabold text-secondary-fixed/15 tv-stats-number select-none leading-none">0{i + 1}</span>
+          </div>
+          <div class="relative shrink-0 w-9 h-9 rounded-lg bg-gradient-to-br from-secondary to-secondary-fixed text-surface flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
             <Icon name={stepIcons[i] ?? "task_alt"} size={20} />
           </div>
-          <div class="flex flex-col gap-0.5">
+          <div class="flex flex-col gap-0.5 relative pr-6">
             <span class="font-label-sm text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">
               Paso 0{i + 1}
             </span>
@@ -39,10 +50,10 @@ const stepIcons = ["upload_file", "compare_arrows", "search", "task_alt"];
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg">
-      {items.map((exp) => <ExpedienteCard expediente={exp} />)}
+      {items.map((exp, i) => <div class={`tv-reveal ${i % 2 === 0 ? "tv-reveal-d1" : "tv-reveal-d2"}`}><ExpedienteCard expediente={exp} /></div>)}
     </div>
 
-    <div class="flex justify-center pt-space-xs">
+    <div class="flex justify-center pt-space-xs tv-reveal">
       <Button label={cta.label} href={cta.href} icon={cta.icon ?? "play_arrow"} variant="bright" dataPath={cta.dataPath} />
     </div>
   </div>

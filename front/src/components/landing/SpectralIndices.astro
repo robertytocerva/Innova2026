@@ -1,4 +1,5 @@
 ---
+import Icon from "../ui/Icon.astro";
 import IndexCard from "../ui/IndexCard.astro";
 import type { IndexCard as IndexCardData, Pipeline } from "../../types/landing";
 
@@ -13,28 +14,46 @@ interface Props {
 const { kicker, title, description, indices, pipeline } = Astro.props;
 ---
 
-<section class="w-full py-space-3xl px-gutter-desktop bg-surface-container-lowest">
-  <div class="max-w-7xl mx-auto flex flex-col gap-space-2xl">
-    <div class="text-center max-w-3xl mx-auto flex flex-col gap-space-xs">
-      <span class="font-label-sm text-label-sm text-primary tracking-widest uppercase font-semibold">{kicker}</span>
+<section class="relative w-full py-space-3xl px-gutter-desktop bg-surface-container-lowest overflow-hidden">
+  <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-gradient-to-br from-secondary-fixed/20 to-tertiary-fixed/15 blur-3xl pointer-events-none tv-aurora"></div>
+  <div class="max-w-7xl mx-auto relative flex flex-col gap-space-2xl">
+    <div class="text-center max-w-3xl mx-auto flex flex-col gap-space-xs tv-reveal">
+      <span class="inline-flex items-center gap-2 mx-auto px-4 py-1.5 rounded-full bg-inverse-surface text-surface w-fit shadow-lg shadow-inverse-surface/30 font-label-sm text-label-sm tracking-widest uppercase font-semibold">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-fixed opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary-fixed"></span>
+        </span>
+        <Icon name="layers" size={16} />
+        {kicker}
+      </span>
       <h2 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">{title}</h2>
       <p class="font-body-md text-body-md text-on-surface-variant">{description}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
-      {indices.map((index) => <IndexCard index={index} />)}
+      {indices.map((index, i) => <div class={`tv-reveal tv-reveal-d${i + 1}`}><IndexCard index={index} /></div>)}
     </div>
 
-    <div class="w-full bg-surface-container-low rounded-2xl p-space-xl flex flex-col lg:flex-row items-center justify-between gap-space-lg">
-      <div class="flex flex-col gap-1 max-w-md">
-        <div class="font-label-sm text-label-sm font-bold text-primary uppercase tracking-wider">{pipeline.kicker}</div>
-        <div class="font-headline-sm text-headline-sm font-bold text-on-surface">{pipeline.title}</div>
-        <p class="font-body-sm text-body-sm text-on-surface-variant">{pipeline.description}</p>
+    <div class="w-full bg-gradient-to-br from-on-surface via-primary-container to-secondary rounded-2xl p-space-xl flex flex-col lg:flex-row items-center justify-between gap-space-lg overflow-hidden relative tv-reveal">
+      <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-tertiary-fixed/20 blur-2xl tv-glow pointer-events-none"></div>
+      <div class="flex flex-col gap-1 max-w-md relative">
+        <div class="flex items-center gap-2 font-label-sm text-label-sm font-bold text-tertiary uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-tertiary tv-pulse-ring"></span>{pipeline.kicker}
+        </div>
+        <div class="font-headline-sm text-headline-sm font-bold text-surface">{pipeline.title}</div>
+        <p class="font-body-sm text-body-sm text-inverse-on-surface/75">{pipeline.description}</p>
       </div>
-      <div class="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-space-sm w-full">
-        {pipeline.phases.map((phase) => (
-          <div class="bg-surface-container-lowest p-space-md rounded-xl flex flex-col gap-1 shadow-sm text-center">
-            <span class="font-label-sm text-label-sm text-primary font-bold">{phase.phase}</span>
+      <div class="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-space-sm w-full relative">
+        {pipeline.phases.map((phase, i) => (
+          <div class="group relative bg-surface-container-lowest/95 p-space-md rounded-xl flex flex-col gap-1 shadow-lg hover:-translate-y-1 transition-transform duration-200">
+            <div class="flex items-center justify-between">
+              <span class="font-label-sm text-label-sm font-extrabold text-primary trackig-tight tv-stats-number">{phase.phase}</span>
+              {i < pipeline.phases.length - 1 && (
+                <span class="text-primary hidden sm:flex items-center">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+                </span>
+              )}
+            </div>
             <span class="font-headline-sm text-headline-sm text-sm font-bold text-on-surface">{phase.title}</span>
             <span class="text-label-sm font-label-sm text-on-surface-variant">{phase.description}</span>
           </div>

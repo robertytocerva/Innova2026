@@ -1,0 +1,210 @@
+---
+import Layout from "../layouts/Layout.astro";
+import NavBar from "../components/landing/NavBar.astro";
+import SiteFooter from "../components/landing/SiteFooter.astro";
+import Icon from "../components/ui/Icon.astro";
+import { navData, footerData } from "../data/landing";
+
+const mockReports = [
+  {
+    id: "REP-2026-042",
+    title: "Informe Anual LULC · Meseta Purépecha",
+    category: "Cobertura Forestal",
+    icon: "forest",
+    status: "Listo",
+    statusTone: "bg-secondary text-surface",
+    date: "12/08/2026",
+    size: "2.4 MB · PDF",
+    coverage: 93,
+    coverageTone: "bg-secondary",
+  },
+  {
+    id: "REP-2026-041",
+    title: "Alertas de Conversión · Corredor Uruapan–Zamora",
+    category: "Alertas Tempranas",
+    icon: "radar",
+    status: "Listo",
+    statusTone: "bg-error-container text-on-error-container",
+    date: "05/08/2026",
+    size: "1.8 MB · PDF",
+    coverage: 41,
+    coverageTone: "bg-tertiary-fixed",
+  },
+  {
+    id: "REP-2026-040",
+    title: "Confronta de Expedientes · Ejido San Juan Nuevo",
+    category: "Expedientes",
+    icon: "verified_user",
+    status: "En proceso",
+    statusTone: "bg-tertiary-fixed text-on-tertiary",
+    date: "28/07/2026",
+    size: "3.1 MB · SHP+PDF",
+    coverage: 96,
+    coverageTone: "bg-secondary",
+  },
+  {
+    id: "REP-2026-039",
+    title: "Dinámica de Cuencas · Cupatitzio y Río Duero",
+    category: "Hidrología",
+    icon: "water_drop",
+    status: "Listo",
+    statusTone: "bg-secondary text-surface",
+    date: "19/07/2026",
+    size: "0.9 MB · PDF",
+    coverage: 78,
+    coverageTone: "bg-secondary",
+  },
+  {
+    id: "REP-2026-038",
+    title: "Índices Espectrales · Serie 2015–2025",
+    category: "Radiometría",
+    icon: "sensors",
+    status: "Listo",
+    statusTone: "bg-secondary text-surface",
+    date: "11/07/2026",
+    size: "4.2 MB · GeoTIFF",
+    coverage: 88,
+    coverageTone: "bg-secondary",
+  },
+  {
+    id: "REP-2026-037",
+    title: "Seguimiento de Compensación · Predios Restauración",
+    category: "Restauración",
+    icon: "nest_eco_leaf",
+    status: "En proceso",
+    statusTone: "bg-tertiary-fixed text-on-tertiary",
+    date: "02/07/2026",
+    size: "1.2 MB · PDF",
+    coverage: 67,
+    coverageTone: "bg-tertiary-fixed",
+  },
+];
+
+const formFields = [
+  { label: "Tipo de reporte", icon: "description", placeholder: "LULC, Alertas, Expediente…", options: ["LULC Anual", "Alertas Tempranas", "Expediente Cero Deforestación", "Índices Espectrales"] },
+  { label: "Ubicación / Predio", icon: "place", placeholder: "Uruapan, Zamora, Los Reyes…" },
+  { label: "Periodo de análisis", icon: "date_range", placeholder: "2015 – 2025" },
+];
+---
+
+<Layout title="Reportes — TerraVision">
+  <NavBar
+    brandName={navData.brandName}
+    links={navData.links}
+    ctaLabel={navData.ctaLabel}
+    ctaHref={navData.ctaHref}
+    ctaDataPath={navData.ctaDataPath}
+  />
+
+  <main class="min-h-screen">
+    <section class="max-w-7xl mx-auto px-gutter-desktop py-12">
+      <p class="font-label-md text-label-md text-secondary uppercase tracking-widest flex items-center gap-2">
+        <Icon name="query_stats" size={18} /> <span data-page="reportes">Centro de Reportes</span>
+      </p>
+      <h1 class="font-headline-xl text-headline-xl text-on-surface font-bold mt-2">Reportes Geoespaciales</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mt-2">
+        Genera y descarga dictámenes LULC, alertas de conversión y expedientes de cumplimiento
+        Cero Deforestación a partir de la serie histórica simulada de Michoacán.
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-10">
+        <div class="lg:col-span-2">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-headline-md text-headline-md text-on-surface font-semibold">Reportes recientes</h2>
+            <span class="font-label-md text-label-md text-on-surface-variant">6 resultados</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {mockReports.map((r) => (
+              <article class="bg-surface border border-surface-container-high rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-xl bg-secondary text-surface flex items-center justify-center shrink-0">
+                      <Icon name={r.icon} size={22} />
+                    </div>
+                    <div>
+                      <span class="font-label-sm text-label-sm text-on-surface-variant">{r.id}</span>
+                      <p class="font-label-md text-label-md text-on-surface-variant">{r.category}</p>
+                    </div>
+                  </div>
+                  <span class={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-label-sm text-label-sm ${r.statusTone}`}>
+                    <span class="w-1.5 h-1.5 rounded-full bg-current"></span>{r.status}
+                  </span>
+                </div>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold mt-4 leading-snug">{r.title}</h3>
+                <div class="mt-4">
+                  <div class="flex items-center justify-between text-xs text-on-surface-variant mb-1">
+                    <span>Completitud de datos</span>
+                    <span>{r.coverage}%</span>
+                  </div>
+                  <div class="h-1.5 w-full rounded-full bg-surface-container-high overflow-hidden">
+                    <div class={`h-full rounded-full ${r.coverageTone}`} style={{ width: `${r.coverage}%` }}></div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between mt-4 text-sm text-on-surface-variant border-t border-surface-container-high pt-3">
+                  <span class="flex items-center gap-1"><Icon name="calendar_today" size={15} /> {r.date}</span>
+                  <span class="flex items-center gap-1"><Icon name="folder" size={15} /> {r.size}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <aside class="bg-inverse-surface text-surface rounded-2xl p-6 h-fit sticky top-24">
+          <h2 class="font-headline-md text-headline-md font-semibold flex items-center gap-2">
+            <Icon name="add_circle" size={22} /> Generar reporte
+          </h2>
+          <p class="font-body-sm text-body-sm text-inverse-on-surface/70 mt-1">Solicita un reporte simulado al instante.</p>
+
+          <form class="mt-5 space-y-4" data-mock-form>
+            {formFields.map((f) => (
+              <label class="block">
+                <span class="font-label-md text-label-md text-inverse-on-surface/80 flex items-center gap-2 mb-1.5">
+                  <Icon name={f.icon} size={16} /> {f.label}
+                </span>
+                {f.options ? (
+                  <select class="w-full rounded-xl bg-surface/10 border border-surface/20 px-3 py-2.5 text-sm text-surface focus:outline-none focus:ring-2 focus:ring-tertiary">
+                    {f.options.map((o) => <option class="text-on-surface">{o}</option>)}
+                  </select>
+                ) : (
+                  <input
+                    placeholder={f.placeholder}
+                    class="w-full rounded-xl bg-surface/10 border border-surface/20 px-3 py-2.5 text-sm text-surface placeholder:text-surface/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
+                  />
+                )}
+              </label>
+            ))}
+            <button
+              type="submit"
+              class="w-full rounded-xl bg-tertiary text-on-tertiary font-semibold py-3 flex items-center justify-center gap-2 hover:bg-tertiary-fixed transition-colors"
+            >
+              <Icon name="bolt" size={18} /> Generar reporte simulado
+            </button>
+            <p class="text-xs text-inverse-on-surface/60 text-center" data-generate-status>
+              Los datos mostrados son de demostración (simulados).
+            </p>
+          </form>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter brand={footerData.brand} columns={footerData.columns} legal={footerData.legal} />
+</Layout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-mock-form]");
+  const status = document.querySelector<HTMLParagraphElement>("[data-generate-status]");
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (status) {
+      status.textContent = "✓ Reporte simulado generado correctamente. (Demostración)";
+      status.classList.add("!text-tertiary");
+    }
+    const btn = form.querySelector<HTMLButtonElement>("button[type=submit]");
+    if (btn) btn.disabled = true;
+    setTimeout(() => {
+      if (status) status.textContent = "Tu reporte simulado está listo para descarga. (Demo)";
+      if (btn) btn.disabled = false;
+    }, 1200);
+  });
+</script>

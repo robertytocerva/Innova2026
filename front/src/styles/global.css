@@ -154,3 +154,154 @@
     -webkit-font-smoothing: antialiased;
   }
 }
+
+/* ===== View Transitions (navegación entre pestañas) ===== */
+::view-transition-old(root) {
+  animation: tv-exit 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+::view-transition-new(root) {
+  animation: tv-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes tv-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-24px) scale(0.985);
+    filter: blur(4px);
+  }
+}
+
+@keyframes tv-enter {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.985);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Transición suave del color de fondo para coherencia visual */
+::view-transition-group(root) {
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+}
+
+/* ===== Micro-animaciones & reveal en scroll ===== */
+.tv-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.tv-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tv-reveal-d1 { transition-delay: 0.08s; }
+.tv-reveal-d2 { transition-delay: 0.16s; }
+.tv-reveal-d3 { transition-delay: 0.24s; }
+.tv-reveal-d4 { transition-delay: 0.32s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tv-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Degradado brillante animado para temas de fondo oscuro */
+@keyframes tv-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.tv-shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--color-tertiary) 0%,
+    #e8ef9a 25%,
+    var(--color-tertiary) 50%,
+    #e8ef9a 75%,
+    var(--color-tertiary) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: tv-shimmer 4s linear infinite;
+}
+
+/* Brillo / resplandor pulsante detrás de tarjetas oscuras */
+@keyframes tv-glow {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.12); }
+}
+
+.tv-glow {
+  animation: tv-glow 5s ease-in-out infinite;
+}
+
+/* Aura de gradiente animada en el fondo de secciones */
+@keyframes tv-aurora {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(24px, -18px, 0) scale(1.08); }
+  66% { transform: translate3d(-20px, 14px, 0) scale(0.94); }
+}
+
+.tv-aurora {
+  animation: tv-aurora 12s ease-in-out infinite;
+}
+
+/* Rebote leve al hacer hover en tarjetas */
+@keyframes tv-hover-lift {
+  from { transform: translateY(0); }
+  to { transform: translateY(-6px); }
+}
+
+/* Pulso suave para elementos "en vivo" */
+@keyframes tv-pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(200, 212, 90, 0.6); }
+  70% { box-shadow: 0 0 0 10px rgba(200, 212, 90, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(200, 212, 90, 0); }
+}
+
+.tv-pulse-ring {
+  animation: tv-pulse-ring 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Borde con gradiente sutil */
+.tv-border-glow {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+    linear-gradient(135deg, rgba(60, 107, 73, 0.5), rgba(200, 212, 90, 0.5)) border-box;
+}
+
+/* Cinta de números grandes con carácter */
+.tv-stats-number {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+
+/* Scrollbar personalizado sutil (opcional) */

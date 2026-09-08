@@ -1,4 +1,4 @@
-import { SATELLITE_HERO_IMG, SATELLITE_HERO_ALT, MAP_TEASER_IMG, MAP_TEASER_ALT, BRAND_LOGO } from "../constants/assets";
+import { SATELLITE_HERO_IMG, SATELLITE_HERO_ALT, MAP_TEASER_IMG, MAP_TEASER_ALT } from "../constants/assets";
 import type {
   Metric,
   LulcBar,
@@ -173,7 +173,7 @@ export const spectralData = {
   kicker: "Fundamento Radiométrico",
   title: "Capas Multiespectrales para la Confronta de Cobertura",
   description:
-    "CertiHuerto procesa reflectancias de superficie calibradas (Level-2A) para aislar firmas biofísicas diferenciales y erradicar falsos positivos en la detección de conversión de bosque nativo a huerto.",
+    "TerraVision procesa reflectancias de superficie calibradas (Level-2A) para aislar firmas biofísicas diferenciales y erradicar falsos positivos en la detección de conversión de bosque nativo a huerto.",
   indices: [
     {
       icon: "eco",
@@ -190,7 +190,7 @@ export const spectralData = {
       resolution: "Activo 10m",
     },
     {
-      icon: "sprout",
+      icon: "agriculture",
       iconBg: "bg-surface-container-high",
       iconFg: "text-secondary",
       category: "ESTRUCTURA AGRÍCOLA",
@@ -378,14 +378,14 @@ export const statusMarqueeData = {
 };
 
 export const navData: NavProps = {
-  logo: BRAND_LOGO,
-  brandName: "TerraSuelo",
+  logo: "/logoBlanco.png",
+  brandName: "TerraVision",
   links: [
-    { label: "Inicio", href: "/#inicio", dataPath: "inicio" },
+    { label: "Inicio", href: "/", dataPath: "inicio" },
     { label: "Mapa Interactivo", href: "/mapa-interactivo", dataPath: "mapa-interactivo" },
-    { label: "Casos de Uso", href: "/#casos-de-uso", dataPath: "casos-de-uso" },
-    { label: "Reportes", href: "/#generador-de-reportes", dataPath: "generador-de-reportes" },
-    { label: "Monitoreo", href: "/#monitoreo", dataPath: "monitoreo" },
+    { label: "Casos de Uso", href: "/casos-de-uso", dataPath: "casos-de-uso" },
+    { label: "Reportes", href: "/reportes", dataPath: "reportes" },
+    { label: "Monitoreo", href: "/monitoreo", dataPath: "monitoreo" },
   ],
   ctaLabel: "Abrir Visor",
   ctaHref: "/mapa-interactivo",
@@ -394,10 +394,10 @@ export const navData: NavProps = {
 
 export const footerData: FooterProps = {
   brand: {
-    name: "CertiHuerto",
+    name: "TerraVision",
     tagline:
       "Plataforma de auditoría ambiental del cinturón aguacatero y berries de Michoacán: confronta polígonos de huertas contra series históricas de cobertura forestal y emite expedientes de cumplimiento Cero Deforestación.",
-    logo: BRAND_LOGO,
+    logo: "/logoVerde.png",
   },
   columns: [
     {
@@ -424,5 +424,5 @@ export const footerData: FooterProps = {
       ],
     },
   ],
-  legal: "© 2026 CertiHuerto Consortium · Uruapan, Michoacán. Todos los derechos reservados.",
+  legal: "© 2026 TerraVision Consortium · Uruapan, Michoacán. Todos los derechos reservados.",
 };

@@ -1,0 +1,164 @@
+---
+import Layout from "../layouts/Layout.astro";
+import NavBar from "../components/landing/NavBar.astro";
+import SiteFooter from "../components/landing/SiteFooter.astro";
+import Icon from "../components/ui/Icon.astro";
+import { navData, footerData } from "../data/landing";
+
+const liveAlerts = [
+  {
+    severity: "critical",
+    severityTone: "bg-error-container text-on-error-container",
+    dot: "bg-error",
+    location: "San Juan Nuevo · Lote 7",
+    title: "Conversión de bosque a huerto detectada",
+    area: "22.4 ha",
+    confidence: "97.6%",
+    time: "Hace 3h",
+  },
+  {
+    severity: "moderate",
+    severityTone: "bg-amber-50 text-amber-800",
+    dot: "bg-amber-500",
+    location: "Colindancia Zona de Los Duendes",
+    title: "Fragmentación de dosel por caminos de acceso",
+    area: "8.9 ha",
+    confidence: "91.3%",
+    time: "Hace 11h",
+  },
+  {
+    severity: "watching",
+    severityTone: "bg-surface-container-high text-on-surface-variant",
+    dot: "bg-secondary",
+    location: "Ribera del Río Duero, Zamora",
+    title: "Estrés hídrico en huertos maduros",
+    area: "15.4 ha",
+    confidence: "86.2%",
+    time: "Ayer",
+  },
+];
+
+const satStatus = [
+  { label: "Sentinel-2B", value: "Órbita activa", bar: 98, icon: "satellite_alt", tone: "text-secondary" },
+  { label: "Landsat 9 OLI", value: "Revisión programada", bar: 87, icon: "public", tone: "text-secondary" },
+  { label: "Cobertura Nube", value: "< 3.4%", bar: 96, icon: "cloud", tone: "text-secondary" },
+  { label: "Índice Kappa Global", value: "0.937", bar: 93, icon: "verified", tone: "text-secondary" },
+];
+---
+
+<Layout title="Monitoreo Satelital — TerraVision">
+  <NavBar
+    brandName={navData.brandName}
+    links={navData.links}
+    ctaLabel={navData.ctaLabel}
+    ctaHref={navData.ctaHref}
+    ctaDataPath={navData.ctaDataPath}
+  />
+
+  <main class="min-h-screen bg-surface-container-lowest">
+    <section class="max-w-7xl mx-auto px-gutter-desktop py-12">
+      <p class="font-label-md text-label-md text-secondary uppercase tracking-widest flex items-center gap-2">
+        <Icon name="sensors" size={18} /> <span data-page="monitoreo">Monitoreo en Vivo</span>
+      </p>
+      <h1 class="font-headline-xl text-headline-xl text-on-surface font-bold mt-2">Centro de Monitoreo Satelital</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mt-2">
+        Estado en tiempo real del cinturón aguacatero y berries de Michoacán. Los datos que se
+        actualizan de forma automática son simulados para fines de demostración.
+      </p>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8" data-live-metrics>
+        <div class="bg-surface rounded-2xl border border-surface-container-high p-5">
+          <div class="text-3xl font-bold text-secondary" data-opt></div>
+          <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Área monitoreada (Mha)</p>
+        </div>
+        <div class="bg-surface rounded-2xl border border-surface-container-high p-5">
+          <div class="text-3xl font-bold text-error" data-alerts></div>
+          <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Alertas activas</p>
+        </div>
+        <div class="bg-surface rounded-2xl border border-surface-container-high p-5">
+          <div class="text-3xl font-bold text-secondary" data-scans></div>
+          <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Escaneos hoy</p>
+        </div>
+        <div class="bg-surface rounded-2xl border border-surface-container-high p-5">
+          <div class="text-3xl font-bold text-secondary" data-kappa></div>
+          <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Confiabilidad</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+        <div class="lg:col-span-2 bg-surface rounded-2xl border border-surface-container-high p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-headline-md text-headline-md text-on-surface font-semibold flex items-center gap-2">
+              <Icon name="radar" size={22} /> Alertas tempranas
+            </h2>
+            <span class="inline-flex items-center gap-1.5 font-label-sm text-label-sm text-secondary">
+              <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary"></span></span>
+              En vivo (simulado)
+            </span>
+          </div>
+          <div class="space-y-3">
+            {liveAlerts.map((a) => (
+              <div class="flex items-center gap-4 rounded-xl border border-surface-container-high p-4 hover:bg-surface-container-lowest transition-colors">
+                <span class={`w-2.5 h-2.5 rounded-full shrink-0 ${a.dot}`}></span>
+                <div class="flex-1 min-w-0">
+                  <p class="font-label-md text-label-md text-on-surface-variant">{a.location}</p>
+                  <p class="font-body-sm text-body-sm text-on-surface font-medium truncate">{a.title}</p>
+                </div>
+                <div class="text-right shrink-0 hidden sm:block">
+                  <p class="font-label-sm text-label-sm text-on-surface">{a.area}</p>
+                  <p class="font-label-sm text-label-sm text-on-surface-variant">{a.confidence}</p>
+                </div>
+                <span class="font-label-sm text-label-sm text-on-surface-variant shrink-0 w-14 text-right">{a.time}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <aside class="bg-inverse-surface text-surface rounded-2xl p-6">
+          <h2 class="font-headline-md text-headline-md font-semibold flex items-center gap-2">
+            <Icon name="satellite_alt" size={22} /> Estado satelital
+          </h2>
+          <div class="mt-5 space-y-5">
+            {satStatus.map((s) => (
+              <div>
+                <div class="flex items-center justify-between text-sm mb-1.5">
+                  <span class="flex items-center gap-2 text-inverse-on-surface/85"><Icon name={s.icon} size={16} /> {s.label}</span>
+                  <span class="font-medium">{s.value}</span>
+                </div>
+                <div class="h-2 w-full rounded-full bg-surface/15 overflow-hidden">
+                  <div class={`h-full rounded-full bg-tertiary`} style={{ width: `${s.bar}%` }}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p class="text-xs text-inverse-on-surface/60 mt-6">
+            Última actualización: <span data-last-update>hace 8 min</span>
+          </p>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter brand={footerData.brand} columns={footerData.columns} legal={footerData.legal} />
+</Layout>
+
+<script>
+  const metrics = {
+    opt: document.querySelector<HTMLElement>("[data-opt]"),
+    alerts: document.querySelector<HTMLElement>("[data-alerts]"),
+    scans: document.querySelector<HTMLElement>("[data-scans]"),
+    kappa: document.querySelector<HTMLElement>("[data-kappa]"),
+    updated: document.querySelector<HTMLElement>("[data-last-update]"),
+  };
+  if (metrics.opt) metrics.opt.textContent = "1.9";
+  if (metrics.alerts) metrics.alerts.textContent = "38";
+  if (metrics.scans) metrics.scans.textContent = "1,240";
+  if (metrics.kappa) metrics.kappa.textContent = "0.937";
+
+  const scan = () => { if (metrics.scans) metrics.scans.textContent = `${Math.floor(1239 + Math.random() * 4).toLocaleString("es-MX")}`; };
+  const tick = () => {
+    if (metrics.updated) metrics.updated.textContent = "hace " + Math.floor(1 + Math.random() * 8) + " min";
+    scan();
+  };
+  setInterval(tick, 4000);
+</script>

@@ -1,0 +1,30 @@
+---
+import Layout from "../layouts/Layout.astro";
+import NavBar from "../components/landing/NavBar.astro";
+import SiteFooter from "../components/landing/SiteFooter.astro";
+import UseCases from "../components/landing/UseCases.astro";
+import { navData, footerData, useCasesData } from "../data/landing";
+---
+
+<Layout title="Casos de Uso — TerraVision">
+  <NavBar
+    brandName={navData.brandName}
+    links={navData.links}
+    ctaLabel={navData.ctaLabel}
+    ctaHref={navData.ctaHref}
+    ctaDataPath={navData.ctaDataPath}
+  />
+
+  <main class="min-h-screen">
+    <section class="max-w-7xl mx-auto px-gutter-desktop py-12">
+      <UseCases
+        kicker={useCasesData.kicker}
+        title={useCasesData.title}
+        description={useCasesData.description}
+        cases={useCasesData.cases}
+      />
+    </section>
+  </main>
+
+  <SiteFooter brand={footerData.brand} columns={footerData.columns} legal={footerData.legal} />
+</Layout>

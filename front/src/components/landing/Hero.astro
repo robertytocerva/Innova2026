@@ -51,9 +51,13 @@ const {
   <div class="max-w-7xl mx-auto relative z-10">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-2xl items-center">
       <div class="lg:col-span-7 flex flex-col gap-space-md">
-        <span class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container-low text-secondary w-fit shadow-sm">
+        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-inverse-surface text-surface w-fit shadow-lg shadow-inverse-surface/30 font-label-sm text-label-sm tracking-widest uppercase font-semibold">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-fixed opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary-fixed"></span>
+          </span>
           <Icon name={badge.icon} size={16} />
-          <span class="font-label-sm text-label-sm tracking-wider uppercase font-semibold">{badge.label}</span>
+          <span class="tracking-wider uppercase font-semibold">{badge.label}</span>
         </span>
 
         <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight font-extrabold leading-[1.08]">

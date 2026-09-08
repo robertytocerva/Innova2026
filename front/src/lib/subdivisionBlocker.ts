@@ -1,6 +1,6 @@
 /**
  * Módulo de Reglas de Negocio: Anti-Subdivisión Fraudulenta
- * Vigilancia Satelital Michoacán - TerraSuelo / Guardián Forestal
+ * Vigilancia Satelital Michoacán - TerraVision / Guardián Forestal
  *
  * REGLA CRÍTICA:
  * Si una huerta o predio tiene historial de deforestación (tala rasa, fuego, aclareo ilegal),

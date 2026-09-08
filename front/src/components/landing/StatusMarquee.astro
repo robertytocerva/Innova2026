@@ -1,4 +1,6 @@
 ---
+import Icon from "../ui/Icon.astro";
+
 interface Props {
   liveLabel: string;
   scanInfo: string;
@@ -10,25 +12,44 @@ interface Props {
 const { liveLabel, scanInfo, coords, calibration, kappa } = Astro.props;
 ---
 
-<div class="w-full bg-surface-container-low px-gutter-desktop py-space-xs flex items-center justify-between overflow-x-auto text-on-surface-variant">
-  <div class="max-w-7xl mx-auto w-full flex items-center justify-between gap-space-md text-label-sm font-label-sm">
-    <div class="flex items-center gap-space-sm whitespace-nowrap">
-      <span class="inline-flex items-center gap-1.5 font-semibold text-secondary">
-        <span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+<div class="relative w-full bg-gradient-to-r from-inverse-surface via-primary-container to-inverse-surface px-gutter-desktop py-space-sm overflow-hidden text-surface">
+  <div class="absolute inset-0 opacity-10 pointer-events-none">
+    <div class="absolute -top-8 left-1/4 w-40 h-40 rounded-full bg-secondary-fixed blur-2xl"></div>
+    <div class="absolute top-2 right-1/4 w-32 h-32 rounded-full bg-tertiary-fixed blur-2xl"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto w-full relative flex items-center justify-between gap-space-md text-label-sm font-label-sm">
+    <div class="flex items-center gap-space-md whitespace-nowrap overflow-x-auto">
+      <span class="inline-flex items-center gap-2 font-semibold text-tertiary px-space-sm py-1 rounded-full bg-surface/10 border border-tertiary/30">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span>
+        </span>
+        <Icon name="satellite_alt" size={16} />
         {liveLabel}
       </span>
-      <span class="text-outline-variant">|</span>
-      <span class="text-on-surface-variant">{scanInfo}</span>
-      <span class="text-outline-variant">|</span>
-      <span class="text-on-surface-variant">{coords}</span>
-    </div>
-    <div class="hidden lg:flex items-center gap-space-md whitespace-nowrap text-label-sm font-label-sm">
-      <span class="text-on-surface-variant">
-        {calibration.label}: <strong class="text-secondary font-semibold">{calibration.value}</strong>
+
+      <span class="hidden sm:inline-flex items-center gap-1.5 text-inverse-on-surface/80">
+        <Icon name="autorenew" size={15} class="text-tertiary/80" />
+        {scanInfo}
       </span>
-      <span class="text-outline-variant">/</span>
-      <span class="text-on-surface-variant">
-        {kappa.label}: <strong class="text-on-surface font-semibold">{kappa.value}</strong>
+
+      <span class="hidden md:inline-flex items-center gap-1.5 text-inverse-on-surface/80">
+        <Icon name="my_location" size={15} class="text-tertiary/80" />
+        {coords}
+      </span>
+    </div>
+
+    <div class="hidden lg:flex items-center gap-space-md whitespace-nowrap text-label-sm font-label-sm shrink-0">
+      <span class="inline-flex items-center gap-1.5 text-inverse-on-surface/85 px-space-sm py-1 rounded-full bg-surface/10">
+        <Icon name="speed" size={15} class="text-tertiary" />
+        {calibration.label}
+        <strong class="text-surface font-semibold">{calibration.value}</strong>
+      </span>
+      <span class="inline-flex items-center gap-1.5 text-inverse-on-surface/85 px-space-sm py-1 rounded-full bg-surface/10">
+        <Icon name="verified_user" size={15} class="text-tertiary" />
+        {kappa.label}
+        <strong class="text-surface font-semibold">{kappa.value}</strong>
       </span>
     </div>
   </div>

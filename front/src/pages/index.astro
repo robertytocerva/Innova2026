@@ -10,6 +10,7 @@ import UseCases from "../components/landing/UseCases.astro";
 import MapTeaser from "../components/landing/MapTeaser.astro";
 import Expedientes from "../components/landing/Expedientes.astro";
 import FastActions from "../components/landing/FastActions.astro";
+import Team from "../components/landing/Team.astro";
 import SiteFooter from "../components/landing/SiteFooter.astro";
 import {
   heroData,
@@ -132,6 +133,8 @@ import {
       description={fastActionsData.description}
       cta={fastActionsData.cta}
     />
+
+    <Team />
   </main>
 
   <SiteFooter brand={footerData.brand} columns={footerData.columns} legal={footerData.legal} />
