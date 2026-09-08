@@ -202,6 +202,19 @@
   }
 }
 
+/* Las páginas con mapa embebido (Leaflet) deben transicionar de forma
+ * instantánea: durante la animación, ::view-transition-new(root) aplica
+ * `transform: scale(0.985)` y `filter: blur(4px)` al pseudo-elemento raíz.
+ * Leaflet mide `getBoundingClientRect()` y obtiene el tamaño escalado,
+ * congelando el viewport a esa medida → "dos cuadrantes" del mapa. */
+.map-page-route ::view-transition-old(root),
+.map-page-route ::view-transition-new(root) {
+  animation: none !important;
+}
+.map-page-route ::view-transition-group(root) {
+  animation: none !important;
+}
+
 /* ===== Micro-animaciones & reveal en scroll ===== */
 .tv-reveal {
   opacity: 0;

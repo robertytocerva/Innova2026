@@ -5,15 +5,32 @@ import { initMapControls } from "./map-controls";
 import { initParcelDrawer } from "./parcel-drawer";
 import { teardownMap } from "./state";
 
+let mapInitToken: symbol | null = null;
+let mapInitInFlight = false;
+
 export function initMapPage(): void {
   initMapControls();
   initParcelDrawer();
   initTimeSlider();
   initAiChatbot();
-  void initMap();
+
+  if (mapInitInFlight) return;
+  mapInitInFlight = true;
+
+  const token = Symbol();
+  mapInitToken = token;
+
+  setTimeout(() => {
+    if (mapInitToken !== token) return;
+    mapInitInFlight = false;
+    if (!document.getElementById("map")) return;
+    void initMap();
+  }, 500);
 }
 
 function cleanupMapPage(): void {
+  mapInitToken = null;
+  mapInitInFlight = false;
   teardownMap();
 }
 
