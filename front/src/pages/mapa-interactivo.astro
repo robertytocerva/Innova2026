@@ -1,18 +1,11 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import NavBar from "../components/landing/NavBar.astro";
-import MapCanvas from "../components/mapa/MapCanvas.astro";
-import MapControls from "../components/mapa/MapControls.astro";
-import MapLegend from "../components/mapa/MapLegend.astro";
-import ParcelDrawer from "../components/mapa/ParcelDrawer.astro";
-import TimeSlider from "../components/mapa/TimeSlider.astro";
-import AiChatbot from "../components/mapa/AiChatbot.astro";
-import MapStyles from "../components/mapa/MapStyles.astro";
+import MapApp from "../components/react/MapApp";
 import { navData } from "../data/landing";
 ---
 
 <Layout title="Visor Satelital Michoacán — TerraVision">
-  <MapStyles />
   <NavBar
     brandName={navData.brandName}
     links={navData.links}
@@ -21,20 +14,7 @@ import { navData } from "../data/landing";
     ctaDataPath={navData.ctaDataPath}
   />
 
-  <main class="map-page map-page-route h-[calc(100vh-5rem)] w-screen flex flex-col overflow-hidden">
-    <div class="flex-1 relative w-full h-full overflow-hidden flex flex-col bg-inverse-surface text-surface">
-      <div class="flex-1 relative w-full h-full overflow-hidden">
-        <MapCanvas />
-        <MapControls />
-        <MapLegend />
-        <ParcelDrawer />
-        <TimeSlider />
-        <AiChatbot />
-      </div>
-    </div>
+  <main class="map-page h-[calc(100vh-5rem)] w-screen flex flex-col overflow-hidden">
+    <MapApp client:only="react" />
   </main>
 </Layout>
-
-<script>
-  import "../scripts/mapa";
-</script>

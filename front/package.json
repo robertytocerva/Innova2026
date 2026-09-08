@@ -12,10 +12,15 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/react": "^6.0.5",
+    "@react-leaflet/core": "^3.0.0",
     "@tailwindcss/vite": "^4.3.3",
     "@turf/turf": "^7.4.0",
     "astro": "^7.3.1",
     "leaflet": "^1.9.4",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-leaflet": "^5.0.0",
     "tailwindcss": "^4.3.3"
   },
   "allowScripts": {
@@ -24,6 +29,8 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@types/leaflet": "^1.9.22",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
     "typescript": "^6.0.3"
   }
 }
