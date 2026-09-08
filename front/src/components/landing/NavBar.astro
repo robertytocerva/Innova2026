@@ -4,14 +4,14 @@ import Button from "../ui/Button.astro";
 import type { NavProps } from "../../types/landing";
 
 interface Props extends NavProps {}
-//hola mundo
+
 const { brandName, links, ctaLabel, ctaHref, ctaDataPath } = Astro.props;
 ---
 
 <header class="sticky top-0 z-50 w-full bg-primary border-b border-primary-container/40 shadow-md">
   <nav class="max-w-7xl mx-auto px-gutter-desktop h-20 flex items-center justify-between gap-space-md">
     <a href="#inicio" data-path="inicio" class="flex items-center gap-space-xs shrink-0">
-      <img src="/public/logoBlanco.png" alt={brandName} class="w-16 h-12" />
+      <img src="/logoBlanco.png" alt={brandName} class="h-12 w-auto object-contain" />
       <span class="font-headline-sm text-headline-sm text-surface font-bold tracking-tight">{brandName}</span>
     </a>
 
@@ -21,7 +21,7 @@ const { brandName, links, ctaLabel, ctaHref, ctaDataPath } = Astro.props;
           <a
             href={link.href}
             data-path={link.dataPath}
-            class="font-label-md text-label-md text-on-primary/85 hover:text-secondary-fixed transition-colors"
+            class="font-label-md text-label-md text-on-primary/85 hover:text-tertiary transition-colors"
           >
             {link.label}
           </a>
@@ -32,7 +32,7 @@ const { brandName, links, ctaLabel, ctaHref, ctaDataPath } = Astro.props;
     <div class="flex items-center gap-space-sm shrink-0">
       <button
         type="button"
-        class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary-container text-on-primary hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-colors"
+        class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary-container text-on-primary-container hover:bg-tertiary-fixed-dim hover:text-on-tertiary transition-colors"
         aria-label="Abrir menú"
         data-nav-toggle
       >
@@ -54,7 +54,7 @@ const { brandName, links, ctaLabel, ctaHref, ctaDataPath } = Astro.props;
           <a
             href={link.href}
             data-path={link.dataPath}
-            class="block py-space-xs font-label-md text-label-md text-on-primary/85 hover:text-secondary-fixed transition-colors"
+            class="block py-space-xs font-label-md text-label-md text-on-primary/85 hover:text-tertiary transition-colors"
           >
             {link.label}
           </a>

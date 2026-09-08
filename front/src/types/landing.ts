@@ -23,6 +23,7 @@ export interface CtaLink {
   label: string;
   href: string;
   dataPath?: string;
+  icon?: string;
 }
 
 export interface ComplianceItem {
@@ -151,4 +152,41 @@ export interface FooterProps {
   brand: FooterBrand;
   columns: FooterColumn[];
   legal: string;
+}
+
+export interface ExpedienteStep {
+  title: string;
+  description: string;
+}
+
+export interface ExpedienteTimelinePoint {
+  year: string;
+  coverage: number;
+  tone: string;
+}
+
+export interface Expediente {
+  id: string;
+  cif: string;
+  owner: string;
+  locality: string;
+  crop: string;
+  areaHa: string;
+  status: string;
+  statusTone: string;
+  ringTone: string;
+  series: ExpedienteTimelinePoint[];
+  verdict: string;
+  verdictNote: string;
+  issuedAt: string;
+}
+
+export interface ExpedientesProps {
+  kicker: string;
+  title: string;
+  description: string;
+  normTag: string;
+  steps: ExpedienteStep[];
+  items: Expediente[];
+  cta: CtaLink;
 }

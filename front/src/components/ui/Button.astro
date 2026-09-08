@@ -28,17 +28,17 @@ const base =
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-primary text-on-primary hover:brightness-110 shadow-sm",
+    "bg-tertiary text-on-tertiary hover:brightness-110 shadow-sm",
   secondary:
-    "bg-surface-container-low text-primary hover:bg-surface-container shadow-sm",
+    "bg-surface-container-low text-secondary hover:bg-surface-container shadow-sm",
   ghost:
-    "bg-surface-container text-primary hover:bg-primary hover:text-on-primary",
+    "bg-surface-container text-secondary hover:bg-primary hover:text-on-primary",
   "outline-on-dark":
     "bg-surface-container-lowest/15 text-surface hover:bg-surface-container-lowest/25 backdrop-blur-md",
   bright:
-    "bg-gradient-to-r from-primary to-primary-container text-on-primary shadow-md hover:shadow-lg hover:brightness-105",
+    "bg-gradient-to-r from-tertiary to-tertiary-fixed-dim text-on-tertiary shadow-md hover:shadow-lg hover:brightness-105",
   inverted:
-    "bg-surface-container-lowest text-primary hover:bg-secondary-fixed hover:text-on-secondary-fixed shadow-sm",
+    "bg-surface-container-lowest text-secondary hover:bg-primary hover:text-on-primary shadow-sm",
 };
 
 const widthClass = fullWidth ? "w-full" : "";

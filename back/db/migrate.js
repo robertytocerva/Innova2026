@@ -5,14 +5,27 @@ import { join } from "node:path";
 
 const MIGRATIONS_DIR = join(import.meta.dirname, "migrations");
 
-const run = async () => {
+const cleanConnectionString = (url) => {
+  try {
+    const u = new URL(url);
+    u.searchParams.delete("channel_binding");
+    return u.toString();
+  } catch {
+    return url;
+  }
+};
+
+export const runMigrations = async ({ silent = false } = {}) => {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
-    console.error("DATABASE_URL no esta configurada en .env");
-    process.exit(1);
+    throw new Error("DATABASE_URL no esta configurada en .env");
   }
 
-  const client = new pg.Client({ connectionString, ssl: { rejectUnauthorized: false } });
+  const client = new pg.Client({
+    connectionString: cleanConnectionString(connectionString),
+    ssl: { rejectUnauthorized: false },
+  });
+
   await client.connect();
 
   try {
@@ -34,23 +47,34 @@ const run = async () => {
     let applied = 0;
     for (const file of files) {
       if (executedNames.has(file)) {
-        console.log(`  omitida: ${file}`);
+        if (!silent) console.log(`  omitida: ${file}`);
         continue;
       }
       const sql = await readFile(join(MIGRATIONS_DIR, file), "utf-8");
-      console.log(`  aplicando: ${file}`);
+      if (!silent) console.log(`  aplicando: ${file}`);
       await client.query(sql);
       await client.query("insert into _migrations (name) values ($1)", [file]);
       applied++;
     }
 
-    console.log(`Migracion completa. ${applied} archivo(s) aplicado(s).`);
+    if (!silent) console.log(`Migracion completa. ${applied} archivo(s) aplicado(s).`);
+    return { applied, total: files.length };
   } finally {
     await client.end();
   }
 };
 
-run().catch((err) => {
-  console.error("Error en migracion:", err.message);
-  process.exit(1);
-});
+const isMain = () => {
+  try {
+    return import.meta.url === `file://${process.argv[1]}`;
+  } catch {
+    return false;
+  }
+};
+
+if (isMain()) {
+  runMigrations().catch((err) => {
+    console.error("Error en migracion:", err.message);
+    process.exit(1);
+  });
+}
