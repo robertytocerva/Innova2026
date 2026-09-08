@@ -3,7 +3,7 @@ import { michoacanParcels } from "../../data/michoacanParcels";
 import { canSubdivide } from "../../lib/subdivisionBlocker";
 import { validatePolygon } from "../../lib/geometryValidator";
 import { calculateVedaForestal, getParcelFireRecords } from "../../lib/nasaFirms";
-import { auditParcelYears } from "../../lib/geminiAudit";
+import { auditParcelYears } from "../../lib/localImageAudit";
 import { getParcelTimeSeriesUrls, SATELLITE_HISTORY_START } from "../../lib/satelliteHistory";
 import type { ParcelFeature } from "../../types/mapa";
 
@@ -15,7 +15,7 @@ export function initParcelDrawer(): void {
     drawer.classList.add("translate-x-full");
   });
   document.getElementById("btnTestSubdivision")?.addEventListener("click", testSubdivision);
-  document.getElementById("btnRunGeminiAudit")?.addEventListener("click", runGeminiAudit);
+  document.getElementById("btnRunAudit")?.addEventListener("click", runImageAudit);
 }
 
 export function openParcelDetail(feature: ParcelFeature): void {
@@ -49,9 +49,9 @@ export function openParcelDetail(feature: ParcelFeature): void {
     alertBox.innerHTML = "";
   }
 
-  document.getElementById("geminiResultBox")?.classList.add("hidden");
-  document.getElementById("geminiAlertBox")?.classList.add("hidden");
-  document.getElementById("geminiLoading")?.classList.add("hidden");
+  document.getElementById("auditResultBox")?.classList.add("hidden");
+  document.getElementById("auditAlertBox")?.classList.add("hidden");
+  document.getElementById("auditLoading")?.classList.add("hidden");
 
   document.getElementById("parcelDrawer")?.classList.remove("translate-x-full");
 }
@@ -62,7 +62,7 @@ export function updateDrawerComparison(): void {
   const fromImage = document.getElementById("drawerFromYearImage") as HTMLImageElement | null;
   const toImage = document.getElementById("drawerToYearImage") as HTMLImageElement | null;
   const notice = document.getElementById("drawerComparisonNotice");
-  const auditButton = document.getElementById("btnRunGeminiAudit") as HTMLButtonElement | null;
+  const auditButton = document.getElementById("btnRunAudit") as HTMLButtonElement | null;
   const hasSatelliteComparison = state.comparisonStartYear >= SATELLITE_HISTORY_START && state.currentMapYear >= SATELLITE_HISTORY_START;
   const fromUrl = state.activeTimeSeries?.series[state.comparisonStartYear];
   const toUrl = state.activeTimeSeries?.series[state.currentMapYear];
@@ -233,11 +233,11 @@ function testSubdivision(): void {
   }
 }
 
-async function runGeminiAudit(): Promise<void> {
-  const button = document.getElementById("btnRunGeminiAudit") as HTMLButtonElement | null;
-  const loading = document.getElementById("geminiLoading");
-  const alertBox = document.getElementById("geminiAlertBox");
-  const resultBox = document.getElementById("geminiResultBox");
+async function runImageAudit(): Promise<void> {
+  const button = document.getElementById("btnRunAudit") as HTMLButtonElement | null;
+  const loading = document.getElementById("auditLoading");
+  const alertBox = document.getElementById("auditAlertBox");
+  const resultBox = document.getElementById("auditResultBox");
   if (
     !state.selectedFeature ||
     state.comparisonStartYear < SATELLITE_HISTORY_START ||
@@ -254,12 +254,12 @@ async function runGeminiAudit(): Promise<void> {
   try {
     const result = await auditParcelYears(state.selectedFeature, state.comparisonStartYear, state.currentMapYear);
     const data = result.data;
-    const title = document.getElementById("geminiVerdictTitle");
-    const confidence = document.getElementById("geminiConfidenceBadge");
-    const summary = document.getElementById("geminiComparisonSummary");
-    const timeline = document.getElementById("geminiTimelineList");
-    const explanation = document.getElementById("geminiExplanation");
-    const legal = document.getElementById("geminiConclusionLegal");
+    const title = document.getElementById("auditVerdictTitle");
+    const confidence = document.getElementById("auditConfidenceBadge");
+    const summary = document.getElementById("auditComparisonSummary");
+    const timeline = document.getElementById("auditTimelineList");
+    const explanation = document.getElementById("auditExplanation");
+    const legal = document.getElementById("auditConclusionLegal");
 
     if (title) title.textContent = data.cambio_detectado ? "CAMBIO DE COBERTURA DETECTADO" : "COBERTURA SIN CAMBIO CRÍTICO";
     if (confidence) confidence.textContent = `${data.nivel_certeza}% certeza`;
@@ -278,7 +278,7 @@ async function runGeminiAudit(): Promise<void> {
     }
   } catch (error) {
     if (alertBox) {
-      alertBox.textContent = error instanceof Error ? error.message : "No fue posible ejecutar la auditoría Gemini.";
+      alertBox.textContent = error instanceof Error ? error.message : "No fue posible ejecutar la auditoría satelital local.";
       alertBox.classList.remove("hidden");
     }
   } finally {

@@ -98,7 +98,7 @@ export interface VedaForestalResult {
   dictamenLegal: string;
 }
 
-export interface GeminiAuditData {
+export interface AuditData {
   cambio_detectado: boolean;
   ano_deforestacion_estimado: number | null;
   incendio_registrado: boolean;
@@ -110,18 +110,24 @@ export interface GeminiAuditData {
     ano_inicial: number;
     ano_final: number;
     resumen: string;
+    perdidaVerdePct?: number;
+    pixelesAnalizados?: number;
   };
   cronologia_pericial: Array<{ ano: number; estado: string }>;
   dictamen_pericial_completo: string;
   conclusion_legal: string;
 }
 
-export interface GeminiAuditResponse {
-  data: GeminiAuditData;
+export interface AuditResponse {
+  data: AuditData;
   fireRecords: NasaFireRecord[];
   timestamp: string;
-  modelUsed: string;
+  method?: string;
+  modelUsed?: string;
 }
+
+export type GeminiAuditData = AuditData;
+export type GeminiAuditResponse = AuditResponse;
 
 export interface SubdivisionResult {
   allowed: boolean;

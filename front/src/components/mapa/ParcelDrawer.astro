@@ -90,25 +90,25 @@ import Icon from "../ui/Icon.astro";
       </div>
       <p id="drawerComparisonNotice" class="text-[10px] leading-relaxed text-inverse-on-surface/70"></p>
       <button
-        id="btnRunGeminiAudit"
+        id="btnRunAudit"
         type="button"
         class="w-full rounded-lg bg-primary px-3 py-2 text-[11px] font-bold text-on-primary transition-colors hover:bg-primary-container"
       >
-        <span class="inline-flex items-center gap-1.5"><Icon name="auto_awesome" size={15} /> Auditar ambos años con Gemini</span>
+        <span class="inline-flex items-center gap-1.5"><Icon name="compare_arrows" size={15} /> Analizar cambio de cobertura (Local)</span>
       </button>
-      <div id="geminiLoading" class="hidden rounded-lg border border-secondary-fixed/30 bg-surface/10 p-2 text-center text-[10px] text-secondary-fixed">
-        Analizando las dos imágenes y los incendios NASA FIRMS...
+      <div id="auditLoading" class="hidden rounded-lg border border-secondary-fixed/30 bg-surface/10 p-2 text-center text-[10px] text-secondary-fixed">
+        Comparando píxeles de ambas imágenes satelitales (ExG)...
       </div>
-      <div id="geminiAlertBox" class="hidden rounded-lg border border-error/50 bg-error/10 p-2 text-[10px] text-red-200"></div>
-      <div id="geminiResultBox" class="hidden space-y-2 rounded-lg border border-secondary-fixed/30 bg-black/20 p-2 text-[10px]">
+      <div id="auditAlertBox" class="hidden rounded-lg border border-error/50 bg-error/10 p-2 text-[10px] text-red-200"></div>
+      <div id="auditResultBox" class="hidden space-y-2 rounded-lg border border-secondary-fixed/30 bg-black/20 p-2 text-[10px]">
         <div class="flex items-center justify-between gap-2 border-b border-surface/10 pb-1">
-          <strong id="geminiVerdictTitle">Resultado de auditoría</strong>
-          <span id="geminiConfidenceBadge" class="font-mono text-secondary-fixed"></span>
+          <strong id="auditVerdictTitle">Resultado de auditoría</strong>
+          <span id="auditConfidenceBadge" class="font-mono text-secondary-fixed"></span>
         </div>
-        <p id="geminiComparisonSummary" class="leading-relaxed text-inverse-on-surface/80"></p>
-        <div id="geminiTimelineList" class="space-y-1 border-l border-secondary-fixed/50 pl-2"></div>
-        <p id="geminiExplanation" class="leading-relaxed text-inverse-on-surface/80"></p>
-        <p id="geminiConclusionLegal" class="rounded bg-error/10 p-2 leading-relaxed text-red-200"></p>
+        <p id="auditComparisonSummary" class="leading-relaxed text-inverse-on-surface/80"></p>
+        <div id="auditTimelineList" class="space-y-1 border-l border-secondary-fixed/50 pl-2"></div>
+        <p id="auditExplanation" class="leading-relaxed text-inverse-on-surface/80"></p>
+        <p id="auditConclusionLegal" class="rounded bg-error/10 p-2 leading-relaxed text-red-200"></p>
       </div>
     </section>
 
