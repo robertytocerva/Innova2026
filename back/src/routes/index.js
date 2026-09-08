@@ -6,6 +6,7 @@ import {
   getParcel, getParcelAlerts, getParcels, postParcel, deleteParcel,
   createParcelSchema, parcelQuerySchema,
 } from "../controllers/parcel.controller.js";
+import { generateExpediente } from "../controllers/expediente.controller.js";
 import {
   bboxQuerySchema, monitoringSchema, monitorParcel, calculateRiskFromBbox,
   fireAlerts, weather, weatherQuerySchema,
@@ -27,6 +28,7 @@ router.post("/parcels", dbRequired, validate(createParcelSchema), asyncHandler(p
 router.get("/parcels/:id", dbRequired, asyncHandler(getParcel));
 router.delete("/parcels/:id", dbRequired, asyncHandler(deleteParcel));
 router.get("/parcels/:id/alerts", dbRequired, asyncHandler(getParcelAlerts));
+router.get("/parcels/:id/expediente", dbRequired, asyncHandler(generateExpediente));
 router.post("/parcels/:id/monitoring", dbRequired, validate(monitoringSchema), asyncHandler(monitorParcel));
 
 router.post("/satellite/search", validate(satelliteSearchSchema), asyncHandler(searchSatellite));
