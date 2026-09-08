@@ -192,7 +192,7 @@ export default function ParcelDrawer({ feature, open, onClose, currentYear, comp
             <span className="block rounded-[11px] bg-gradient-to-r from-primary to-primary-container px-3 py-2.5 text-[11px] font-bold text-on-primary transition-all group-hover:from-primary-container group-hover:to-primary group-disabled:opacity-50">
               <span className="inline-flex items-center gap-2">
                 <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
-                {geminiLoading ? "Analizando con Gemini..." : "Auditar ambos años con Gemini"}
+                {geminiLoading ? "Analizando con Gemini..." : "Auditar ambos años"}
               </span>
             </span>
           </button>
