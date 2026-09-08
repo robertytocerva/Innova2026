@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "secondary-fixed-dim": "#8bd6b6", "on-secondary-fixed": "#002116", "on-tertiary-container": "#8fffc9", "surface-container-high": "#dce9ff", "on-secondary-fixed-variant": "#00513b", "on-tertiary-fixed": "#002113", "tertiary-fixed-dim": "#4edea3", "surface-container-highest": "#d3e4fe", "secondary-fixed": "#a6f2d1", "surface": "#f8f9ff", "surface-bright": "#f8f9ff", "surface-container-low": "#eff4ff", "outline": "#6e7a73", "on-surface": "#0b1c30", "on-primary-container": "#9ffdd3", "primary-container": "#047857", "on-tertiary": "#ffffff", "on-tertiary-fixed-variant": "#005236", "primary": "#005d42", "secondary-container": "#a6f2d1", "tertiary-container": "#007852", "error-container": "#ffdad6", "tertiary-fixed": "#6ffbbe", "on-primary-fixed-variant": "#00513a", "on-surface-variant": "#3e4943", "inverse-on-surface": "#eaf1ff", "on-error-container": "#93000a", "surface-container-lowest": "#ffffff", "on-secondary-container": "#237157", "inverse-primary": "#7bd8b1", "inverse-surface": "#213145", "primary-fixed-dim": "#7bd8b1", "secondary": "#1b6b51", "error": "#ba1a1a", "primary-fixed": "#97f5cc", "tertiary": "#005d3e", "on-secondary": "#ffffff", "surface-variant": "#d3e4fe", "on-primary": "#ffffff", "surface-container": "#e5eeff", "on-background": "#0b1c30", "on-primary-fixed": "#002115", "surface-dim": "#cbdbf5", "background": "#f8f9ff", "surface-tint": "#006c4e", "outline-variant": "#bdc9c1", "on-error": "#ffffff" }, "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, "spacing": { "space-lg": "1.5rem", "map-controls-offset": "1rem", "space-3xl": "4rem", "sidebar-width": "18rem", "space-sm": "0.75rem", "space-2xl": "3rem", "space-xl": "2rem", "space-2xs": "0.25rem", "space-md": "1rem", "gutter-mobile": "1rem", "space-xs": "0.5rem", "gutter-desktop": "1.5rem" }, "fontFamily": { "label-md": [ "JetBrains Mono" ], "body-md": [ "Plus Jakarta Sans" ], "headline-xl-mobile": [ "Plus Jakarta Sans" ], "body-sm": [ "Plus Jakarta Sans" ], "body-lg": [ "Plus Jakarta Sans" ], "headline-sm": [ "Plus Jakarta Sans" ], "label-sm": [ "JetBrains Mono" ], "label-lg": [ "Plus Jakarta Sans" ], "headline-lg-mobile": [ "Plus Jakarta Sans" ], "headline-md": [ "Plus Jakarta Sans" ], "headline-xl": [ "Plus Jakarta Sans" ], "headline-lg": [ "Plus Jakarta Sans" ] }, "fontSize": { "label-md": [ "0.75rem", { "lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500" } ], "body-md": [ "0.9375rem", { "lineHeight": "1.55", "fontWeight": "400" } ], "headline-xl-mobile": [ "2rem", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "body-sm": [ "0.8125rem", { "lineHeight": "1.5", "fontWeight": "400" } ], "body-lg": [ "1.125rem", { "lineHeight": "1.6", "fontWeight": "400" } ], "headline-sm": [ "1.125rem", { "lineHeight": "1.4", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "label-sm": [ "0.6875rem", { "lineHeight": "1.3", "letterSpacing": "0.03em", "fontWeight": "500" } ], "label-lg": [ "0.875rem", { "lineHeight": "1.25", "letterSpacing": "0.01em", "fontWeight": "600" } ], "headline-lg-mobile": [ "1.625rem", { "lineHeight": "1.25", "letterSpacing": "-0.015em", "fontWeight": "600" } ], "headline-md": [ "1.5rem", { "lineHeight": "1.3", "letterSpacing": "-0.015em", "fontWeight": "600" } ], "headline-xl": [ "3rem", { "lineHeight": "1.15", "letterSpacing": "-0.025em", "fontWeight": "700" } ], "headline-lg": [ "2.25rem", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" } ] } } } };</script></head><body class="bg-surface-container-lowest font-body-md text-body-md text-on-surface"><header class="fixed top-0 left-0 right-0 z-50 bg-[linear-gradient(135deg,#064e3b_0%,#047857_50%,#059669_100%)] shadow-[0_4px_20px_rgba(4,120,87,0.18)]"><div class="h-16 w-full px-gutter-desktop max-w-7xl mx-auto flex items-center justify-between"><div class="flex items-center gap-space-md"><img alt="TerraSuelo Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XMTE7j8uxcwPnvX6D75iC9JT3X8t7xpBT-P50fKHRQ-_HtTgYRVBg9kRZqgCzpADnG5yXGxwwxZojAhhKWqfbIInWn03oZYCCifBMZp68-2j2mcCtfmw398wsXmRN200ufXJVdeNsIa2X4NEOPWCqp5jgfzeVDwOIbO08PUTDzTXBcIqTJPJ6p0uYyGZQQGAzpHYcdMuh_QW6RUfZq9q44-pSMSUcMI81VS0lasaZked7tEORpFeFFnQ"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-primary tracking-tight font-bold leading-none">TerraSuelo</span><span class="font-label-sm text-label-sm text-on-primary-container tracking-wider uppercase leading-tight">Geospatial LULC Intelligence</span></div></div><nav class="hidden md:flex items-center gap-space-xs" data-active-classes="bg-surface-container-lowest/20 text-on-primary font-headline-sm rounded-lg"><a aria-current="page" class="px-space-sm py-space-2xs transition-all bg-surface-container-lowest/20 text-on-primary font-headline-sm rounded-lg" data-path="inicio" href="#">Inicio</a><a class="text-on-primary/80 hover:text-on-primary hover:bg-surface-container-lowest/10 px-space-sm py-space-2xs rounded-lg transition-all font-body-md text-body-md" data-path="mapa-interactivo" href="#">Mapa Interactivo</a><a class="text-on-primary/80 hover:text-on-primary hover:bg-surface-container-lowest/10 px-space-sm py-space-2xs rounded-lg transition-all font-body-md text-body-md" data-path="generador-de-reportes" href="#">Generador de Reportes</a></nav><div class="flex items-center gap-space-md"><a class="inline-flex items-center justify-center gap-space-2xs px-space-md py-space-xs rounded-xl bg-secondary-fixed text-on-secondary-fixed font-label-lg text-label-lg hover:bg-primary-fixed hover:text-on-primary-fixed transition-all shadow-[0_2px_8px_rgba(0,0,0,0.08)]" data-path="generador-de-reportes" href="#"><span class="material-symbols-outlined text-[18px]">analytics</span><span>Iniciar Análisis</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ring-2 ring-surface-container-lowest/30 shadow-inner"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface-container-lowest min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Technical Status Marquee / Ribbon -->
+<div class="w-full bg-surface-container-low px-gutter-desktop py-space-xs flex items-center justify-between overflow-x-auto text-on-surface-variant">
+<div class="max-w-7xl mx-auto w-full flex items-center justify-between gap-space-md text-label-sm font-label-sm">
+<div class="flex items-center gap-space-sm whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 font-semibold text-primary">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+          COPERNICUS SENTINEL-2B EN ÓRBITA
+        </span>
+<span class="text-outline-variant">|</span>
+<span class="text-on-surface-variant">Último barrido multiespectral: hace 18 min</span>
+<span class="text-outline-variant">|</span>
+<span class="text-on-surface-variant">Lat: -03°44'28" / Lon: -62°21'10"</span>
+</div>
+<div class="hidden lg:flex items-center gap-space-md whitespace-nowrap font-label-sm text-label-sm">
+<span class="text-on-surface-variant">Calibración Radiométrica: <strong class="text-primary font-semibold">Óptima (TOA L2A)</strong></span>
+<span class="text-outline-variant">/</span>
+<span class="text-on-surface-variant">Índice Kappa Global: <strong class="text-on-surface font-semibold">0.941</strong></span>
+</div>
+</div>
+</div>
+<!-- Hero Section (Clean white baseline with deep ecological gradients) -->
+<section class="relative w-full overflow-hidden py-space-3xl px-gutter-desktop bg-surface-container-lowest">
+<!-- Ambient ecological radiant glow -->
+<div class="absolute -top-32 right-[-5%] w-[600px] h-[600px] rounded-full bg-gradient-to-br from-primary-fixed/25 to-secondary-fixed/15 blur-3xl pointer-events-none -z-0"></div>
+<div class="absolute top-1/2 left-[-10%] w-[450px] h-[450px] rounded-full bg-gradient-to-tr from-surface-container-high/40 to-transparent blur-3xl pointer-events-none -z-0"></div>
+<div class="max-w-7xl mx-auto relative z-10">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-2xl items-center">
+<!-- Left Editorial Narrative -->
+<div class="lg:col-span-7 flex flex-col gap-space-md">
+<div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container-low text-primary w-fit shadow-sm">
+<span class="material-symbols-outlined text-[16px]">satellite_alt</span>
+<span class="font-label-sm text-label-sm tracking-wider uppercase font-semibold">Observatorio LULC en Tiempo Real</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight font-extrabold leading-[1.08]">
+            Monitoreo satelital inteligente del cambio y degradación de suelos en <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary-container to-secondary">tiempo real</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
+            Detección precisa de transiciones de cobertura terrestre, deforestación, expansión urbana y regeneración vegetal con datos continuos de Copernicus Sentinel y Landsat 8/9 integrados a modelos de aprendizaje profundo.
+          </p>
+<div class="flex flex-wrap items-center gap-space-sm pt-space-xs">
+<a class="inline-flex items-center justify-center gap-space-2xs px-space-lg py-space-sm rounded-xl bg-gradient-to-r from-primary to-primary-container text-on-primary font-label-lg text-label-lg shadow-md hover:shadow-lg hover:brightness-105 transition-all" data-path="mapa-interactivo" href="#">
+<span class="material-symbols-outlined text-[20px]">explore</span>
+<span>Explorar Mapa de Zonas</span>
+</a>
+<a class="inline-flex items-center justify-center gap-space-2xs px-space-lg py-space-sm rounded-xl bg-surface-container-lowest text-primary font-label-lg text-label-lg shadow-sm hover:bg-surface-container-low transition-all" data-path="generador-de-reportes" href="#">
+<span class="material-symbols-outlined text-[20px]">lab_profile</span>
+<span>Generar Reporte de Impacto</span>
+</a>
+</div>
+<div class="flex items-center gap-space-lg pt-space-sm text-on-surface-variant">
+<div class="flex items-center gap-space-2xs">
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+<span class="font-body-sm text-body-sm">Conforme a Directrices IPCC Tier 3</span>
+</div>
+<div class="flex items-center gap-space-2xs">
+<span class="material-symbols-outlined text-primary text-[18px]">update</span>
+<span class="font-body-sm text-body-sm">Ciclo orbital cada 5 días</span>
+</div>
+</div>
+</div>
+<!-- Right Visual Showcase / Sensor Viewfinder Graphic -->
+<div class="lg:col-span-5 relative">
+<div class="relative bg-surface-container-lowest rounded-xl shadow-xl overflow-hidden p-space-xs">
+<!-- Satellite Imagery Mock Preview with LULC Vector Mesh -->
+<div class="relative h-96 w-full rounded-lg overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="High resolution false color composite satellite imagery of tropical forest edge meeting agricultural mosaic and winding blue river corridor with geometric infrared canopy masks" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmT-6e4klNAjHTYFWi8bOijNJpXwJE2NGJ2oehNVigKUkYNhNa5QzC8tDohzzZkJncgLGTnzqKeTF_8R-Twv4yWLMr-G_D-WIc4e41qtX1JbWdQjii5wmOT3K-dCu-EB2IBle7dt_9YkuzB8xYSRilEKDQj4bVVVkXr-qwwjqlOGpUC1uB8saju5S5frQiRjTjSZzJqUFxi-BsOhLUw4nsDSfcbIpziOe2jZF-9m5oAClSYBqGV9dE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/80 via-transparent to-black/30"></div>
+<!-- Cartographic HUD Elements -->
+<div class="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container-lowest/90 backdrop-blur-md shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">NDVI Compositivo 2024-Q3</span>
+</div>
+<div class="absolute top-3 right-3 px-2 py-1 rounded-lg bg-surface-container-lowest/90 backdrop-blur-md font-label-sm text-label-sm text-on-surface">
+                10m / px GSD
+              </div>
+<!-- Floating Live Detection Pin on image -->
+<div class="absolute top-1/3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-xl bg-surface-container-lowest/95 backdrop-blur-md shadow-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-error text-[18px]">warning</span>
+<div class="flex flex-col text-left">
+<span class="font-label-sm text-label-sm font-bold text-on-surface leading-tight">Anomalía de Cobertura</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant leading-none">-42.3 ha deforestadas</span>
+</div>
+</div>
+<!-- Bottom Meta Strip inside viewport -->
+<div class="absolute bottom-3 inset-x-3 p-3 rounded-lg bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-between text-on-surface">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Bioma Activo</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary">Cuenca Amazónica Sur</span>
+</div>
+<div class="text-right">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Confiabilidad</span>
+<div class="font-label-md text-label-md font-bold text-primary">99.1%</div>
+</div>
+</div>
+</div>
+<!-- Sensor Telemetry Bar -->
+<div class="mt-space-xs px-space-sm py-space-xs bg-surface-container-low rounded-lg flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">sensors</span>
+                Banda B8/B4/B3
+              </span>
+<span>Nubosidad: &lt; 2.1%</span>
+<span class="text-primary font-semibold">Sincronizado</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Key Metrics Counter Cards (Pure white containers, delicate elevation) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md mt-space-2xl">
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Superficie Activa</span>
+<div class="w-9 h-9 rounded-xl bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed">
+<span class="material-symbols-outlined text-[20px]">public</span>
+</div>
+</div>
+<div>
+<div class="font-headline-lg text-headline-lg font-extrabold text-on-surface">3.4M</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Hectáreas Monitoreadas en Sudamérica y Centroamérica</p>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center text-label-sm font-label-sm text-primary">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span class="ml-1">+240k ha incorporadas este mes</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Certeza Algorítmica</span>
+<div class="w-9 h-9 rounded-xl bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed">
+<span class="material-symbols-outlined text-[20px]">verified</span>
+</div>
+</div>
+<div>
+<div class="font-headline-lg text-headline-lg font-extrabold text-primary">98.2%</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Precisión Clasificación LULC validada en campo</p>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center text-label-sm font-label-sm text-on-surface-variant">
+<span>Matriz de Confusión 12 clases</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Vigilancia Continua</span>
+<div class="w-9 h-9 rounded-xl bg-error-container flex items-center justify-center text-on-error-container">
+<span class="material-symbols-outlined text-[20px]">radar</span>
+</div>
+</div>
+<div>
+<div class="font-headline-lg text-headline-lg font-extrabold text-on-surface">+120</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Regiones Críticas bajo alerta de deforestación inmediata</p>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center text-label-sm font-label-sm text-error">
+<span class="w-2 h-2 rounded-full bg-error mr-1.5"></span>
+<span>18 alertas rojas activas hoy</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Resolución Óptica</span>
+<div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+</div>
+</div>
+<div>
+<div class="font-headline-lg text-headline-lg font-extrabold text-on-surface">10m</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Resolución Satelital nativa por píxel en bandas VNIR</p>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center text-label-sm font-label-sm text-on-surface-variant">
+<span>Remuestreo super-resolución a 2.5m</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Soil Dynamics & Annual Land Transformation Panel -->
+<section class="w-full py-space-3xl px-gutter-desktop bg-surface-container-low">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-xl">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-2xs max-w-2xl">
+<span class="font-label-sm text-label-sm text-primary tracking-widest uppercase font-semibold">Dinámicas Geoespaciales 2023 - 2024</span>
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">Transiciones y Pérdidas de Cobertura Vegetal</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Comportamiento interanual derivado de clasificaciones espectrales multisensor con segmentación semántica de series de tiempo.
+          </p>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Periodo de comparación:</span>
+<span class="px-space-sm py-1 rounded-lg bg-surface-container-lowest shadow-sm font-label-md text-label-md text-primary font-bold">2023 vs 2024 (YTD)</span>
+</div>
+</div>
+<!-- Main Visual Analytics Split -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- Left: Comparative LULC Bar & Distribution Chart -->
+<div class="lg:col-span-7 bg-surface-container-lowest rounded-xl p-space-xl shadow-sm flex flex-col justify-between gap-space-lg">
+<div class="flex items-center justify-between pb-space-sm">
+<div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Variación Neta de Uso de Suelo</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Cambio porcentual de masa superficial agregada</p>
+</div>
+<span class="material-symbols-outlined text-outline-variant">equalizer</span>
+</div>
+<!-- Comparative metrics bars -->
+<div class="flex flex-col gap-space-md">
+<!-- Bosque Nativo -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span class="flex items-center gap-2 font-semibold text-on-surface">
+<span class="w-3 h-3 rounded bg-primary"></span>
+                  Bosque Nativo y Dosel Denso
+                </span>
+<span class="font-label-md text-label-md font-bold text-error">-2.4% (-81,600 ha)</span>
+</div>
+<div class="w-full h-3 rounded-full bg-surface-container overflow-hidden flex">
+<div class="h-full bg-primary rounded-full transition-all duration-500" style="width: 58%;"></div>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Pérdida focalizada en amortiguamientos agroindustriales</span>
+</div>
+<!-- Suelo Agrícola -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span class="flex items-center gap-2 font-semibold text-on-surface">
+<span class="w-3 h-3 rounded bg-amber-600"></span>
+                  Suelo Agrícola y Pasturas
+                </span>
+<span class="font-label-md text-label-md font-bold text-amber-700">+4.1% (+139,400 ha)</span>
+</div>
+<div class="w-full h-3 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-amber-600 rounded-full transition-all duration-500" style="width: 28%;"></div>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Conversión rápida de sabanas y matorrales</span>
+</div>
+<!-- Suelo Urbano -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span class="flex items-center gap-2 font-semibold text-on-surface">
+<span class="w-3 h-3 rounded bg-blue-600"></span>
+                  Suelo Urbano e Infraestructura
+                </span>
+<span class="font-label-md text-label-md font-bold text-blue-800">+1.8% (+61,200 ha)</span>
+</div>
+<div class="w-full h-3 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-blue-600 rounded-full transition-all duration-500" style="width: 14%;"></div>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Expansión periurbana en corredores logísticos</span>
+</div>
+<!-- Humedales Protegidos -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span class="flex items-center gap-2 font-semibold text-on-surface">
+<span class="w-3 h-3 rounded bg-cyan-600"></span>
+                  Humedales y Cuerpos de Agua
+                </span>
+<span class="font-label-md text-label-md font-bold text-primary">Estable (0.0%)</span>
+</div>
+<div class="w-full h-3 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-cyan-600 rounded-full transition-all duration-500" style="width: 8%;"></div>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Eficacia de regímenes RAMSAR en zonas núcleo</span>
+</div>
+</div>
+<!-- Bottom micro-summary note -->
+<div class="pt-space-sm flex items-center justify-between text-label-sm font-label-sm text-on-surface-variant">
+<span>Metodología de Corrección Topográfica: C-Correction / SRTM DEM 30m</span>
+<a class="text-primary font-semibold hover:underline" data-path="generador-de-reportes" href="#">Ver matriz completa →</a>
+</div>
+</div>
+<!-- Right: Early Degradation Alerts Feed -->
+<div class="lg:col-span-5 bg-surface-container-lowest rounded-xl p-space-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-2xs">
+<span class="w-2.5 h-2.5 rounded-full bg-error animate-ping"></span>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Alertas Tempranas de Degradación</h3>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Radar GLAD/RADD</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+            Eventos anómalos de pérdida de biomasa detectados en los últimos 7 días con verificación de reflectancia infrarroja.
+          </p>
+<!-- List of Alerts -->
+<div class="flex flex-col gap-space-sm">
+<!-- Alert 1 - Crítico -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex items-start justify-between gap-space-sm">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm font-bold bg-error text-on-error uppercase">Crítico</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Sector Guaviare - Lote 14</span>
+</div>
+<div class="font-headline-sm text-headline-sm text-on-surface font-semibold text-sm">Deforestación por tala rasa detectada</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Área: <strong class="text-on-surface font-semibold">184.2 ha</strong> | Confianza: 98.4%</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">Hace 4h</span>
+</div>
+<!-- Alert 2 - Moderado -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex items-start justify-between gap-space-sm">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm font-bold bg-amber-500 text-white uppercase">Moderado</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Reserva Chocó Biogeográfico</span>
+</div>
+<div class="font-headline-sm text-headline-sm text-on-surface font-semibold text-sm">Fragmentación de dosel por caminos ilegales</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Área: <strong class="text-on-surface font-semibold">32.6 ha</strong> | Confianza: 89.1%</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">Hace 14h</span>
+</div>
+<!-- Alert 3 - En Observación -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex items-start justify-between gap-space-sm">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm font-bold bg-surface-container-high text-on-surface uppercase">En Observación</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Delta del Río Magdalena</span>
+</div>
+<div class="font-headline-sm text-headline-sm text-on-surface font-semibold text-sm">Estrés hídrico en manglar periférico</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Área: <strong class="text-on-surface font-semibold">51.0 ha</strong> | Confianza: 84.7%</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">Ayer</span>
+</div>
+</div>
+<div class="pt-space-md mt-space-sm">
+<a class="w-full inline-flex items-center justify-center gap-space-2xs py-space-xs rounded-lg bg-surface-container text-primary font-label-lg text-label-lg hover:bg-primary hover:text-on-primary transition-all" data-path="mapa-interactivo" href="#">
+<span class="material-symbols-outlined text-[18px]">emergency_share</span>
+<span>Abrir Gestor de Alertas Satelitales</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Methodologies & Spectral Indices (Scientific Rigor Focus) -->
+<section class="w-full py-space-3xl px-gutter-desktop bg-surface-container-lowest">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-2xl">
+<div class="text-center max-w-3xl mx-auto flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-primary tracking-widest uppercase font-semibold">Fundamento Radiométrico</span>
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">Capas Multiespectrales &amp; Clasificación Algorítmica</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+          TerraSuelo procesa reflectancias de superficie calibradas (Level-2A) para aislar firmas biofísicas diferenciales y erradicar falsos positivos en el cálculo de biomasa.
+        </p>
+</div>
+<!-- Indices Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+<!-- NDVI Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+<div class="flex flex-col gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed shadow-sm">
+<span class="material-symbols-outlined text-[26px]">eco</span>
+</div>
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-bold text-primary tracking-wider">ÍNDICE VEGETATIVO</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-low px-2 py-0.5 rounded">NIR / Red</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mt-1">NDVI (Normalized Difference Vegetation Index)</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Cuantifica el vigor fotosintético mediante el contraste entre la absorción de clorofila en el canal rojo y la reflectancia celular en el infrarrojo cercano.
+            </p>
+<div class="p-space-sm rounded-lg bg-surface-container-low font-label-sm text-label-sm text-on-surface flex items-center justify-between">
+<span>Fórmula estándar:</span>
+<code class="font-bold text-primary">(B08 - B04) / (B08 + B04)</code>
+</div>
+</div>
+<div class="mt-space-lg pt-space-md flex items-center justify-between text-on-surface-variant text-label-sm font-label-sm">
+<span>Rango de Detección: 0.1 a 0.85</span>
+<span class="text-primary font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+              Activo 10m
+            </span>
+</div>
+</div>
+<!-- NDBI Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+<div class="flex flex-col gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[26px]">apartment</span>
+</div>
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-bold text-on-surface-variant tracking-wider">SUPERFICIE CONSTRUIDA</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-low px-2 py-0.5 rounded">SWIR / NIR</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mt-1">NDBI (Normalized Difference Built-up Index)</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Identifica núcleos urbanos, carreteras pavimentadas y suelo sellado distinguiendo firmas minerales artificiales de la vegetación circundante.
+            </p>
+<div class="p-space-sm rounded-lg bg-surface-container-low font-label-sm text-label-sm text-on-surface flex items-center justify-between">
+<span>Fórmula estándar:</span>
+<code class="font-bold text-primary">(B11 - B08) / (B11 + B08)</code>
+</div>
+</div>
+<div class="mt-space-lg pt-space-md flex items-center justify-between text-on-surface-variant text-label-sm font-label-sm">
+<span>Segregación Asfáltica: 96.8%</span>
+<span class="text-primary font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+              Activo 20m
+            </span>
+</div>
+</div>
+<!-- NDWI Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+<div class="flex flex-col gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface shadow-sm">
+<span class="material-symbols-outlined text-[26px]">water_drop</span>
+</div>
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-bold text-cyan-700 tracking-wider">ESTRÉS HÍDRICO &amp; HUMEDALES</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-low px-2 py-0.5 rounded">Green / NIR</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mt-1">NDWI (Normalized Difference Water Index)</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Delimita cuerpos superficiales de agua y monitorea la turgencia foliar en canopias forestales para predecir vulnerabilidad a incendios forestales.
+            </p>
+<div class="p-space-sm rounded-lg bg-surface-container-low font-label-sm text-label-sm text-on-surface flex items-center justify-between">
+<span>Fórmula estándar:</span>
+<code class="font-bold text-primary">(B03 - B08) / (B03 + B08)</code>
+</div>
+</div>
+<div class="mt-space-lg pt-space-md flex items-center justify-between text-on-surface-variant text-label-sm font-label-sm">
+<span>Mapeo Hidrológico Dinámico</span>
+<span class="text-primary font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+              Activo 10m
+            </span>
+</div>
+</div>
+</div>
+<!-- Pipeline Architecture Illustration -->
+<div class="w-full bg-surface-container-low rounded-2xl p-space-xl flex flex-col lg:flex-row items-center justify-between gap-space-lg">
+<div class="flex flex-col gap-1 max-w-md">
+<div class="font-label-sm text-label-sm font-bold text-primary uppercase tracking-wider">Flujo de Ingesta &amp; Machine Learning</div>
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface">Arquitectura de Procesamiento Cloud-Native</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Desde la captura orbital bruta hasta la inferencia semántica en tensores georeferenciados en menos de 40 minutos.
+          </p>
+</div>
+<div class="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-space-sm w-full">
+<div class="bg-surface-container-lowest p-space-md rounded-xl flex flex-col gap-1 shadow-sm text-center">
+<span class="font-label-sm text-label-sm text-primary font-bold">FASE 01</span>
+<span class="font-headline-sm text-headline-sm text-sm font-bold text-on-surface">Ingesta L1C</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Descarga directa ESA/USGS</span>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl flex flex-col gap-1 shadow-sm text-center">
+<span class="font-label-sm text-label-sm text-primary font-bold">FASE 02</span>
+<span class="font-headline-sm text-headline-sm text-sm font-bold text-on-surface">Sen2Cor L2A</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Corrección atmosférica BOA</span>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl flex flex-col gap-1 shadow-sm text-center">
+<span class="font-label-sm text-label-sm text-primary font-bold">FASE 03</span>
+<span class="font-headline-sm text-headline-sm text-sm font-bold text-on-surface">U-Net Segmenter</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Clasificación 12 clases LULC</span>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl flex flex-col gap-1 shadow-sm text-center">
+<span class="font-label-sm text-label-sm text-primary font-bold">FASE 04</span>
+<span class="font-headline-sm text-headline-sm text-sm font-bold text-on-surface">Validación Vectorial</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">GeoJSON, COG &amp; Alertas</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Applied Use Cases Mosaic (Bento Style Layout) -->
+<section class="w-full py-space-3xl px-gutter-desktop bg-surface-container-low">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-2xl">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-2xs max-w-2xl">
+<span class="font-label-sm text-label-sm text-primary tracking-widest uppercase font-semibold">Impacto Operativo Multidisciplinario</span>
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">Casos de Uso Científico &amp; Gubernamental</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Nuestra plataforma provee la verdad de terreno verificable necesaria para fiscalización ambiental, mercados climáticos regulados y ordenamiento territorial.
+          </p>
+</div>
+</div>
+<!-- Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-space-md">
+<!-- Use Case 1: Forest Conservation (Wide Left) -->
+<div class="md:col-span-7 bg-surface-container-lowest rounded-xl p-space-xl shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[22px]">park</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-primary font-bold uppercase">Conservación Forestal</span>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Auditoría y Blindaje de Áreas Protegidas</h3>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Detección milimétrica de incursiones de tala ilegal antes de que se consoliden en pérdida masiva de cobertura. Integración con patrullas de guardaparques mediante coordenadas geodésicas directas enviadas al dispositivo satelital de campo.
+          </p>
+<div class="grid grid-cols-3 gap-space-sm p-space-md rounded-xl bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Respuesta</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary">&lt; 48 Horas</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Área Mínima</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">0.05 ha</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Polígonos</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Auto-Shp</span>
+</div>
+</div>
+</div>
+<!-- Use Case 2: Carbon Credits (Narrow Right) -->
+<div class="md:col-span-5 bg-surface-container-lowest rounded-xl p-space-xl shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[22px]">co2</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-primary font-bold uppercase">Mercados de Carbono</span>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Certificación REDD+ &amp; MRV</h3>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Validación independiente de líneas base históricas de deforestación para certificar créditos de carbono bajo estándares Verra (VCS) y Gold Standard sin sesgos declarativos.
+          </p>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low font-label-sm text-label-sm">
+<span class="text-on-surface-variant">Cálculo de Biomasa Aérea (AGB):</span>
+<span class="font-bold text-primary">Incertidumbre ±6.2%</span>
+</div>
+</div>
+<!-- Use Case 3: Sustainable Urban Planning -->
+<div class="md:col-span-5 bg-surface-container-lowest rounded-xl p-space-xl shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[22px]">location_city</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-bold uppercase">Planificación Urbana</span>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Monitoreo de Isla de Calor &amp; Suelo</h3>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Control de la expansión informal de manchas metropolitanas sobre cinturones agrícolas de preservación y estimación de superficies impermeabilizadas.
+          </p>
+<div class="flex items-center gap-2 text-label-sm font-label-sm text-primary">
+<span class="material-symbols-outlined text-[16px]">domain_verification</span>
+<span>Compatible con catastros municipales multi-capa</span>
+</div>
+</div>
+<!-- Use Case 4: Climate Mitigation & Restoration -->
+<div class="md:col-span-7 bg-surface-container-lowest rounded-xl p-space-xl shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+<span class="material-symbols-outlined text-[22px]">nest_eco_leaf</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-tertiary font-bold uppercase">Mitigación Climática</span>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Seguimiento de Restauración Ecológica Activa</h3>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Medición del crecimiento foliar y revegetación en cuencas hidrográficas degradadas. Comprueba fehacientemente el éxito de proyectos de reforestación a lo largo de series temporales de 10 años sin requerir muestreo destructivo.
+          </p>
+<div class="flex flex-wrap items-center gap-space-sm">
+<span class="px-space-sm py-1 rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-semibold">Tasa de Supervivencia Foliar</span>
+<span class="px-space-sm py-1 rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-semibold">Índice EVI Mejorado</span>
+<span class="px-space-sm py-1 rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-semibold">Mapas de Conectividad</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Map Demo Banner / Teaser Section -->
+<section class="w-full py-space-3xl px-gutter-desktop bg-surface-container-lowest">
+<div class="max-w-7xl mx-auto">
+<div class="relative rounded-2xl overflow-hidden shadow-xl bg-on-surface text-surface">
+<!-- Imagery Background with Subtle Mask -->
+<div class="absolute inset-0 opacity-40">
+<img class="w-full h-full object-cover" data-alt="Dark aesthetic satellite radar terrain relief map showing topographical watershed contours with glowing green river lines and land classification matrices" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbpnKAQPoVoe3XXoSxbfPylgLVrESInKdBQQEQkjD8VdCkcUHo_JMnmcojAxIRCbuqBy3m4OWaTF0QgQlqAfcQ7j8trkr5ehajSXlZXTVdolvobWqDZma4KNDMDU8o0fxwXSO3NKLE26m0wxDRGHMVp4r0YARS0a9kYdrmAGKdUH6muQLUWGpLwhXpb9u34lbx_lX8W9Z7MYm-jEEIzHGIbm_21vSgRuG7sf2DYFZCqJf55TYh6VYz"/>
+</div>
+<div class="absolute inset-0 bg-gradient-to-r from-on-surface via-on-surface/90 to-transparent"></div>
+<!-- Content Overlay -->
+<div class="relative z-10 p-space-xl lg:p-space-3xl max-w-2xl flex flex-col gap-space-md">
+<div class="inline-flex items-center gap-space-2xs px-space-sm py-1 rounded-full bg-primary/30 text-on-primary-container text-label-sm font-label-sm w-fit backdrop-blur-md">
+<span class="material-symbols-outlined text-[16px]">travel_explore</span>
+<span>VISOR CARTOGRÁFICO EN VIVO</span>
+</div>
+<h2 class="font-headline-xl text-headline-xl font-bold tracking-tight text-surface">
+            Inspecciona cualquier coordenada territorial con resolución de 10 metros
+          </h2>
+<p class="font-body-lg text-body-lg text-inverse-on-surface/80">
+            Navega por capas históricas desde el año 2018 hasta la actualidad. Aplica filtros espectrales dinámicos, traza polígonos de interés (AOI) y exporta GeoTIFFs listos para QGIS o ArcGIS.
+          </p>
+<div class="flex flex-wrap items-center gap-space-sm pt-space-sm">
+<a class="inline-flex items-center justify-center gap-space-2xs px-space-lg py-space-sm rounded-xl bg-secondary-fixed text-on-secondary-fixed font-label-lg text-label-lg hover:bg-primary-fixed transition-all shadow-md" data-path="mapa-interactivo" href="#">
+<span class="material-symbols-outlined text-[20px]">map</span>
+<span>Abrir Visor Geoespacial</span>
+</a>
+<a class="inline-flex items-center justify-center gap-space-2xs px-space-lg py-space-sm rounded-xl bg-surface-container-lowest/15 text-surface font-label-lg text-label-lg hover:bg-surface-container-lowest/25 backdrop-blur-md transition-all" data-path="generador-de-reportes" href="#">
+<span class="material-symbols-outlined text-[20px]">download</span>
+<span>Descargar Informe Anual LULC 2024</span>
+</a>
+</div>
+<div class="flex items-center gap-space-lg pt-space-xs font-label-sm text-label-sm text-inverse-on-surface/60">
+<span>Soporta formatos WMS, WFS, GeoJSON, Shapefile y COG Cloud Optimized GeoTIFF</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Fast Actions Bar / Final Call to Engagement -->
+<section class="w-full py-space-2xl px-gutter-desktop bg-surface-container-lowest">
+<div class="max-w-7xl mx-auto rounded-xl p-space-xl bg-surface-container-low flex flex-col md:flex-row items-center justify-between gap-space-lg">
+<div class="flex items-center gap-space-md">
+<div class="w-14 h-14 rounded-xl bg-primary flex items-center justify-center text-on-primary shrink-0 shadow-md">
+<span class="material-symbols-outlined text-[32px]">query_stats</span>
+</div>
+<div class="flex flex-col">
+<h4 class="font-headline-sm text-headline-sm font-bold text-on-surface">¿Necesitas delimitar un predio o área de conservación?</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Genera diagnósticos de deforestación y serie temporal multiespectral en segundos subiendo tu archivo KML o SHP.</p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm shrink-0">
+<a class="inline-flex items-center justify-center gap-space-2xs px-space-lg py-space-sm rounded-xl bg-primary text-on-primary font-label-lg text-label-lg hover:brightness-110 shadow-sm transition-all" data-path="generador-de-reportes" href="#">
+<span class="material-symbols-outlined text-[20px]">upload_file</span>
+<span>Analizar Polígono</span>
+</a>
+</div>
+</div>
+</section>
+</div></main><footer class="w-full bg-surface-container-low border-t border-outline-variant/30 py-space-2xl"><div class="max-w-7xl mx-auto px-gutter-desktop flex flex-col gap-space-xl"><div class="grid grid-cols-1 md:grid-cols-4 gap-space-lg"><div class="flex flex-col gap-space-sm md:col-span-1"><div class="flex items-center gap-space-xs"><img alt="TerraSuelo Logo" class="h-6 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XMTE7j8uxcwPnvX6D75iC9JT3X8t7xpBT-P50fKHRQ-_HtTgYRVBg9kRZqgCzpADnG5yXGxwwxZojAhhKWqfbIInWn03oZYCCifBMZp68-2j2mcCtfmw398wsXmRN200ufXJVdeNsIa2X4NEOPWCqp5jgfzeVDwOIbO08PUTDzTXBcIqTJPJ6p0uYyGZQQGAzpHYcdMuh_QW6RUfZq9q44-pSMSUcMI81VS0lasaZked7tEORpFeFFnQ"/><span class="font-headline-sm text-headline-sm text-primary font-bold">TerraSuelo</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Infraestructura científica de observación terrestre para el monitoreo dinámico del uso de suelo, balance de biomasa y resiliencia forestal.</p></div><div class="flex flex-col gap-space-xs"><span class="font-label-lg text-label-lg text-on-surface uppercase tracking-wider font-semibold">Plataforma</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="inicio" href="#">Visión Global</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="mapa-interactivo" href="#">Visualizador Geoespacial</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="generador-de-reportes" href="#">Polígonos &amp; Reportes</a></div><div class="flex flex-col gap-space-xs"><span class="font-label-lg text-label-lg text-on-surface uppercase tracking-wider font-semibold">Satélites &amp; Datos</span><span class="font-body-sm text-body-sm text-on-surface-variant">ESA Copernicus Sentinel-2</span><span class="font-body-sm text-body-sm text-on-surface-variant">USGS Landsat 8/9 OLI</span><span class="font-body-sm text-body-sm text-on-surface-variant">MODIS Vegetation Indices</span></div><div class="flex flex-col gap-space-xs"><span class="font-label-lg text-label-lg text-on-surface uppercase tracking-wider font-semibold">Validación Científica</span><div class="flex flex-col gap-space-2xs"><span class="font-label-sm text-label-sm text-on-surface-variant">Metodología LULC IPCC Tier 3</span><span class="font-label-sm text-label-sm text-on-surface-variant">Resolución Espacial: 10m Ground Sample</span><span class="font-label-sm text-label-sm text-primary font-semibold">Índice de Certeza Algorítmica: 94.8%</span></div></div></div><div class="pt-space-md border-t border-outline-variant/20 flex flex-col sm:flex-row items-center justify-between gap-space-sm text-on-surface-variant"><span class="font-label-sm text-label-sm">© 2024 TerraSuelo Land Cover Observatory. Licencia Abierta para Investigación y Conservación.</span><div class="flex items-center gap-space-md"><span class="font-label-sm text-label-sm hover:text-primary cursor-pointer">Privacidad de Datos</span><span class="font-label-sm text-label-sm hover:text-primary cursor-pointer">Protocolos de Sensoramiento</span></div></div></div></footer></body></html>

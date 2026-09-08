@@ -1,0 +1,41 @@
+---
+import type { Alert } from "../../types/landing";
+
+interface Props {
+  alert: Alert;
+}
+
+const { alert } = Astro.props;
+
+const severityBadge: Record<Alert["severity"], { bg: string; text: string }> = {
+  critical: { bg: "bg-error", text: "text-on-error" },
+  moderate: { bg: "bg-amber-500", text: "text-white" },
+  watching: { bg: "bg-surface-container-high", text: "text-on-surface" },
+};
+
+const severityLabel: Record<Alert["severity"], string> = {
+  critical: "Crítico",
+  moderate: "Moderado",
+  watching: "En Observación",
+};
+
+const badge = severityBadge[alert.severity];
+---
+
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex items-start justify-between gap-space-sm">
+  <div class="flex flex-col gap-1">
+    <div class="flex items-center gap-2">
+      <span class={`px-2 py-0.5 rounded text-label-sm font-label-sm font-bold uppercase ${badge.bg} ${badge.text}`}>
+        {severityLabel[alert.severity]}
+      </span>
+      <span class="font-label-sm text-label-sm text-on-surface-variant">{alert.location}</span>
+    </div>
+    <div class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+      {alert.title}
+    </div>
+    <div class="font-label-sm text-label-sm text-on-surface-variant">
+      Área: <strong class="text-on-surface font-semibold">{alert.area}</strong> | Confianza: {alert.confidence}
+    </div>
+  </div>
+  <span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">{alert.timestamp}</span>
+</div>

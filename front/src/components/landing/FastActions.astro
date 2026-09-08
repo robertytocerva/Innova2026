@@ -1,0 +1,31 @@
+---
+import Icon from "../ui/Icon.astro";
+import Button from "../ui/Button.astro";
+import type { CtaLink } from "../../types/landing";
+
+interface Props {
+  icon: string;
+  title: string;
+  description: string;
+  cta: CtaLink;
+}
+
+const { icon, title, description, cta } = Astro.props;
+---
+
+<section class="w-full py-space-2xl px-gutter-desktop bg-surface-container-lowest">
+  <div class="max-w-7xl mx-auto rounded-xl p-space-xl bg-surface-container-low flex flex-col md:flex-row items-center justify-between gap-space-lg">
+    <div class="flex items-center gap-space-md">
+      <div class="w-14 h-14 rounded-xl bg-primary flex items-center justify-center text-on-primary shrink-0 shadow-md">
+        <Icon name={icon} size={32} />
+      </div>
+      <div class="flex flex-col">
+        <h4 class="font-headline-sm text-headline-sm font-bold text-on-surface">{title}</h4>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">{description}</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-space-sm shrink-0">
+      <Button label={cta.label} href={cta.href} icon="upload_file" variant="primary" dataPath={cta.dataPath} />
+    </div>
+  </div>
+</section>

@@ -1,0 +1,84 @@
+---
+import Icon from "../ui/Icon.astro";
+import type { UseCase } from "../../types/landing";
+
+interface Props {
+  kicker: string;
+  title: string;
+  description: string;
+  cases: UseCase[];
+}
+
+const { kicker, title, description, cases } = Astro.props;
+
+const colSpanClass: Record<UseCase["colSpan"], string> = {
+  wide: "md:col-span-7",
+  narrow: "md:col-span-5",
+  "narrow-2": "md:col-span-5",
+  "wide-2": "md:col-span-7",
+};
+---
+
+<section class="w-full py-space-3xl px-gutter-desktop bg-surface-container-low">
+  <div class="max-w-7xl mx-auto flex flex-col gap-space-2xl">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+      <div class="flex flex-col gap-space-2xs max-w-2xl">
+        <span class="font-label-sm text-label-sm text-primary tracking-widest uppercase font-semibold">{kicker}</span>
+        <h2 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">{title}</h2>
+        <p class="font-body-md text-body-md text-on-surface-variant">{description}</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-space-md">
+      {cases.map((c) => (
+        <div class={`${colSpanClass[c.colSpan]} bg-surface-container-lowest rounded-xl p-space-xl shadow-sm flex flex-col justify-between gap-space-md`}>
+          <div class="flex items-center gap-space-sm">
+            <div class={`w-10 h-10 rounded-xl ${c.iconBg} flex items-center justify-center ${c.iconFg}`}>
+              <Icon name={c.icon} size={22} />
+            </div>
+            <div>
+              <span class={`font-label-sm text-label-sm font-bold uppercase ${c.kickerTone ?? "text-primary"}`}>{c.kicker}</span>
+              <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">{c.title}</h3>
+            </div>
+          </div>
+          <p class={`${c.metrics ? "font-body-md text-body-md" : "font-body-sm text-body-sm"} text-on-surface-variant`}>
+            {c.description}
+          </p>
+
+          {c.metrics && (
+            <div class="grid grid-cols-3 gap-space-sm p-space-md rounded-xl bg-surface-container-low">
+              {c.metrics.map((m) => (
+                <div class="flex flex-col">
+                  <span class="font-label-sm text-label-sm text-on-surface-variant">{m.label}</span>
+                  <span class={`font-headline-sm text-headline-sm font-bold ${m.valueTone ?? "text-on-surface"}`}>{m.value}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {c.footerNote && !c.metrics && !c.tags && (
+            <div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low font-label-sm text-label-sm">
+              <span class="text-on-surface-variant">{c.footerNote.split(":")[0]}:</span>
+              <span class="font-bold text-primary">{c.footerNote.split(":")[1]}</span>
+            </div>
+          )}
+
+          {c.footerNote && c.tags && (
+            <div class="flex items-center gap-2 font-label-sm text-label-sm text-primary">
+              <Icon name="domain_verification" size={16} />
+              <span>{c.footerNote}</span>
+            </div>
+          )}
+
+          {c.tags && (
+            <div class="flex flex-wrap items-center gap-space-sm">
+              {c.tags.map((tag) => (
+                <span class="px-space-sm py-1 rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-semibold">{tag}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

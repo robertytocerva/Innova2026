@@ -1,0 +1,51 @@
+---
+import Icon from "./Icon.astro";
+
+type Variant = "primary" | "secondary" | "ghost" | "outline-on-dark" | "bright" | "inverted";
+
+interface Props {
+  label: string;
+  href: string;
+  icon?: string;
+  variant?: Variant;
+  dataPath?: string;
+  fullWidth?: boolean;
+  class?: string;
+}
+
+const {
+  label,
+  href,
+  icon,
+  variant = "primary",
+  dataPath,
+  fullWidth = false,
+  class: className = "",
+} = Astro.props;
+
+const base =
+  "inline-flex items-center justify-center gap-space-2xs px-space-lg py-space-sm rounded-xl font-label-lg text-label-lg transition-all";
+
+const variantClasses: Record<Variant, string> = {
+  primary:
+    "bg-primary text-on-primary hover:brightness-110 shadow-sm",
+  secondary:
+    "bg-surface-container-low text-primary hover:bg-surface-container shadow-sm",
+  ghost:
+    "bg-surface-container text-primary hover:bg-primary hover:text-on-primary",
+  "outline-on-dark":
+    "bg-surface-container-lowest/15 text-surface hover:bg-surface-container-lowest/25 backdrop-blur-md",
+  bright:
+    "bg-gradient-to-r from-primary to-primary-container text-on-primary shadow-md hover:shadow-lg hover:brightness-105",
+  inverted:
+    "bg-surface-container-lowest text-primary hover:bg-secondary-fixed hover:text-on-secondary-fixed shadow-sm",
+};
+
+const widthClass = fullWidth ? "w-full" : "";
+const cls = [base, variantClasses[variant], widthClass, className].filter(Boolean).join(" ");
+---
+
+<a class={cls} href={href} data-path={dataPath}>
+  {icon && <Icon name={icon} size={20} />}
+  <span>{label}</span>
+</a>
