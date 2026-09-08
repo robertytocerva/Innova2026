@@ -1,18 +1,31 @@
 {
   "name": "innova2026-backend",
   "version": "1.0.0",
-  "description": "Backend API para Innova 2026",
+  "description": "API de monitoreo de deforestacion e impacto ambiental",
+  "type": "module",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "node --watch src/index.js"
+    "dev": "node --watch src/index.js",
+    "check": "node --check src/index.js",
+    "migrate": "supabase db push"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1"
+    "@supabase/supabase-js": "^2.57.0",
+    "axios": "^1.11.0",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.0",
+    "zod": "^4.0.17"
   }
 }

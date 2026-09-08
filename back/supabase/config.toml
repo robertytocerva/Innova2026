@@ -1,0 +1,7 @@
+project_id = "innova2026"
+
+[api]
+enabled = true
+
+[db]
+major_version = 15
