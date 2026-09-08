@@ -1,0 +1,557 @@
+---
+import Icon from "../ui/Icon.astro";
+---
+
+<div class="flex-1 relative w-full h-full overflow-hidden flex flex-col bg-inverse-surface text-surface">
+  <div class="flex-1 relative w-full h-full overflow-hidden">
+    <div id="map" class="w-full h-full z-0 bg-inverse-surface"></div>
+
+    <div class="absolute top-4 right-4 z-20 flex flex-col gap-space-xs">
+      <button id="btnToggleLegend" type="button" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-container-lowest/95 hover:bg-surface-container backdrop-blur-md text-on-surface text-label-sm font-label-sm font-semibold border border-outline-variant/40 shadow-lg transition-all" aria-label="Alternar leyenda">
+        <Icon name="info" size={18} class="text-primary" />
+        <span>Leyenda</span>
+      </button>
+      <button id="btnToggleLayer" type="button" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-secondary-fixed text-on-secondary-fixed text-label-sm font-label-sm font-bold border border-secondary-fixed-dim/40 shadow-lg transition-all" aria-label="Alternar vista de mapa">
+        <Icon name="satellite_alt" size={18} id="layerIcon" />
+        <span id="layerText">Vista Satélite</span>
+      </button>
+    </div>
+
+    <div id="legendPanel" class="absolute top-24 right-4 z-20 bg-surface-container-lowest/95 backdrop-blur-md text-on-surface p-4 rounded-xl shadow-2xl border border-outline-variant/40 text-label-sm font-label-sm w-72 transition-all duration-300 hidden">
+      <div class="flex items-center justify-between pb-2 border-b border-outline-variant/40 mb-2.5">
+        <span class="font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1.5">
+          <Icon name="layers" size={16} class="text-primary" />
+          Estados de Predios
+        </span>
+        <button type="button" id="btnCloseLegend" class="text-on-surface-variant hover:text-on-surface" aria-label="Cerrar leyenda">
+          <Icon name="close" size={16} />
+        </button>
+      </div>
+      <div class="space-y-2">
+        <div class="flex items-center gap-2.5">
+          <span class="w-4 h-4 rounded bg-primary-fixed/30 border-2 border-primary shrink-0"></span>
+          <div>
+            <div class="font-semibold text-on-surface">Aprobada (Exportación OK)</div>
+            <div class="text-[10px] text-on-surface-variant">Sin deforestación en histórico</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="w-4 h-4 rounded bg-error/30 border-2 border-error shrink-0"></span>
+          <div>
+            <div class="font-semibold text-on-surface">Bloqueada (Deforestación)</div>
+            <div class="text-[10px] text-on-surface-variant">Pérdida de bosque detectada</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="w-4 h-4 rounded bg-amber-500/30 border-2 border-amber-600 shrink-0"></span>
+          <div>
+            <div class="font-semibold text-on-surface">En Revisión</div>
+            <div class="text-[10px] text-on-surface-variant">Análisis multitemporal en curso</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="w-4 h-4 rounded border-2 border-dashed border-error bg-error/20 shrink-0"></span>
+          <div>
+            <div class="font-semibold text-error">Subdivisión Bloqueada</div>
+            <div class="text-[10px] text-on-surface-variant">Intento de fragmentar predio sancionado</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="w-4 h-4 rounded border-2 border-orange-500 bg-orange-500/20 shrink-0"></span>
+          <div>
+            <div class="font-semibold text-orange-700">Problemas Geométricos</div>
+            <div class="text-[10px] text-on-surface-variant">Auto-intersección / traslape catastral</div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-3 pt-2.5 border-t border-outline-variant/40 text-[10px] text-on-surface-variant flex items-center justify-between">
+        <span>Pasa el cursor: <strong>Coordenadas WGS84</strong></span>
+        <span>Clic: <strong>Detalles</strong></span>
+      </div>
+    </div>
+
+    <div id="parcelDrawer" class="absolute top-0 right-0 h-full w-96 max-w-full bg-surface-container-lowest text-on-surface shadow-2xl z-30 transform translate-x-full transition-transform duration-300 flex flex-col border-l border-outline-variant/40">
+      <div class="p-4 bg-inverse-surface text-surface flex items-center justify-between border-b border-inverse-surface/40">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-base font-bold text-primary-fixed" id="drawerParcelId">MCH-000</span>
+            <span id="drawerStatusBadge" class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-primary/20 text-on-primary-container">APROBADA</span>
+          </div>
+          <p class="text-label-sm font-label-sm text-on-surface/60 mt-0.5" id="drawerMunicipio">Municipio</p>
+        </div>
+        <button type="button" id="btnCloseDrawer" class="p-1 rounded-lg text-on-surface/60 hover:text-surface hover:bg-inverse-surface/40 transition-colors" aria-label="Cerrar panel">
+          <Icon name="close" size={20} />
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-4 space-y-5 text-label-sm font-label-sm">
+        <section class="space-y-2">
+          <h3 class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1">
+            <Icon name="badge" size={14} />
+            Ficha del Predio
+          </h3>
+          <div class="grid grid-cols-2 gap-2 bg-surface-container-low p-3 rounded-lg border border-outline-variant/40">
+            <div>
+              <span class="text-on-surface-variant block text-[10px]">Propietario:</span>
+              <span class="font-semibold text-on-surface" id="drawerPropietario">-</span>
+            </div>
+            <div>
+              <span class="text-on-surface-variant block text-[10px]">Superficie:</span>
+              <span class="font-semibold text-on-surface" id="drawerSuperficie">- ha</span>
+            </div>
+            <div>
+              <span class="text-on-surface-variant block text-[10px]">Cultivo:</span>
+              <span class="font-semibold text-on-surface" id="drawerCultivo">-</span>
+            </div>
+            <div>
+              <span class="text-on-surface-variant block text-[10px]">NDVI Promedio:</span>
+              <span class="font-semibold text-primary font-mono" id="drawerNdvi">-</span>
+            </div>
+            <div>
+              <span class="text-on-surface-variant block text-[10px]">Fecha de Alta:</span>
+              <span class="font-semibold text-on-surface" id="drawerFecha">-</span>
+            </div>
+            <div>
+              <span class="text-on-surface-variant block text-[10px]">Confianza IA:</span>
+              <span class="font-semibold text-on-surface font-mono" id="drawerConfianza">-</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="space-y-2">
+          <h3 class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1">
+            <Icon name="history_toggle_off" size={14} />
+            Historial Satelital de Cobertura
+          </h3>
+          <div id="drawerDeforestationList" class="space-y-2"></div>
+        </section>
+
+        <section class="space-y-2">
+          <h3 class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1">
+            <Icon name="polyline" size={14} />
+            Validación Geométrica (Turf.js)
+          </h3>
+          <div id="drawerGeometryIssues" class="space-y-1.5"></div>
+        </section>
+
+        <section class="space-y-2 pt-2 border-t border-outline-variant/40">
+          <div class="flex items-center justify-between">
+            <h3 class="text-[11px] font-bold uppercase tracking-wider text-on-surface flex items-center gap-1">
+              <Icon name="gavel" size={14} class="text-error" />
+              Regla Anti-Subdivisión
+            </h3>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-error-container text-error font-semibold">Art. 15días</span>
+          </div>
+          <p class="text-[11px] text-on-surface-variant leading-relaxed">
+            Si un predio registra tala o cambio de uso de suelo, el sistema <strong>impide fraccionarlo</strong> para que partes limpias puedan exportar. Lo que importa es la historia total del terreno.
+          </p>
+
+          <button id="btnTestSubdivision" type="button" class="w-full py-2.5 px-3 rounded-lg bg-inverse-surface hover:bg-on-surface text-surface font-medium flex items-center justify-center gap-1.5 shadow transition-all">
+            <Icon name="call_split" size={16} />
+            <span>Simular Intento de Subdivisión</span>
+          </button>
+
+          <div id="subdivisionAlertBox" class="hidden p-3 rounded-lg border text-[11px] leading-relaxed transition-all"></div>
+        </section>
+      </div>
+    </div>
+
+    <div class="absolute bottom-6 right-6 z-20 flex flex-col items-end">
+      <div id="aiChatWindow" class="hidden w-80 h-96 mb-3 bg-surface-container-lowest text-on-surface rounded-2xl shadow-2xl border border-outline-variant/40 flex flex-col overflow-hidden">
+        <div class="p-3 bg-primary-container text-surface flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <Icon name="smart_toy" size={20} class="text-secondary-fixed" />
+            <div>
+              <div class="font-bold text-label-sm font-label-sm">Asistente IA Forestal</div>
+              <div class="text-[10px] text-on-primary">Consultas satelitales Michoacán</div>
+            </div>
+          </div>
+          <button type="button" id="btnCloseAiChat" class="text-on-primary hover:text-surface" aria-label="Cerrar chat">
+            <Icon name="close" size={16} />
+          </button>
+        </div>
+
+        <div id="aiMessages" class="flex-1 overflow-y-auto p-3 space-y-2 text-label-sm font-label-sm bg-surface-container-low">
+          <div class="bg-primary-container/30 text-on-surface p-2.5 rounded-xl rounded-tl-none border border-primary-fixed/40 text-label-sm font-label-sm">
+            👋 Hola. Puedo responderte sobre:
+            <ul class="list-disc pl-4 mt-1 space-y-0.5 text-[11px] text-on-surface">
+              <li>Historial de predios (ej: <strong>MCH-007</strong>)</li>
+              <li>Parcelas con <strong>deforestación</strong></li>
+              <li>Intentos de <strong>subdivisión</strong> bloqueados</li>
+              <li>Errores de <strong>geometría</strong> detectados</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="p-2 border-t border-outline-variant/40 bg-surface-container-lowest flex gap-1.5">
+          <input id="aiInput" type="text" placeholder="Escribe tu consulta..." class="flex-1 bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-1.5 text-label-sm font-label-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary" />
+          <button type="button" id="btnSendAi" class="p-2 bg-primary hover:bg-primary-container text-on-primary rounded-lg flex items-center justify-center" aria-label="Enviar">
+            <Icon name="send" size={16} />
+          </button>
+        </div>
+      </div>
+
+      <button type="button" id="btnToggleAiChat" class="w-13 h-13 p-3.5 bg-primary hover:bg-primary-container text-on-primary rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-105 border-2 border-surface" aria-label="Abrir asistente IA">
+        <Icon name="smart_toy" size={22} />
+      </button>
+    </div>
+  </div>
+</div>
+
+<style is:global>
+  .leaflet-tooltip-custom {
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    padding: 10px 14px !important;
+    color: #0f172a !important;
+  }
+  .leaflet-tooltip-custom:before {
+    border-top-color: rgba(255, 255, 255, 0.98) !important;
+  }
+  .map-page ::-webkit-scrollbar {
+    width: 6px;
+  }
+  .map-page ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  .map-page ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+  .map-page ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+</style>
+
+<script>
+  import L from "leaflet";
+  import "leaflet/dist/leaflet.css";
+  import { michoacanParcels } from "../../data/michoacanParcels";
+  import { canSubdivide } from "../../lib/subdivisionBlocker";
+  import type { ParcelFeature } from "../../types/mapa";
+
+  let selectedFeature: ParcelFeature | null = null;
+
+  const map = L.map("map", { zoomControl: true }).setView([19.42, -102.05], 10);
+
+  const osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap contributors",
+  });
+
+  const satelliteLayer = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    {
+      maxZoom: 18,
+      attribution: "Tiles &copy; Esri",
+    }
+  );
+
+  osmLayer.addTo(map);
+  let isSatellite = false;
+
+  document.getElementById("btnToggleLayer")?.addEventListener("click", () => {
+    isSatellite = !isSatellite;
+    const icon = document.getElementById("layerIcon");
+    const text = document.getElementById("layerText");
+    if (isSatellite) {
+      map.removeLayer(osmLayer);
+      satelliteLayer.addTo(map);
+      if (icon) icon.textContent = "map";
+      if (text) text.textContent = "Vista Mapa";
+    } else {
+      map.removeLayer(satelliteLayer);
+      osmLayer.addTo(map);
+      if (icon) icon.textContent = "satellite_alt";
+      if (text) text.textContent = "Vista Satélite";
+    }
+  });
+
+  document.getElementById("btnToggleLegend")?.addEventListener("click", () => {
+    document.getElementById("legendPanel")?.classList.toggle("hidden");
+  });
+
+  document.getElementById("btnCloseLegend")?.addEventListener("click", () => {
+    document.getElementById("legendPanel")?.classList.add("hidden");
+  });
+
+  function getPolygonStyle(feature: ParcelFeature) {
+    const p = feature.properties;
+    let fillColor = "#22c55e";
+    let fillOpacity = 0.35;
+    let color = "#15803d";
+    let weight = 2;
+    let dashArray: string | null = null;
+
+    if (p.exportacion === "bloqueada") {
+      fillColor = "#ef4444";
+      color = "#b91c1c";
+      fillOpacity = 0.45;
+    } else if (p.exportacion === "en_revision") {
+      fillColor = "#f59e0b";
+      color = "#d97706";
+      fillOpacity = 0.4;
+    }
+
+    if (p.subdivisionBloqueada) {
+      color = "#dc2626";
+      dashArray = "6, 6";
+      weight = 3;
+    } else if (p.geometryIssues && p.geometryIssues.length > 0) {
+      color = "#ea580c";
+      weight = 3;
+    }
+
+    return { fillColor, fillOpacity, color, weight, dashArray };
+  }
+
+  function onEachParcel(feature: ParcelFeature, layer: L.Layer) {
+    const l = layer as L.Path;
+    const coords = feature.geometry?.coordinates?.[0] ?? [];
+    const vertices = coords.length > 1 ? coords.slice(0, -1) : coords;
+
+    const coordRows = vertices
+      .map(
+        (pt, i) => `
+        <tr class="border-b border-slate-100 last:border-none">
+          <td class="px-2 py-0.5 text-slate-400 font-mono">P${i + 1}</td>
+          <td class="px-2 py-0.5 font-mono text-emerald-950 font-medium">${pt[1].toFixed(6)}°N</td>
+          <td class="px-2 py-0.5 font-mono text-emerald-950 font-medium">${pt[0].toFixed(6)}°W</td>
+        </tr>
+      `
+      )
+      .join("");
+
+    l.bindTooltip(
+      `
+      <div style="font-size:12px;min-width:270px;">
+        <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-weight:700;color:#005d42;font-size:13px;font-family:monospace;">${feature.properties.id}</span>
+          <span style="color:#475569;font-weight:600;">${feature.properties.municipio}</span>
+        </div>
+        <div style="color:#64748b;margin-bottom:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Vértices del polígono (WGS 84)</div>
+        <table style="border-collapse:collapse;width:100%;font-size:11px;">
+          <thead>
+            <tr style="border-bottom:1px solid #cbd5e1;background:#f8fafc;">
+              <th style="padding:2px 6px;text-align:left;color:#64748b;font-size:10px;">Pto</th>
+              <th style="padding:2px 6px;text-align:left;color:#64748b;font-size:10px;">Latitud</th>
+              <th style="padding:2px 6px;text-align:left;color:#64748b;font-size:10px;">Longitud</th>
+            </tr>
+          </thead>
+          <tbody>${coordRows}</tbody>
+        </table>
+      </div>
+    `,
+      { sticky: true, className: "leaflet-tooltip-custom" }
+    );
+
+    l.on("click", () => openParcelDetail(feature));
+  }
+
+  const parcelsLayer = L.geoJSON(michoacanParcels as unknown as GeoJSON.FeatureCollection, {
+    style: (f) => getPolygonStyle(f as unknown as ParcelFeature),
+    onEachFeature: (f, l) => onEachParcel(f as unknown as ParcelFeature, l),
+  } as L.GeoJSONOptions).addTo(map);
+
+  map.fitBounds((parcelsLayer as L.GeoJSON).getBounds(), { padding: [40, 40] });
+
+  function openParcelDetail(feature: ParcelFeature) {
+    selectedFeature = feature;
+    const p = feature.properties;
+
+    const setText = (id: string, val: string) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    };
+
+    setText("drawerParcelId", p.id);
+    setText("drawerMunicipio", `Municipio: ${p.municipio} · Michoacán`);
+    setText("drawerPropietario", p.propietario);
+    setText("drawerSuperficie", `${p.superficieHa} ha`);
+    setText("drawerCultivo", p.cultivo);
+    setText("drawerNdvi", String(p.ndviPromedio ?? "0.82"));
+    setText("drawerFecha", p.fechaAlta || "2023-01-01");
+    setText("drawerConfianza", `${p.confianzaIA}%`);
+
+    const badge = document.getElementById("drawerStatusBadge");
+    if (badge) {
+      if (p.exportacion === "aprobada") {
+        badge.className = "text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-primary/20 text-on-primary-container border border-primary/40";
+        badge.textContent = "APROBADA";
+      } else if (p.exportacion === "bloqueada") {
+        badge.className = "text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-error/20 text-error border border-error/40";
+        badge.textContent = "BLOQUEADA";
+      } else {
+        badge.className = "text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 border border-amber-600/40";
+        badge.textContent = "EN REVISIÓN";
+      }
+    }
+
+    const defList = document.getElementById("drawerDeforestationList");
+    if (defList) {
+      defList.innerHTML = "";
+      if (p.historialDeforestacion && p.historialDeforestacion.length > 0) {
+        p.historialDeforestacion.forEach((ev) => {
+          defList.innerHTML += `
+            <div class="p-2.5 rounded-lg bg-error-container/40 border border-error/40 text-error">
+              <div class="flex items-center justify-between font-bold text-label-sm font-label-sm">
+                <span>⚠️ ${ev.tipo}</span>
+                <span class="font-mono text-[10px] text-error">${ev.fecha}</span>
+              </div>
+              <div class="text-[11px] mt-1">
+                Área talada: <strong>${ev.areaHa} ha</strong> · Sensor: <strong>${ev.fuente}</strong>
+              </div>
+            </div>
+          `;
+        });
+      } else {
+        defList.innerHTML = `
+          <div class="p-2.5 rounded-lg bg-primary-fixed/20 border border-primary-fixed/40 text-on-surface flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-base">verified</span>
+            <span>Sin eventos de deforestación registrados desde 2018.</span>
+          </div>
+        `;
+      }
+    }
+
+    const geoIssues = document.getElementById("drawerGeometryIssues");
+    if (geoIssues) {
+      geoIssues.innerHTML = "";
+      if (p.geometryIssues && p.geometryIssues.length > 0) {
+        p.geometryIssues.forEach((iss) => {
+          geoIssues.innerHTML += `
+            <div class="p-2 rounded bg-orange-50 border border-orange-200 text-orange-950 flex items-start gap-1.5">
+              <span class="material-symbols-outlined text-orange-600 text-sm mt-0.5">warning</span>
+              <div>
+                <span class="font-semibold capitalize">${iss.tipo.replace("_", " ")}:</span>
+                ${iss.descripcion}
+              </div>
+            </div>
+          `;
+        });
+      } else {
+        geoIssues.innerHTML = `
+          <div class="p-2 rounded bg-surface-container border border-outline-variant/40 text-on-surface flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+            <span>Topología y cierre vectorial correctos (100/100).</span>
+          </div>
+        `;
+      }
+    }
+
+    const alertBox = document.getElementById("subdivisionAlertBox");
+    if (alertBox) {
+      alertBox.className = "hidden";
+      alertBox.innerHTML = "";
+    }
+
+    document.getElementById("parcelDrawer")?.classList.remove("translate-x-full");
+  }
+
+  document.getElementById("btnCloseDrawer")?.addEventListener("click", () => {
+    document.getElementById("parcelDrawer")?.classList.add("translate-x-full");
+  });
+
+  function testSubdivision() {
+    if (!selectedFeature) return;
+    const res = canSubdivide(selectedFeature);
+    const alertBox = document.getElementById("subdivisionAlertBox");
+    if (!alertBox) return;
+    alertBox.classList.remove("hidden");
+
+    if (!res.allowed) {
+      alertBox.className = "p-3 rounded-lg border bg-error-container/40 border-error text-error space-y-1";
+      alertBox.innerHTML = `
+        <div class="font-bold flex items-center gap-1 text-error">
+          <span class="material-symbols-outlined text-base">block</span>
+          SUBDIVISIÓN DENEGADA POR LEY FORESTAL
+        </div>
+        <p class="text-[11px] leading-tight">${res.reason}</p>
+        <div class="mt-2 text-[10px] font-mono bg-error/10 p-1.5 rounded">
+          Dictamen: El predio no puede ser fraccionado para eludir restricciones fitosanitarias de exportación (EUDR/SENASICA).
+        </div>
+      `;
+    } else {
+      alertBox.className = "p-3 rounded-lg border bg-primary-container/30 border-primary text-on-surface space-y-1";
+      alertBox.innerHTML = `
+        <div class="font-bold flex items-center gap-1 text-primary">
+          <span class="material-symbols-outlined text-base">check_circle</span>
+          SUBDIVISIÓN PERMITIDA
+        </div>
+        <p class="text-[11px] leading-tight">${res.reason}</p>
+      `;
+    }
+  }
+
+  document.getElementById("btnTestSubdivision")?.addEventListener("click", testSubdivision);
+
+  function toggleAiChat() {
+    document.getElementById("aiChatWindow")?.classList.toggle("hidden");
+  }
+
+  document.getElementById("btnToggleAiChat")?.addEventListener("click", toggleAiChat);
+  document.getElementById("btnCloseAiChat")?.addEventListener("click", toggleAiChat);
+
+  function sendAiMessage() {
+    const input = document.getElementById("aiInput") as HTMLInputElement | null;
+    if (!input) return;
+    const text = input.value.trim();
+    if (!text) return;
+    const container = document.getElementById("aiMessages");
+    if (!container) return;
+
+    container.innerHTML += `
+      <div class="flex justify-end">
+        <div class="bg-primary text-on-primary p-2 rounded-xl rounded-tr-none text-label-sm font-label-sm max-w-[85%]">
+          ${text}
+        </div>
+      </div>
+    `;
+    input.value = "";
+
+    setTimeout(() => {
+      let reply = "No comprendo la consulta. Prueba consultando por 'deforestación', 'subdivisión', o un ID como 'MCH-007'.";
+      const q = text.toLowerCase();
+
+      if (q.includes("deforest") || q.includes("alerta")) {
+        const def = michoacanParcels.features.filter((f) => f.properties.historialDeforestacion?.length > 0);
+        reply = `🚨 Se identifican ${def.length} predios con historial de deforestación: <strong>${def.map((f) => f.properties.id).join(", ")}</strong>. Ninguno es apto para exportar aguacate a la UE bajo reglamento EUDR.`;
+      } else if (q.includes("subdivis") || q.includes("bloquea")) {
+        const sub = michoacanParcels.features.filter((f) => f.properties.subdivisionBloqueada);
+        reply = `🛑 Predios con intento de fraccionamiento fraudulento bloqueado: <strong>${sub.map((f) => f.properties.id).join(", ")}</strong>. La regla inmutable estipula que la historia del predio completo prevalece.`;
+      } else if (q.includes("geometr") || q.includes("traslape") || q.includes("intersec")) {
+        const geom = michoacanParcels.features.filter((f) => f.properties.geometryIssues?.length > 0);
+        reply = `📐 Predios con errores cartográficos detectados por IA (Turf.js): <strong>${geom.map((f) => f.properties.id).join(", ")}</strong> (auto-intersecciones o solapes de linderos).`;
+      } else {
+        const match = q.match(/mch-\d{3}/i);
+        if (match) {
+          const id = match[0].toUpperCase();
+          const found = michoacanParcels.features.find((f) => f.properties.id === id);
+          if (found) {
+            const p = found.properties;
+            reply = `📍 <strong>${id}</strong> (${p.municipio}): Propietario <em>${p.propietario}</em>, ${p.superficieHa} ha. Estado: <strong>${p.exportacion.toUpperCase()}</strong>. ${p.historialDeforestacion.length > 0 ? "Tiene alertas de tala." : "Sin alertas de tala."}`;
+          } else {
+            reply = `No localicé el predio ${id} en la franja aguacatera.`;
+          }
+        }
+      }
+
+      container.innerHTML += `
+        <div class="flex justify-start">
+          <div class="bg-surface-container-lowest border border-outline-variant/40 text-on-surface p-2.5 rounded-xl rounded-tl-none text-label-sm font-label-sm max-w-[90%] shadow-sm">
+            ${reply}
+          </div>
+        </div>
+      `;
+      container.scrollTop = container.scrollHeight;
+    }, 400);
+  }
+
+  document.getElementById("btnSendAi")?.addEventListener("click", sendAiMessage);
+  document.getElementById("aiInput")?.addEventListener("keydown", (e) => {
+    if ((e as KeyboardEvent).key === "Enter") sendAiMessage();
+  });
+</script>

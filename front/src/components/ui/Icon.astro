@@ -3,11 +3,12 @@ interface Props {
   name: string;
   size?: number;
   class?: string;
+  id?: string;
 }
 
-const { name, size, class: className = "" } = Astro.props;
+const { name, size, class: className = "", id } = Astro.props;
 const sizeClass = size ? `text-[${size}px]` : "";
 const cls = ["material-symbols-outlined", sizeClass, className].filter(Boolean).join(" ");
 ---
 
-<span class={cls}>{name}</span>
+<span class={cls} id={id}>{name}</span>

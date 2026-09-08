@@ -11,7 +11,7 @@ export interface NavLink {
 }
 
 export interface NavProps {
-  logo: string;
+  logo?: string;
   brandName: string;
   links: NavLink[];
   ctaLabel: string;

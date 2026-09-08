@@ -18,7 +18,7 @@ export const heroData = {
   paragraph:
     "Confrontamos los polígonos de huertas registradas de aguacate y berries (Uruapan, Zamora, Los Reyes y la Meseta Purépecha) contra la serie histórica de cobertura forestal Landsat/Sentinel para automatizar la emisión de expedientes de cumplimiento ambiental, en apego al Decreto estatal de Cero Deforestación.",
   primaryCta: { label: "Auditar Mi Predio", href: "#expedientes", dataPath: "expedientes", icon: "verified_user" },
-  secondaryCta: { label: "Explorar Mapa de Zonas", href: "#mapa-interactivo", dataPath: "mapa-interactivo" },
+  secondaryCta: { label: "Explorar Mapa de Zonas", href: "/mapa-interactivo", dataPath: "mapa-interactivo" },
   complianceItems: [
     { icon: "verified", text: "Conforme al Decreto de Certificación de Cero Deforestación" },
     { icon: "update", text: "Series históricas Landsat 8/9 + Sentinel-2" },
@@ -298,7 +298,7 @@ export const mapTeaserData = {
   title: "Inspecciona cualquier huerta registrada con resolución de 10 m",
   paragraph:
     "Carga el polígono de tu predio o navega la serie 2015–2025 en Uruapan, Zamora y Los Reyes. Aplica filtros espectrales dinámicos, traza polígonos de interés (AOI) y exporta GeoTIFFs listos para QGIS o ArcGIS.",
-  primaryCta: { label: "Abrir Visor Geoespacial", href: "#mapa-interactivo", dataPath: "mapa-interactivo" },
+  primaryCta: { label: "Abrir Visor Geoespacial", href: "/mapa-interactivo", dataPath: "mapa-interactivo" },
   secondaryCta: { label: "Descargar Informe Anual LULC 2025", href: "#expedientes", dataPath: "expedientes" },
   formats: "Soporta formatos WMS, WFS, GeoJSON, Shapefile y COG Cloud Optimized GeoTIFF",
   imageUrl: MAP_TEASER_IMG,
@@ -379,17 +379,17 @@ export const statusMarqueeData = {
 
 export const navData: NavProps = {
   logo: BRAND_LOGO,
-  brandName: "CertiHuerto",
+  brandName: "TerraSuelo",
   links: [
-    { label: "Inicio", href: "#inicio", dataPath: "inicio" },
-    { label: "Expedientes", href: "#expedientes", dataPath: "expedientes" },
-    { label: "Mapa Interactivo", href: "#mapa-interactivo", dataPath: "mapa-interactivo" },
-    { label: "Casos de Uso", href: "#casos-de-uso", dataPath: "casos-de-uso" },
-    { label: "Reportes", href: "#generador-de-reportes", dataPath: "generador-de-reportes" },
+    { label: "Inicio", href: "/#inicio", dataPath: "inicio" },
+    { label: "Mapa Interactivo", href: "/mapa-interactivo", dataPath: "mapa-interactivo" },
+    { label: "Casos de Uso", href: "/#casos-de-uso", dataPath: "casos-de-uso" },
+    { label: "Reportes", href: "/#generador-de-reportes", dataPath: "generador-de-reportes" },
+    { label: "Monitoreo", href: "/#monitoreo", dataPath: "monitoreo" },
   ],
-  ctaLabel: "Auditar Mi Predio",
-  ctaHref: "#expedientes",
-  ctaDataPath: "expedientes",
+  ctaLabel: "Abrir Visor",
+  ctaHref: "/mapa-interactivo",
+  ctaDataPath: "mapa-interactivo",
 };
 
 export const footerData: FooterProps = {
@@ -405,7 +405,7 @@ export const footerData: FooterProps = {
       links: [
         { label: "Visión Regional", href: "#", dataPath: "inicio" },
         { label: "Auditoría de Predios", href: "#expedientes", dataPath: "expedientes" },
-        { label: "Visualizador Geoespacial", href: "#", dataPath: "mapa-interactivo" },
+        { label: "Visualizador Geoespacial", href: "/mapa-interactivo", dataPath: "mapa-interactivo" },
       ],
     },
     {

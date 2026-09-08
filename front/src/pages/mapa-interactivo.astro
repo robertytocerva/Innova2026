@@ -1,0 +1,20 @@
+---
+import Layout from "../layouts/Layout.astro";
+import NavBar from "../components/landing/NavBar.astro";
+import MapView from "../components/landing/MapView.astro";
+import { navData } from "../data/landing";
+---
+
+<Layout title="Visor Satelital Michoacán — TerraSuelo">
+  <NavBar
+    brandName={navData.brandName}
+    links={navData.links}
+    ctaLabel={navData.ctaLabel}
+    ctaHref={navData.ctaHref}
+    ctaDataPath={navData.ctaDataPath}
+  />
+
+  <main class="map-page h-[calc(100vh-5rem)] w-screen flex flex-col overflow-hidden">
+    <MapView />
+  </main>
+</Layout>
