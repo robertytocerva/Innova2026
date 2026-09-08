@@ -12,16 +12,93 @@ interface ManagedLayer {
   remove: () => void;
 }
 
-export function initMap(): void {
+function waitForStableSize(
+  container: HTMLElement,
+  timeoutMs = 4000,
+): Promise<DOMRect> {
+  return new Promise((resolve, reject) => {
+    const start = performance.now();
+    let lastRect: { w: number; h: number } | null = null;
+    let stableFrames = 0;
+    const REQUIRED = 3;
+    const MIN_SIZE = 200;
+
+    const measure = () => {
+      const rect = container.getBoundingClientRect();
+      const w = Math.floor(rect.width);
+      const h = Math.floor(rect.height);
+
+      if (w >= MIN_SIZE && h >= MIN_SIZE) {
+        if (lastRect && lastRect.w === w && lastRect.h === h) {
+          stableFrames++;
+          if (stableFrames >= REQUIRED) {
+            resolve(rect);
+            return;
+          }
+        } else {
+          stableFrames = 0;
+          lastRect = { w, h };
+        }
+      } else {
+        stableFrames = 0;
+        lastRect = null;
+      }
+
+      if (performance.now() - start > timeoutMs) {
+        if (w > 0 && h > 0) {
+          resolve(rect);
+          return;
+        }
+        reject(new Error("Map container never reached a usable size"));
+        return;
+      }
+      requestAnimationFrame(measure);
+    };
+
+    measure();
+  });
+}
+
+function invalidateSizeRepeatedly(): void {
+  if (!state.map) return;
+  state.map.invalidateSize();
+  requestAnimationFrame(() => state.map?.invalidateSize());
+  setTimeout(() => state.map?.invalidateSize(), 100);
+  setTimeout(() => state.map?.invalidateSize(), 400);
+  setTimeout(() => state.map?.invalidateSize(), 900);
+  setTimeout(() => state.map?.invalidateSize(), 1500);
+}
+
+export async function initMap(): Promise<void> {
   const container = document.getElementById("map") as HTMLDivElement | null;
   if (!container) return;
 
-  if ((container as HTMLDivElement & { _leaflet_id?: number })._leaflet_id) {
-    state.map?.remove();
+  try {
+    await waitForStableSize(container);
+  } catch {
+    return;
+  }
+
+  if (state.map) {
+    try {
+      state.map.remove();
+    } catch {
+      // ignore
+    }
     state.map = null;
   }
 
-  state.map = L.map("map", { zoomControl: true }).setView([19.42, -102.05], 10);
+  if (state.resizeObserver) {
+    state.resizeObserver.disconnect();
+    state.resizeObserver = null;
+  }
+
+  state.map = L.map("map", {
+    zoomControl: true,
+    fadeAnimation: false,
+    zoomAnimation: false,
+    preferCanvas: false,
+  });
 
   let satelliteLayer: ManagedLayer = L.tileLayer(getWaybackUrl(SATELLITE_HISTORY_END), {
     maxZoom: 18,
@@ -30,12 +107,12 @@ export function initMap(): void {
 
   document.addEventListener("map:year-change", ((event: Event) => {
     const detail = (event as CustomEvent<{ year: number }>).detail;
-    if (!detail) return;
+    if (!detail || !state.map) return;
     satelliteLayer.remove();
     const newLayer = L.tileLayer(getWaybackUrl(detail.year), {
       maxZoom: 18,
       attribution: `Tiles &copy; Esri Wayback (${detail.year})`,
-    }).addTo(state.map!);
+    }).addTo(state.map);
     satelliteLayer = newLayer as unknown as ManagedLayer;
   }) as EventListener);
 
@@ -48,11 +125,15 @@ export function initMap(): void {
     parcelsLayer.resetStyle();
   });
 
+  state.map.setView([19.42, -102.05], 10);
   state.map.fitBounds((parcelsLayer as L.GeoJSON).getBounds(), { padding: [40, 40] });
 
-  requestAnimationFrame(() => {
-    setTimeout(() => state.map?.invalidateSize(), 150);
+  invalidateSizeRepeatedly();
+
+  state.resizeObserver = new ResizeObserver(() => {
+    state.map?.invalidateSize();
   });
+  state.resizeObserver.observe(container);
 }
 
 function getPolygonStyle(feature: ParcelFeature): L.PathOptions {
