@@ -9,11 +9,9 @@ const { brandName, links, ctaLabel, ctaHref, ctaDataPath } = Astro.props;
 ---
 
 <header class="sticky top-0 z-50 w-full bg-primary border-b border-primary-container/40 shadow-md">
-  <nav class="max-w-7xl mx-auto px-gutter-desktop h-16 flex items-center justify-between gap-space-md">
+  <nav class="max-w-7xl mx-auto px-gutter-desktop h-20 flex items-center justify-between gap-space-md">
     <a href="#inicio" data-path="inicio" class="flex items-center gap-space-xs shrink-0">
-      <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-surface-container-lowest text-primary font-extrabold text-headline-sm shadow-sm">
-        T
-      </span>
+      <img src="/public/logoBlanco.png" alt={brandName} class="w-16 h-12" />
       <span class="font-headline-sm text-headline-sm text-surface font-bold tracking-tight">{brandName}</span>
     </a>
 
