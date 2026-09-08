@@ -43,7 +43,14 @@ export default function MapApp(): ReactElement {
   }, []);
 
   return (
-    <div className="flex-1 relative w-full h-full overflow-hidden flex flex-col bg-inverse-surface text-surface">
+    <div className="flex-1 relative w-full h-full overflow-hidden flex flex-col bg-gradient-to-br from-inverse-surface via-primary-container/40 to-inverse-surface text-surface">
+      <div
+        className="pointer-events-none absolute inset-0 z-0 opacity-40"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 20% 20%, rgba(200,212,90,0.18), transparent 50%), radial-gradient(circle at 80% 80%, rgba(60,107,73,0.22), transparent 55%)",
+        }}
+      />
       <div className="flex-1 relative w-full h-full overflow-hidden">
         <MapLeaflet
           currentYear={currentYear}
