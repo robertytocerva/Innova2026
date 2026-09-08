@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, type ReactElement } from "react";
-import type { Map as LeafletMap, Layer, Path } from "leaflet";
+import type { Map as LeafletMap, Layer } from "leaflet";
 import type { ParcelFeature } from "../../types/mapa";
 import MapLeaflet from "./MapLeaflet";
 import MapControls from "./MapControls";
@@ -16,6 +16,7 @@ export default function MapApp(): ReactElement {
   const [showAiChat, setShowAiChat] = useState(false);
   const [currentYear, setCurrentYear] = useState<number>(SATELLITE_HISTORY_END);
   const [comparisonYear, setComparisonYear] = useState<number>(SATELLITE_HISTORY_START);
+  const [stylesVersion, setStylesVersion] = useState(0);
 
   const mapRef = useRef<LeafletMap | null>(null);
   const parcelsLayerRef = useRef<Layer | null>(null);
@@ -37,9 +38,8 @@ export default function MapApp(): ReactElement {
     setDrawerOpen(false);
   }, []);
 
-  const handleResetStyles = useCallback(() => {
-    const layer = parcelsLayerRef.current as (Path & { resetStyle?: () => void }) | null;
-    if (layer?.resetStyle) layer.resetStyle();
+  const handleParcelBlocked = useCallback(() => {
+    setStylesVersion((v) => v + 1);
   }, []);
 
   return (
@@ -58,6 +58,7 @@ export default function MapApp(): ReactElement {
           onParcelsLayer={handleParcelsLayer}
           onSelectParcel={handleSelectParcel}
           selectedFeature={selectedFeature}
+          stylesVersion={stylesVersion}
         />
 
         <MapControls onToggleLegend={() => setShowLegend((v) => !v)} />
@@ -71,7 +72,7 @@ export default function MapApp(): ReactElement {
           onSelectParcel={handleSelectParcel}
           currentYear={currentYear}
           comparisonYear={comparisonYear}
-          onParcelBlocked={handleResetStyles}
+          onParcelBlocked={handleParcelBlocked}
         />
 
         <TimeSlider

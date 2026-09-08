@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, type ReactElement } from "react";
-import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
+import { useEffect, useMemo, useRef, useCallback, type ReactElement } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import { michoacanParcels } from "../../data/michoacanParcels";
 import { getWaybackUrl } from "../../lib/satelliteHistory";
 import { getParcelFireRecords, calculateVedaForestal } from "../../lib/nasaFirms";
@@ -12,22 +12,15 @@ import type { Map as LeafletMap, Layer } from "leaflet";
 interface Props {
   currentYear: number;
   selectedFeature: ParcelFeature | null;
+  stylesVersion: number;
   onMapReady: (map: LeafletMap) => void;
   onParcelsLayer: (layer: Layer) => void;
   onSelectParcel: (feature: ParcelFeature) => void;
 }
 
-function MapEvents({ onMapReady }: { onMapReady: (map: LeafletMap) => void }): null {
-  const map = useMap();
-  useEffect(() => {
-    onMapReady(map);
-    const handle = setTimeout(() => map.invalidateSize(), 200);
-    return () => clearTimeout(handle);
-  }, [map, onMapReady]);
-  return null;
-}
+type MapStyle = L.PathOptions;
 
-function getPolygonStyle(feature: ParcelFeature): L.PathOptions {
+function getStyleForFeature(feature: ParcelFeature): MapStyle {
   const p = feature.properties;
   const fireRecords = getParcelFireRecords(feature);
   const vedaInfo = calculateVedaForestal(fireRecords);
@@ -98,16 +91,77 @@ function buildTooltip(feature: ParcelFeature): string {
   `;
 }
 
-export default function MapLeaflet({ currentYear, onMapReady, onParcelsLayer, onSelectParcel }: Props): ReactElement {
-  const geoJsonRef = useRef<L.GeoJSON | null>(null);
+const TOOLTIP_CACHE = new Map<string, string>(
+  michoacanParcels.features.map((f) => [f.properties.id, buildTooltip(f as unknown as ParcelFeature)]),
+);
+
+function computeInitialBounds(): L.LatLngBoundsExpression {
+  const bounds = L.latLngBounds([]);
+  for (const feature of michoacanParcels.features) {
+    const ring = feature.geometry.coordinates[0];
+    for (const point of ring) {
+      bounds.extend([point[1], point[0]]);
+    }
+  }
+  return bounds;
+}
+
+const INITIAL_BOUNDS = computeInitialBounds();
+
+function MapEvents({ onMapReady }: { onMapReady: (map: LeafletMap) => void }): null {
+  const map = useMap();
+  useEffect(() => {
+    onMapReady(map);
+    const handle = window.setTimeout(() => {
+      map.invalidateSize();
+      map.fitBounds(INITIAL_BOUNDS, { padding: [40, 40], animate: false });
+    }, 200);
+    return () => window.clearTimeout(handle);
+  }, [map, onMapReady]);
+  return null;
+}
+
+export default function MapLeaflet({ currentYear, stylesVersion, onMapReady, onParcelsLayer, onSelectParcel }: Props): ReactElement {
+  const parcelsLayerRef = useRef<L.GeoJSON | null>(null);
   const tileUrl = useMemo(() => getWaybackUrl(currentYear), [currentYear]);
 
-  const handleEachFeature = (feature: GeoJSON.Feature, layer: L.Layer): void => {
-    const path = layer as L.Path;
-    const parcelFeature = feature as unknown as ParcelFeature;
-    path.bindTooltip(buildTooltip(parcelFeature), { sticky: true, className: "leaflet-tooltip-custom" });
-    path.on("click", () => onSelectParcel(parcelFeature));
-  };
+  const styles = useMemo<Map<string, MapStyle>>(() => {
+    const next = new Map<string, MapStyle>();
+    for (const feature of michoacanParcels.features) {
+      const parcel = feature as unknown as ParcelFeature;
+      next.set(parcel.properties.id, getStyleForFeature(parcel));
+    }
+    return next;
+  }, [stylesVersion]);
+
+  const styleFn = useCallback(
+    (feature?: GeoJSON.Feature): MapStyle => {
+      if (!feature) return {};
+      const id = (feature.properties as { id?: string } | null)?.id;
+      return id ? styles.get(id) ?? {} : {};
+    },
+    [styles],
+  );
+
+  const onEachFeature = useCallback(
+    (feature: GeoJSON.Feature, layer: L.Layer): void => {
+      const parcel = feature as unknown as ParcelFeature;
+      const html = TOOLTIP_CACHE.get(parcel.properties.id);
+      if (html) {
+        (layer as L.Path).bindTooltip(html, { sticky: true, className: "leaflet-tooltip-custom" });
+      }
+      (layer as L.Path).on("click", () => onSelectParcel(parcel));
+    },
+    [onSelectParcel],
+  );
+
+  const handleLayerRef = useCallback(
+    (layer: L.GeoJSON | null): void => {
+      parcelsLayerRef.current = layer;
+      if (layer) onParcelsLayer(layer);
+    },
+    [onParcelsLayer],
+  );
 
   return (
     <MapContainer
@@ -121,22 +175,10 @@ export default function MapLeaflet({ currentYear, onMapReady, onParcelsLayer, on
       <MapEvents onMapReady={onMapReady} />
       <TileLayer key={currentYear} url={tileUrl} maxZoom={18} attribution="Tiles &copy; Esri Wayback" />
       <GeoJSON
-        ref={(layer) => {
-          if (layer) {
-            geoJsonRef.current = layer;
-            onParcelsLayer(layer);
-            setTimeout(() => {
-              try {
-                layer.getBounds && layer.getBounds().isValid() && layer.getBounds();
-              } catch {
-                // ignore
-              }
-            }, 200);
-          }
-        }}
+        ref={handleLayerRef}
         data={michoacanParcels as unknown as GeoJSON.FeatureCollection}
-        style={(feature) => getPolygonStyle(feature as unknown as ParcelFeature)}
-        onEachFeature={handleEachFeature}
+        style={styleFn}
+        onEachFeature={onEachFeature}
       />
     </MapContainer>
   );
