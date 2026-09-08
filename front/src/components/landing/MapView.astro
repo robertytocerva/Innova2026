@@ -11,10 +11,10 @@ import Icon from "../ui/Icon.astro";
         <Icon name="info" size={18} class="text-primary" />
         <span>Leyenda</span>
       </button>
-      <button id="btnToggleLayer" type="button" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-secondary-fixed text-on-secondary-fixed text-label-sm font-label-sm font-bold border border-secondary-fixed-dim/40 shadow-lg transition-all" aria-label="Alternar vista de mapa">
-        <Icon name="satellite_alt" size={18} id="layerIcon" />
-        <span id="layerText">Vista Satélite</span>
-      </button>
+      <div class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-secondary-fixed text-on-secondary-fixed text-label-sm font-label-sm font-bold border border-secondary-fixed-dim/40 shadow-lg">
+        <Icon name="satellite_alt" size={18} />
+        <span>Vista Satélite</span>
+      </div>
     </div>
 
     <div id="legendPanel" class="absolute top-24 right-4 z-20 bg-surface-container-lowest/95 backdrop-blur-md text-on-surface p-4 rounded-xl shadow-2xl border border-outline-variant/40 text-label-sm font-label-sm w-72 transition-all duration-300 hidden">
@@ -126,11 +126,79 @@ import Icon from "../ui/Icon.astro";
           <div id="drawerDeforestationList" class="space-y-2"></div>
         </section>
 
+        <section class="space-y-2 rounded-xl bg-inverse-surface p-3 text-surface" id="drawerSatelliteComparison">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="text-[11px] font-bold uppercase tracking-wider text-secondary-fixed flex items-center gap-1">
+              <Icon name="compare_arrows" size={14} />
+              Comparativa Satelital
+            </h3>
+            <span class="text-[9px] font-mono text-inverse-on-surface/70">Esri Wayback</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="space-y-1">
+              <div id="drawerFromYearLabel" class="text-[10px] font-mono text-inverse-on-surface/70">Año inicial</div>
+              <div class="h-24 overflow-hidden rounded-lg border border-surface/10 bg-black">
+                <img id="drawerFromYearImage" src="" alt="Imagen satelital del año inicial" class="h-full w-full object-cover" />
+              </div>
+            </div>
+            <div class="space-y-1">
+              <div id="drawerToYearLabel" class="text-[10px] font-mono text-secondary-fixed">Año final</div>
+              <div class="h-24 overflow-hidden rounded-lg border border-secondary-fixed/30 bg-black">
+                <img id="drawerToYearImage" src="" alt="Imagen satelital del año final" class="h-full w-full object-cover" />
+              </div>
+            </div>
+          </div>
+          <p id="drawerComparisonNotice" class="text-[10px] leading-relaxed text-inverse-on-surface/70"></p>
+          <button id="btnRunGeminiAudit" type="button" class="w-full rounded-lg bg-primary px-3 py-2 text-[11px] font-bold text-on-primary transition-colors hover:bg-primary-container">
+            <span class="inline-flex items-center gap-1.5"><Icon name="auto_awesome" size={15} /> Auditar ambos años con Gemini</span>
+          </button>
+          <div id="geminiLoading" class="hidden rounded-lg border border-secondary-fixed/30 bg-surface/10 p-2 text-center text-[10px] text-secondary-fixed">
+            Analizando las dos imágenes y los incendios NASA FIRMS...
+          </div>
+          <div id="geminiAlertBox" class="hidden rounded-lg border border-error/50 bg-error/10 p-2 text-[10px] text-red-200"></div>
+          <div id="geminiResultBox" class="hidden space-y-2 rounded-lg border border-secondary-fixed/30 bg-black/20 p-2 text-[10px]">
+            <div class="flex items-center justify-between gap-2 border-b border-surface/10 pb-1">
+              <strong id="geminiVerdictTitle">Resultado de auditoría</strong>
+              <span id="geminiConfidenceBadge" class="font-mono text-secondary-fixed"></span>
+            </div>
+            <p id="geminiComparisonSummary" class="leading-relaxed text-inverse-on-surface/80"></p>
+            <div id="geminiTimelineList" class="space-y-1 border-l border-secondary-fixed/50 pl-2"></div>
+            <p id="geminiExplanation" class="leading-relaxed text-inverse-on-surface/80"></p>
+            <p id="geminiConclusionLegal" class="rounded bg-error/10 p-2 leading-relaxed text-red-200"></p>
+          </div>
+        </section>
+
+        <section class="space-y-2">
+          <div class="flex items-center justify-between border-b border-outline-variant/40 pb-1">
+            <h3 class="text-[11px] font-bold uppercase tracking-wider text-on-surface flex items-center gap-1">
+              <Icon name="local_fire_department" size={14} class="text-orange-600" />
+              Comparativa NASA FIRMS (2012–2026)
+            </h3>
+            <span id="drawerFireCount" class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-orange-100 text-orange-800">
+              0 eventos
+            </span>
+          </div>
+
+          <div id="drawerVedaBanner" class="hidden p-2.5 rounded-lg bg-red-50 border border-red-300 text-red-950 space-y-1">
+            <div class="font-bold text-xs flex items-center gap-1 text-red-700">
+              <Icon name="gavel" size={16} />
+              <span>VEDA FORESTAL ACTIVA (ART. 97 LGDFS)</span>
+            </div>
+            <p id="drawerVedaText" class="text-[11px] leading-tight"></p>
+          </div>
+
+          <div id="drawerFireList" class="space-y-1.5"></div>
+        </section>
+
         <section class="space-y-2">
           <h3 class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1">
             <Icon name="polyline" size={14} />
             Validación Geométrica (Turf.js)
           </h3>
+          <div class="flex items-center justify-between rounded-lg bg-surface-container-low px-2.5 py-2 text-[10px] text-on-surface-variant">
+            <span>Comparativa contra el catastro cargado</span>
+            <strong id="drawerGeometryScore" class="font-mono text-primary">100/100</strong>
+          </div>
           <div id="drawerGeometryIssues" class="space-y-1.5"></div>
         </section>
 
@@ -156,7 +224,34 @@ import Icon from "../ui/Icon.astro";
       </div>
     </div>
 
-    <div class="absolute bottom-6 right-6 z-20 flex flex-col items-end">
+    <div id="mapTimeSliderContainer" class="absolute bottom-4 left-4 right-4 z-20 mx-auto max-w-2xl rounded-2xl border border-secondary-fixed/40 bg-inverse-surface/95 px-4 py-3 text-surface shadow-2xl backdrop-blur-md md:left-1/2 md:right-auto md:w-[92%] md:-translate-x-1/2">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <Icon name="history" size={16} class="text-secondary-fixed" />
+          <span class="text-[11px] font-bold uppercase tracking-wider text-inverse-on-surface">Serie Histórica Satelital</span>
+        </div>
+        <span id="mapCurrentYearBadge" class="rounded border border-secondary-fixed/40 bg-black/30 px-2 py-0.5 font-mono text-sm font-bold text-secondary-fixed">2026</span>
+      </div>
+      <div class="mt-2 grid grid-cols-2 gap-2">
+        <label class="text-[10px] text-inverse-on-surface/70">
+          Año inicial
+          <select id="mapStartYear" class="mt-1 w-full rounded-lg border border-surface/15 bg-surface/10 px-2 py-1.5 font-mono text-[11px] text-surface outline-none focus:border-secondary-fixed">
+            {Array.from({ length: 9 }, (_, index) => 2018 + index).map((year) => <option value={year} selected={year === 2018}>{year}</option>)}
+          </select>
+        </label>
+        <label class="text-[10px] text-inverse-on-surface/70">
+          Año final satelital
+          <span id="mapEndYearLabel" class="mt-1 block rounded-lg border border-secondary-fixed/40 bg-secondary-fixed/10 px-2 py-1.5 font-mono text-[11px] text-secondary-fixed">2026</span>
+        </label>
+      </div>
+      <input id="mapYearSlider" type="range" min="2018" max="2026" step="1" value="2026" class="mt-2 h-1.5 w-full cursor-pointer accent-secondary-fixed" aria-label="Año final de la serie satelital" />
+      <div class="mt-1 flex justify-between font-mono text-[9px] text-inverse-on-surface/60">
+        <span>2018 base</span><span>2022 seguimiento</span><span>2026 actual</span>
+      </div>
+      <p id="mapTimelineNotice" class="mt-1 text-[10px] leading-relaxed text-secondary-fixed"></p>
+    </div>
+
+    <div class="absolute bottom-4 right-4 z-20 flex flex-col items-end md:bottom-6 md:right-6">
       <div id="aiChatWindow" class="hidden w-80 h-96 mb-3 bg-surface-container-lowest text-on-surface rounded-2xl shadow-2xl border border-outline-variant/40 flex flex-col overflow-hidden">
         <div class="p-3 bg-primary-container text-surface flex items-center justify-between">
           <div class="flex items-center gap-2">
@@ -231,10 +326,22 @@ import Icon from "../ui/Icon.astro";
   import "leaflet/dist/leaflet.css";
   import { michoacanParcels } from "../../data/michoacanParcels";
   import { canSubdivide } from "../../lib/subdivisionBlocker";
+  import { validatePolygon } from "../../lib/geometryValidator";
+  import { calculateVedaForestal, getParcelFireRecords } from "../../lib/nasaFirms";
+  import { auditParcelYears } from "../../lib/geminiAudit";
+  import {
+    getParcelTimeSeriesUrls,
+    getWaybackUrl,
+    SATELLITE_HISTORY_START,
+    SATELLITE_HISTORY_END,
+  } from "../../lib/satelliteHistory";
   import type { ParcelFeature } from "../../types/mapa";
 
   let selectedFeature: ParcelFeature | null = null;
   let map: L.Map | null = null;
+  let currentMapYear = SATELLITE_HISTORY_END;
+  let comparisonStartYear = SATELLITE_HISTORY_START;
+  let activeTimeSeries: ReturnType<typeof getParcelTimeSeriesUrls> | null = null;
 
   function initMap() {
     const container = document.getElementById("map") as HTMLDivElement | null;
@@ -248,38 +355,48 @@ import Icon from "../ui/Icon.astro";
 
     map = L.map("map", { zoomControl: true }).setView([19.42, -102.05], 10);
 
-    const osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: "&copy; OpenStreetMap contributors",
-    });
+    let satelliteLayer = L.tileLayer(getWaybackUrl(currentMapYear), {
+      maxZoom: 18,
+      attribution: `Tiles &copy; Esri Wayback (${currentMapYear})`,
+    }).addTo(map);
 
-    const satelliteLayer = L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-      {
+    const startYearSelect = document.getElementById("mapStartYear") as HTMLSelectElement | null;
+    const yearSlider = document.getElementById("mapYearSlider") as HTMLInputElement | null;
+    const yearBadge = document.getElementById("mapCurrentYearBadge");
+    const endYearLabel = document.getElementById("mapEndYearLabel");
+    const timelineNotice = document.getElementById("mapTimelineNotice");
+
+    function updateComparisonNotice() {
+      if (timelineNotice) {
+        timelineNotice.textContent = `Comparativa activa: ${comparisonStartYear} vs ${currentMapYear} + incendios NASA FIRMS 2012–${new Date().getFullYear()}.`;
+      }
+      updateDrawerComparison();
+    }
+
+    function updateSatelliteMapLayer(year: number) {
+      currentMapYear = year;
+      const availableYear = Math.min(SATELLITE_HISTORY_END, Math.max(SATELLITE_HISTORY_START, year));
+      map?.removeLayer(satelliteLayer);
+      satelliteLayer = L.tileLayer(getWaybackUrl(availableYear), {
         maxZoom: 18,
-        attribution: "Tiles &copy; Esri",
-      }
-    );
+        attribution: `Tiles &copy; Esri Wayback (${availableYear})`,
+      }).addTo(map!);
+      if (yearBadge) yearBadge.textContent = String(year);
+      if (endYearLabel) endYearLabel.textContent = String(year);
+      if (yearSlider) yearSlider.value = String(year);
+      updateComparisonNotice();
+    }
 
-    osmLayer.addTo(map);
-    let isSatellite = false;
-
-    document.getElementById("btnToggleLayer")?.addEventListener("click", () => {
-      isSatellite = !isSatellite;
-      const icon = document.getElementById("layerIcon");
-      const text = document.getElementById("layerText");
-      if (isSatellite) {
-        map?.removeLayer(osmLayer);
-        satelliteLayer.addTo(map!);
-        if (icon) icon.textContent = "map";
-        if (text) text.textContent = "Vista Mapa";
-      } else {
-        map?.removeLayer(satelliteLayer);
-        osmLayer.addTo(map!);
-        if (icon) icon.textContent = "satellite_alt";
-        if (text) text.textContent = "Vista Satélite";
+    yearSlider?.addEventListener("input", () => updateSatelliteMapLayer(Number(yearSlider.value)));
+    startYearSelect?.addEventListener("change", () => {
+      comparisonStartYear = Number(startYearSelect.value);
+      if (comparisonStartYear > currentMapYear) {
+        comparisonStartYear = currentMapYear;
+        startYearSelect.value = String(comparisonStartYear);
       }
+      updateComparisonNotice();
     });
+    updateComparisonNotice();
 
     document.getElementById("btnToggleLegend")?.addEventListener("click", () => {
       document.getElementById("legendPanel")?.classList.toggle("hidden");
@@ -291,30 +408,34 @@ import Icon from "../ui/Icon.astro";
 
     function getPolygonStyle(feature: ParcelFeature) {
       const p = feature.properties;
+      const fireRecords = getParcelFireRecords(feature);
+      const vedaInfo = calculateVedaForestal(fireRecords);
+      const geometryValidation = validatePolygon(feature, michoacanParcels);
+      const hasGeometryIssues = Boolean(p.geometryIssues?.length || geometryValidation.issues.length);
       let fillColor = "#22c55e";
       let fillOpacity = 0.35;
       let color = "#15803d";
       let weight = 2;
       let dashArray: string | null = null;
 
-      if (p.exportacion === "bloqueada") {
-        fillColor = "#ef4444";
-        color = "#b91c1c";
-        fillOpacity = 0.45;
+       if (p.exportacion === "bloqueada" || p.deforestacionDetectada || vedaInfo.vedaActiva) {
+         fillColor = "#ef4444";
+         color = "#b91c1c";
+         fillOpacity = 0.45;
       } else if (p.exportacion === "en_revision") {
         fillColor = "#f59e0b";
         color = "#d97706";
         fillOpacity = 0.4;
       }
 
-      if (p.subdivisionBloqueada) {
-        color = "#dc2626";
-        dashArray = "6, 6";
-        weight = 3;
-      } else if (p.geometryIssues && p.geometryIssues.length > 0) {
-        color = "#ea580c";
-        weight = 3;
-      }
+       if (p.subdivisionBloqueada) {
+         color = "#dc2626";
+         dashArray = "6, 6";
+         weight = 3;
+       } else if (hasGeometryIssues) {
+         color = "#ea580c";
+         weight = 3;
+       }
 
       return { fillColor, fillOpacity, color, weight, dashArray };
     }
@@ -369,9 +490,36 @@ import Icon from "../ui/Icon.astro";
 
     map.fitBounds((parcelsLayer as L.GeoJSON).getBounds(), { padding: [40, 40] });
 
+    function updateDrawerComparison() {
+      const fromLabel = document.getElementById("drawerFromYearLabel");
+      const toLabel = document.getElementById("drawerToYearLabel");
+      const fromImage = document.getElementById("drawerFromYearImage") as HTMLImageElement | null;
+      const toImage = document.getElementById("drawerToYearImage") as HTMLImageElement | null;
+      const notice = document.getElementById("drawerComparisonNotice");
+      const auditButton = document.getElementById("btnRunGeminiAudit") as HTMLButtonElement | null;
+      const hasSatelliteComparison = comparisonStartYear >= SATELLITE_HISTORY_START && currentMapYear >= SATELLITE_HISTORY_START;
+      const fromUrl = activeTimeSeries?.series[comparisonStartYear];
+      const toUrl = activeTimeSeries?.series[currentMapYear];
+
+      if (fromLabel) fromLabel.textContent = `${comparisonStartYear} · Imagen inicial`;
+      if (toLabel) toLabel.textContent = `${currentMapYear} · Imagen final`;
+      if (fromImage) {
+        fromImage.src = hasSatelliteComparison && fromUrl ? fromUrl : "";
+        fromImage.alt = hasSatelliteComparison ? `Imagen satelital ${comparisonStartYear}` : "Sin imagen satelital disponible";
+      }
+      if (toImage) {
+        toImage.src = hasSatelliteComparison && toUrl ? toUrl : "";
+        toImage.alt = hasSatelliteComparison ? `Imagen satelital ${currentMapYear}` : "Sin imagen satelital disponible";
+      }
+      if (notice) notice.textContent = `Se compararán ${comparisonStartYear} y ${currentMapYear}. Los incendios FIRMS se consultan desde 2012.`;
+      if (auditButton) auditButton.disabled = !selectedFeature || !hasSatelliteComparison || comparisonStartYear >= currentMapYear;
+    }
+
     function openParcelDetail(feature: ParcelFeature) {
       selectedFeature = feature;
       const p = feature.properties;
+      activeTimeSeries = getParcelTimeSeriesUrls(feature);
+      updateDrawerComparison();
 
       const setText = (id: string, val: string) => {
         const el = document.getElementById(id);
@@ -387,14 +535,48 @@ import Icon from "../ui/Icon.astro";
       setText("drawerFecha", p.fechaAlta || "2023-01-01");
       setText("drawerConfianza", `${p.confianzaIA}%`);
 
+      const fireRecords = getParcelFireRecords(feature);
+      const vedaInfo = calculateVedaForestal(fireRecords);
+      const fireCount = document.getElementById("drawerFireCount");
+      const vedaBanner = document.getElementById("drawerVedaBanner");
+      const vedaText = document.getElementById("drawerVedaText");
+      const fireList = document.getElementById("drawerFireList");
+
+      if (fireCount) fireCount.textContent = `${fireRecords.length} evento${fireRecords.length === 1 ? "" : "s"}`;
+      if (vedaBanner) vedaBanner.classList.toggle("hidden", !vedaInfo.vedaActiva);
+      if (vedaText) vedaText.textContent = vedaInfo.vedaActiva
+        ? `El último incendio detectado por NASA FIRMS fue en ${vedaInfo.anoIncendio}. El predio queda restringido hasta ${vedaInfo.anoFinVeda} (${vedaInfo.anosRestantes} años restantes).`
+        : vedaInfo.dictamenLegal;
+
+      if (fireList) {
+        fireList.innerHTML = fireRecords.length === 0
+          ? `<div class="p-2.5 rounded-lg bg-primary-fixed/20 border border-primary-fixed/40 text-on-surface flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-base">verified</span>
+              <span>Sin focos de calor registrados por NASA FIRMS entre 2012 y 2026.</span>
+            </div>`
+          : fireRecords.map((fire) => `
+              <article class="p-2.5 rounded-lg bg-orange-50 border border-orange-200 text-orange-950 space-y-1">
+                <div class="flex items-center justify-between gap-2 font-bold">
+                  <span class="flex items-center gap-1 text-orange-800">
+                    <span class="material-symbols-outlined text-xs">whatshot</span>
+                    ${fire.fecha} (${fire.hora})
+                  </span>
+                  <span class="font-mono text-[10px] bg-orange-200/80 px-1.5 py-0.5 rounded text-orange-900">${fire.frpMegawatts} MW</span>
+                </div>
+                <div class="text-[11px] text-orange-900"><strong>${fire.sensor}:</strong> ${fire.tipoIncendio}</div>
+                <div class="text-[10px] text-orange-700 italic">${fire.indiciosDolo} · ${fire.distanciaCentroideMetros} m del centroide</div>
+              </article>
+            `).join("");
+      }
+
       const badge = document.getElementById("drawerStatusBadge");
       if (badge) {
-        if (p.exportacion === "aprobada") {
-          badge.className = "text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-primary/20 text-on-primary-container border border-primary/40";
-          badge.textContent = "APROBADA";
-        } else if (p.exportacion === "bloqueada") {
+        if (p.exportacion === "bloqueada" || p.deforestacionDetectada || vedaInfo.vedaActiva) {
           badge.className = "text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-error/20 text-error border border-error/40";
           badge.textContent = "BLOQUEADA";
+        } else if (p.exportacion === "aprobada") {
+          badge.className = "text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-primary/20 text-on-primary-container border border-primary/40";
+          badge.textContent = "APROBADA";
         } else {
           badge.className = "text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 border border-amber-600/40";
           badge.textContent = "EN REVISIÓN";
@@ -429,10 +611,14 @@ import Icon from "../ui/Icon.astro";
       }
 
       const geoIssues = document.getElementById("drawerGeometryIssues");
+      const validation = validatePolygon(feature, michoacanParcels);
+      const geometryScore = document.getElementById("drawerGeometryScore");
+      if (geometryScore) geometryScore.textContent = `${validation.score}/100`;
       if (geoIssues) {
         geoIssues.innerHTML = "";
-        if (p.geometryIssues && p.geometryIssues.length > 0) {
-          p.geometryIssues.forEach((iss) => {
+        const issues = validation.issues.length > 0 ? validation.issues : p.geometryIssues;
+        if (issues && issues.length > 0) {
+          issues.forEach((iss) => {
             geoIssues.innerHTML += `
               <div class="p-2 rounded bg-orange-50 border border-orange-200 text-orange-950 flex items-start gap-1.5">
                 <span class="material-symbols-outlined text-orange-600 text-sm mt-0.5">warning</span>
@@ -459,12 +645,68 @@ import Icon from "../ui/Icon.astro";
         alertBox.innerHTML = "";
       }
 
+      document.getElementById("geminiResultBox")?.classList.add("hidden");
+      document.getElementById("geminiAlertBox")?.classList.add("hidden");
+      document.getElementById("geminiLoading")?.classList.add("hidden");
+
       document.getElementById("parcelDrawer")?.classList.remove("translate-x-full");
     }
 
     document.getElementById("btnCloseDrawer")?.addEventListener("click", () => {
       document.getElementById("parcelDrawer")?.classList.add("translate-x-full");
     });
+
+    async function runGeminiAudit() {
+      const button = document.getElementById("btnRunGeminiAudit") as HTMLButtonElement | null;
+      const loading = document.getElementById("geminiLoading");
+      const alertBox = document.getElementById("geminiAlertBox");
+      const resultBox = document.getElementById("geminiResultBox");
+      if (!selectedFeature || comparisonStartYear < SATELLITE_HISTORY_START || currentMapYear < SATELLITE_HISTORY_START || comparisonStartYear >= currentMapYear) return;
+
+      button?.setAttribute("disabled", "true");
+      loading?.classList.remove("hidden");
+      alertBox?.classList.add("hidden");
+      resultBox?.classList.add("hidden");
+
+      try {
+        const result = await auditParcelYears(selectedFeature, comparisonStartYear, currentMapYear);
+        const data = result.data;
+        const title = document.getElementById("geminiVerdictTitle");
+        const confidence = document.getElementById("geminiConfidenceBadge");
+        const summary = document.getElementById("geminiComparisonSummary");
+        const timeline = document.getElementById("geminiTimelineList");
+        const explanation = document.getElementById("geminiExplanation");
+        const legal = document.getElementById("geminiConclusionLegal");
+
+        if (title) title.textContent = data.cambio_detectado ? "CAMBIO DE COBERTURA DETECTADO" : "COBERTURA SIN CAMBIO CRÍTICO";
+        if (confidence) confidence.textContent = `${data.nivel_certeza}% certeza`;
+        if (summary) summary.textContent = `${data.comparativa.ano_inicial} vs ${data.comparativa.ano_final}: ${data.comparativa.resumen}`;
+        if (timeline) timeline.innerHTML = data.cronologia_pericial.map((item) => `<div><strong>${item.ano}:</strong> ${item.estado}</div>`).join("");
+        if (explanation) explanation.textContent = data.dictamen_pericial_completo;
+        if (legal) legal.textContent = data.conclusion_legal;
+        resultBox?.classList.remove("hidden");
+
+        if (data.cambio_detectado || data.veda_art97_activa) {
+          selectedFeature.properties.deforestacionDetectada = true;
+          selectedFeature.properties.exportacion = "bloqueada";
+          selectedFeature.properties.subdivisionBloqueada = true;
+          parcelsLayer.resetStyle();
+        }
+      } catch (error) {
+        if (alertBox) {
+          alertBox.textContent = error instanceof Error ? error.message : "No fue posible ejecutar la auditoría Gemini.";
+          alertBox.classList.remove("hidden");
+        }
+      } finally {
+        loading?.classList.add("hidden");
+        if (button) {
+          button.removeAttribute("disabled");
+          updateDrawerComparison();
+        }
+      }
+    }
+
+    document.getElementById("btnRunGeminiAudit")?.addEventListener("click", runGeminiAudit);
 
     function testSubdivision() {
       if (!selectedFeature) return;

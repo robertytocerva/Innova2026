@@ -15,6 +15,7 @@ import {
   satelliteSearchSchema, processSatelliteImage, processImageSchema,
   imageTypes,
 } from "../controllers/catalog.controller.js";
+import { auditGemini, geminiAuditSchema } from "../controllers/gemini.controller.js";
 
 const router = Router();
 
@@ -36,5 +37,6 @@ router.get("/satellite/types", asyncHandler(imageTypes));
 router.get("/risk/area", validate(bboxQuerySchema, "query"), asyncHandler(calculateRiskFromBbox));
 router.get("/alerts/fire", validate(bboxQuerySchema, "query"), asyncHandler(fireAlerts));
 router.get("/weather", validate(weatherQuerySchema, "query"), asyncHandler(weather));
+router.post("/audits/gemini", validate(geminiAuditSchema), asyncHandler(auditGemini));
 
 export default router;

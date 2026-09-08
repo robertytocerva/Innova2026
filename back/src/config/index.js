@@ -10,6 +10,8 @@ const envSchema = z.object({
   SENTINEL_HUB_BASE_URL: z.string().url().default("https://services.sentinel-hub.com"),
   GFW_API_TOKEN: z.preprocess((value) => value || undefined, z.string().optional()),
   FIRMS_MAP_KEY: z.preprocess((value) => value || undefined, z.string().optional()),
+  GEMINI_API_KEY: z.preprocess((value) => value || undefined, z.string().optional()),
+  GEMINI_MODEL: z.string().default("gemini-3.5-flash"),
   OPEN_METEO_BASE_URL: z.string().url().default("https://api.open-meteo.com/v1"),
   REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(15000),
   FRONTEND_ORIGIN: z.string().default("http://localhost:5173"),

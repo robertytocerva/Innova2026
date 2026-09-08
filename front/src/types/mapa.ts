@@ -73,6 +73,56 @@ export interface GeometryValidationResult {
   issues: GeometryIssue[];
 }
 
+export interface NasaFireRecord {
+  id: string;
+  parcelId: string;
+  municipio: string;
+  fecha: string;
+  hora: string;
+  lat: number;
+  lon: number;
+  sensor: string;
+  frpMegawatts: number;
+  confianza: "alta" | "nominal" | "baja";
+  tipoIncendio: string;
+  indiciosDolo: string;
+  distanciaCentroideMetros?: number;
+}
+
+export interface VedaForestalResult {
+  vedaActiva: boolean;
+  anosRestantes: number;
+  anoIncendio: number | null;
+  anoFinVeda: number | null;
+  totalIncendios: number;
+  dictamenLegal: string;
+}
+
+export interface GeminiAuditData {
+  cambio_detectado: boolean;
+  ano_deforestacion_estimado: number | null;
+  incendio_registrado: boolean;
+  ano_incendio: number | null;
+  veda_art97_activa: boolean;
+  ano_fin_veda_art97: number | null;
+  nivel_certeza: number;
+  comparativa: {
+    ano_inicial: number;
+    ano_final: number;
+    resumen: string;
+  };
+  cronologia_pericial: Array<{ ano: number; estado: string }>;
+  dictamen_pericial_completo: string;
+  conclusion_legal: string;
+}
+
+export interface GeminiAuditResponse {
+  data: GeminiAuditData;
+  fireRecords: NasaFireRecord[];
+  timestamp: string;
+  modelUsed: string;
+}
+
 export interface SubdivisionResult {
   allowed: boolean;
   reason: string | null;
