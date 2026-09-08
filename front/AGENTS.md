@@ -1,12 +1,18 @@
 ## Development
 
-When starting the dev server, use background mode:
+From the `front/` directory, start the dev server in background mode:
 
 ```
-astro dev --background
+cd front && npm install
+cd front && astro dev --background
 ```
 
 Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
+
+## Project layout
+
+- `front/` — Astro 7 frontend (src/, public/, astro.config.mjs, package.json)
+- `back/` — Node.js backend (Express + Postgres/Neon)
 
 ## Documentation
 
