@@ -5,13 +5,12 @@ import MapCanvas from "../components/mapa/MapCanvas.astro";
 import MapControls from "../components/mapa/MapControls.astro";
 import MapLegend from "../components/mapa/MapLegend.astro";
 import ParcelDrawer from "../components/mapa/ParcelDrawer.astro";
-import TimeSlider from "../components/mapa/TimeSlider.astro";
 import AiChatbot from "../components/mapa/AiChatbot.astro";
 import MapStyles from "../components/mapa/MapStyles.astro";
 import { navData } from "../data/landing";
 ---
 
-<Layout title="Visor Satelital Michoacán — TerraVision">
+<Layout title="Visor Ligero de Predios — TerraVision">
   <MapStyles />
   <NavBar
     brandName={navData.brandName}
@@ -28,7 +27,6 @@ import { navData } from "../data/landing";
         <MapControls />
         <MapLegend />
         <ParcelDrawer />
-        <TimeSlider />
         <AiChatbot />
       </div>
     </div>
@@ -36,5 +34,6 @@ import { navData } from "../data/landing";
 </Layout>
 
 <script>
-  import "../scripts/mapa";
+  import { initMapPage } from "../scripts/mapa";
+  initMapPage();
 </script>

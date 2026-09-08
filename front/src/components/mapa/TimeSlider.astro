@@ -1,0 +1,55 @@
+---
+import Icon from "../ui/Icon.astro";
+---
+
+<div
+  id="mapTimeSliderContainer"
+  class="absolute bottom-4 left-4 right-4 z-20 mx-auto max-w-2xl rounded-2xl border border-secondary-fixed/40 bg-inverse-surface/95 px-4 py-3 text-surface shadow-2xl backdrop-blur-md md:left-1/2 md:right-auto md:w-[92%] md:-translate-x-1/2"
+>
+  <div class="flex items-center justify-between gap-3">
+    <div class="flex items-center gap-2">
+      <Icon name="history" size={16} class="text-secondary-fixed" />
+      <span class="text-[11px] font-bold uppercase tracking-wider text-inverse-on-surface">Serie Histórica Satelital</span>
+    </div>
+    <span
+      id="mapCurrentYearBadge"
+      class="rounded border border-secondary-fixed/40 bg-black/30 px-2 py-0.5 font-mono text-sm font-bold text-secondary-fixed"
+      >2026</span
+    >
+  </div>
+  <div class="mt-2 grid grid-cols-2 gap-2">
+    <label class="text-[10px] text-inverse-on-surface/70">
+      Año inicial
+      <select
+        id="mapStartYear"
+        class="mt-1 w-full rounded-lg border border-surface/15 bg-surface/10 px-2 py-1.5 font-mono text-[11px] text-surface outline-none focus:border-secondary-fixed"
+      >
+        {Array.from({ length: 9 }, (_, index) => 2018 + index).map((year) => (
+          <option value={year} selected={year === 2018}>{year}</option>
+        ))}
+      </select>
+    </label>
+    <label class="text-[10px] text-inverse-on-surface/70">
+      Año final satelital
+      <span
+        id="mapEndYearLabel"
+        class="mt-1 block rounded-lg border border-secondary-fixed/40 bg-secondary-fixed/10 px-2 py-1.5 font-mono text-[11px] text-secondary-fixed"
+        >2026</span
+      >
+    </label>
+  </div>
+  <input
+    id="mapYearSlider"
+    type="range"
+    min="2018"
+    max="2026"
+    step="1"
+    value="2026"
+    class="mt-2 h-1.5 w-full cursor-pointer accent-secondary-fixed"
+    aria-label="Año final de la serie satelital"
+  />
+  <div class="mt-1 flex justify-between font-mono text-[9px] text-inverse-on-surface/60">
+    <span>2018 base</span><span>2022 seguimiento</span><span>2026 actual</span>
+  </div>
+  <p id="mapTimelineNotice" class="mt-1 text-[10px] leading-relaxed text-secondary-fixed"></p>
+</div>
