@@ -18,11 +18,11 @@ export const monitorParcel = async (req, res) => {
   const parcel = await findParcel(req.params.id);
   if (!parcel) throw notFound("Parcela no encontrada");
   const { fromDate, toDate, cloudCoverMax } = req.body;
-  const session = await createSession({ parcel_id: parcel.id, from_date: fromDate, to_date: toDate, cloud_cover_max: cloudCoverMax, status: "running" });
+  const session = await createSession({ parcelId: parcel.id, fromDate, toDate, cloudCoverMax });
   try {
     const satellite = await searchSentinel({ geometry: parcel.geometry, from: fromDate, to: toDate, cloudCover: cloudCoverMax });
     const assessment = buildAssessment({});
-    const saved = await saveAssessment({ parcel_id: parcel.id, session_id: session.id, status: "completed", risk_level: assessment.riskLevel, score: assessment.score, factors: assessment.factors, limitations: assessment.limitations, assessed_at: new Date().toISOString() });
+    const saved = await saveAssessment({ parcelId: parcel.id, sessionId: session.id, status: "completed", riskLevel: assessment.riskLevel, score: assessment.score, factors: assessment.factors, limitations: assessment.limitations, assessedAt: new Date().toISOString() });
     success(res, { session, satellite, assessment: saved }, 201);
   } catch (error) {
     throw error;

@@ -4,8 +4,7 @@ import { z } from "zod";
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().int().positive().default(3000),
-  SUPABASE_URL: z.preprocess((value) => value || undefined, z.string().url().optional()),
-  SUPABASE_SERVICE_ROLE_KEY: z.preprocess((value) => value || undefined, z.string().min(1).optional()),
+  DATABASE_URL: z.preprocess((value) => value || undefined, z.string().min(1, "DATABASE_URL es requerido")),
   SENTINEL_HUB_CLIENT_ID: z.preprocess((value) => value || undefined, z.string().optional()),
   SENTINEL_HUB_CLIENT_SECRET: z.preprocess((value) => value || undefined, z.string().optional()),
   SENTINEL_HUB_BASE_URL: z.string().url().default("https://services.sentinel-hub.com"),
@@ -13,7 +12,7 @@ const envSchema = z.object({
   FIRMS_MAP_KEY: z.preprocess((value) => value || undefined, z.string().optional()),
   OPEN_METEO_BASE_URL: z.string().url().default("https://api.open-meteo.com/v1"),
   REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(15000),
-  FRONTEND_ORIGIN: z.string().default("http://localhost:5173")
+  FRONTEND_ORIGIN: z.string().default("http://localhost:5173"),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -22,4 +21,4 @@ if (!parsed.success) {
 }
 
 export const config = parsed.data;
-export const hasSupabase = Boolean(config.SUPABASE_URL && config.SUPABASE_SERVICE_ROLE_KEY);
+export const hasDatabase = Boolean(config.DATABASE_URL);

@@ -1,30 +1,43 @@
-import { supabase } from "../config/supabase.js";
+import { query } from "../config/database.js";
 import { AppError } from "../utils/errors.js";
 
-const ensure = () => { if (!supabase) throw new AppError("Supabase no esta configurado", 503, "DATABASE_UNAVAILABLE"); };
-
-export const createSession = async (payload) => {
-  ensure();
-  const { data, error } = await supabase.from("monitoring_sessions").insert(payload).select().single();
-  if (error) throw new AppError(error.message, 400, "DATABASE_ERROR");
-  return data;
+export const createSession = async ({ parcelId, fromDate, toDate, cloudCoverMax }) => {
+  try {
+    const { rows } = await query(
+      `insert into monitoring_sessions (parcel_id, from_date, to_date, cloud_cover_max, status)
+       values ($1, $2, $3, $4, 'running')
+       returning *`,
+      [parcelId, fromDate, toDate, cloudCoverMax]
+    );
+    return rows[0];
+  } catch (err) {
+    throw new AppError(err.message, 400, "DATABASE_ERROR");
+  }
 };
 
-export const saveAssessment = async (payload) => {
-  ensure();
-  const { data, error } = await supabase.from("environmental_assessments").insert(payload).select().single();
-  if (error) throw new AppError(error.message, 400, "DATABASE_ERROR");
-  return data;
+export const saveAssessment = async ({ parcelId, sessionId, status, riskLevel, score, factors, limitations, assessedAt }) => {
+  try {
+    const { rows } = await query(
+      `insert into environmental_assessments (parcel_id, session_id, status, risk_level, score, factors, limitations, assessed_at)
+       values ($1, $2, $3, $4, $5, $6, $7, $8)
+       returning *`,
+      [parcelId, sessionId, status, riskLevel, score, JSON.stringify(factors), limitations, assessedAt]
+    );
+    return rows[0];
+  } catch (err) {
+    throw new AppError(err.message, 400, "DATABASE_ERROR");
+  }
 };
 
 export const listParcelAlerts = async (parcelId) => {
-  ensure();
   const [forest, fire, assessments] = await Promise.all([
-    supabase.from("deforestation_alerts").select("*").eq("parcel_id", parcelId).order("detected_at", { ascending: false }),
-    supabase.from("fire_alerts").select("*").eq("parcel_id", parcelId).order("detected_at", { ascending: false }),
-    supabase.from("environmental_assessments").select("*").eq("parcel_id", parcelId).order("created_at", { ascending: false })
+    query("select * from deforestation_alerts where parcel_id = $1 order by detected_at desc", [parcelId]),
+    query("select * from fire_alerts where parcel_id = $1 order by detected_at desc", [parcelId]),
+    query("select * from environmental_assessments where parcel_id = $1 order by created_at desc", [parcelId]),
   ]);
-  const failure = [forest, fire, assessments].find((result) => result.error);
-  if (failure) throw new AppError(failure.error.message, 502, "DATABASE_ERROR");
-  return { deforestationAlerts: forest.data, fireAlerts: fire.data, assessments: assessments.data };
+  return {
+    deforestationAlerts: forest.rows,
+    fireAlerts: fire.rows,
+    assessments: assessments.rows,
+  };
 };

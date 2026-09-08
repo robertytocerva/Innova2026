@@ -5,7 +5,7 @@ API para monitoreo de deforestacion e impacto ambiental en huertos de aguacate y
 ## Requisitos
 
 - Node.js 20 o superior
-- Proyecto de Supabase con PostGIS habilitado
+- Cuenta en Neon (PostgreSQL con PostGIS)
 - Credenciales de Sentinel Hub para imagenes satelitales
 - Credenciales opcionales de Global Forest Watch y NASA FIRMS
 
@@ -14,6 +14,7 @@ API para monitoreo de deforestacion e impacto ambiental en huertos de aguacate y
 ```bash
 npm install
 cp .env.example .env
+# Configurar DATABASE_URL en .env con tu string de conexion de Neon
 npm run dev
 ```
 
@@ -21,31 +22,44 @@ El servidor inicia en `http://localhost:3000`.
 
 ## Base de datos
 
-Las migraciones estan en `supabase/migrations/`. Para aplicarlas con Supabase CLI:
+Las migraciones estan en `db/migrations/`. Para aplicarlas:
 
 ```bash
-npx supabase login
-npx supabase link --project-ref TU_PROJECT_REF
 npm run migrate
 ```
 
-La migracion crea tablas geoespaciales, indices PostGIS, auditoria, triggers de actualizacion y RLS. La `SUPABASE_SERVICE_ROLE_KEY` solo se usa en el backend y nunca debe exponerse al frontend.
+El script crea la tabla `_migrations` para rastrear que archivos ya se ejecutaron. Las migraciones se aplican en orden alfabetico.
 
-## Endpoints principales
+### Tablas creadas
 
-- `GET /health`
-- `GET /api/v1/layers`
-- `GET /api/v1/geocode?q=Uruapan Michoacan`
-- `GET /api/v1/parcels`
-- `POST /api/v1/parcels`
-- `GET /api/v1/parcels/:id`
-- `DELETE /api/v1/parcels/:id` (archivado logico)
-- `GET /api/v1/parcels/:id/alerts`
-- `POST /api/v1/parcels/:id/monitoring`
-- `POST /api/v1/satellite/search`
-- `GET /api/v1/alerts/deforestation`
-- `GET /api/v1/alerts/fire`
-- `GET /api/v1/weather`
+- `parcels` - Parcelas/huertos con geometria PostGIS
+- `monitoring_sessions` - Sesiones de monitoreo satelital
+- `satellite_observations` - Imagenes satelitales consultadas
+- `deforestation_alerts` - Alertas de deforestacion (GLAD, RADD)
+- `fire_alerts` - Alertas de incendios (NASA FIRMS)
+- `environmental_assessments` - Evaluaciones de riesgo ambiental
+- `evidence_records` - Registros de evidencia
+
+## Endpoints
+
+### Publicos
+
+- `GET /health` - Estado del servicio
+- `GET /api/v1/layers` - Capas ambientales disponibles
+- `GET /api/v1/geocode?q=Uruapan` - Geocodificacion
+- `POST /api/v1/satellite/search` - Buscar imagenes Sentinel-2
+- `GET /api/v1/alerts/deforestation` - Alertas GFW por bbox
+- `GET /api/v1/alerts/fire` - Incendios FIRMS por bbox
+- `GET /api/v1/weather` - Clima historico
+
+### Requieren base de datos
+
+- `GET /api/v1/parcels` - Listar parcelas
+- `POST /api/v1/parcels` - Crear parcela
+- `GET /api/v1/parcels/:id` - Obtener parcela
+- `DELETE /api/v1/parcels/:id` - Archivar parcela
+- `GET /api/v1/parcels/:id/alerts` - Alertas de una parcela
+- `POST /api/v1/parcels/:id/monitoring` - Ejecutar monitoreo
 
 ## Limitaciones
 
