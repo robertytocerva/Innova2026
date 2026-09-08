@@ -215,6 +215,22 @@
   animation: none !important;
 }
 
+/* Crear un stacking context propio para los elementos UI del mapa.
+ * Durante la view transition de Astro, el pseudo-elemento
+ * ::view-transition-new(root) crea su propio contexto que captura a
+ * los hijos y los posiciona relativamente, ignorando el z-index del
+ * documento. `isolation: isolate` + un z-index explícito en el
+ * contenedor principal fuerza un nuevo contexto de apilamiento que
+ * no se ve afectado por la pseudo-element de la transición, y
+ * garantiza que TimeSlider / MapControls / AiChatbot / ParcelDrawer
+ * queden siempre por encima de los tiles y controles de Leaflet,
+ * incluso justo después de una navegación con ClientRouter. */
+.map-page-route {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+}
+
 /* ===== Micro-animaciones & reveal en scroll ===== */
 .tv-reveal {
   opacity: 0;
