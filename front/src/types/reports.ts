@@ -7,6 +7,8 @@ export interface ReportSource {
   status?: string;
   reference?: string;
   detail?: string;
+  quote?: string;
+  url?: string;
 }
 
 export interface ReportFinding {

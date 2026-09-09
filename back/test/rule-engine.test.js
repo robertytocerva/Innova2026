@@ -47,7 +47,9 @@ test("returns the reason, observed value, evidence source, and normative source 
   assert.equal(result.findings.length, 3);
   assert.match(result.findings[0].reason, /2\.00%/);
   assert.equal(result.findings[0].sources[0].type, "normativa");
-  assert.match(result.findings[0].sources[0].reference, /normas\.md/);
+  assert.match(result.findings[0].sources[0].reference, /Página oficial/);
+  assert.match(result.findings[0].sources[0].url, /michoacan\.gob\.mx/);
+  assert.match(result.findings[0].sources[0].quote, /deforestación/);
   assert.equal(result.findings[0].sources[1].title, "Global Forest Watch");
   assert.match(result.regulatoryNotice, /voluntaria/);
 });
