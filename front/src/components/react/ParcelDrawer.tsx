@@ -65,7 +65,7 @@ export default function ParcelDrawer({ feature, open, onClose, currentYear, comp
 
   return (
     <div
-      className={`fixed inset-0 z-[1200] flex items-center justify-center p-3 sm:p-6 transition-opacity duration-300 ease-out ${
+      className={`fixed inset-0 z-[1200] flex items-center justify-center overflow-y-auto px-4 pt-[5.5rem] pb-6 sm:px-8 sm:pt-[6rem] sm:pb-8 transition-opacity duration-300 ease-out ${
         open ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
       aria-hidden={!open}
@@ -366,7 +366,7 @@ function YearImage({ label, src, tone }: { label: string; src: string | undefine
         role="dialog"
         aria-modal="true"
         aria-labelledby="parcel-modal-title"
-        className={`relative w-full max-w-md max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-3rem)] flex flex-col bg-gradient-to-b from-surface-container-lowest to-surface-container-low text-on-surface rounded-3xl shadow-[-12px_0_60px_-15px_rgba(0,0,0,0.5)] border border-outline-variant/40 backdrop-blur-xl transition-all duration-300 ease-out ${
+        className={`relative w-full max-w-2xl my-auto flex flex-col bg-gradient-to-b from-surface-container-lowest to-surface-container-low text-on-surface rounded-3xl shadow-[-12px_0_60px_-15px_rgba(0,0,0,0.5)] border border-outline-variant/40 backdrop-blur-xl max-h-[calc(100vh-7.5rem)] sm:max-h-[calc(100vh-9rem)] transition-all duration-300 ease-out ${
           open ? "scale-100 opacity-100 translate-y-0" : "scale-95 opacity-0 translate-y-4"
       }`}
       >
@@ -376,7 +376,7 @@ function YearImage({ label, src, tone }: { label: string; src: string | undefine
           onClose={onClose}
         />
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-5 text-label-sm font-label-sm">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5 text-label-sm font-label-sm">
           {feature && (
             <>
               <ParcelFicha feature={feature} status={status} />
