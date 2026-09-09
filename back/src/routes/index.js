@@ -6,7 +6,6 @@ import {
   getParcel, getParcelAlerts, getParcels, postParcel, deleteParcel,
   createParcelSchema, parcelQuerySchema,
 } from "../controllers/parcel.controller.js";
-import { generateExpediente } from "../controllers/expediente.controller.js";
 import {
   bboxQuerySchema, monitoringSchema, monitorParcel, calculateRiskFromBbox,
   fireAlerts, weather, weatherQuerySchema,
@@ -17,6 +16,11 @@ import {
   imageTypes,
 } from "../controllers/catalog.controller.js";
 import { auditGemini, geminiAuditSchema } from "../controllers/gemini.controller.js";
+import {
+  seedHuertas, seedSchema, confrontHuerta, comparisonSchema, auditReportSchema, createAuditReport, getComparisons,
+  getExpedientes, getExpediente, approvalSchema, approve, generatePdf, downloadPdf,
+  publicVerification,
+} from "../controllers/report.controller.js";
 
 const router = Router();
 
@@ -29,8 +33,22 @@ router.post("/parcels", dbRequired, validate(createParcelSchema), asyncHandler(p
 router.get("/parcels/:id", dbRequired, asyncHandler(getParcel));
 router.delete("/parcels/:id", dbRequired, asyncHandler(deleteParcel));
 router.get("/parcels/:id/alerts", dbRequired, asyncHandler(getParcelAlerts));
-router.get("/parcels/:id/expediente", dbRequired, asyncHandler(generateExpediente));
 router.post("/parcels/:id/monitoring", dbRequired, validate(monitoringSchema), asyncHandler(monitorParcel));
+
+router.get("/huertas", dbRequired, validate(parcelQuerySchema, "query"), asyncHandler(getParcels));
+router.post("/huertas", dbRequired, validate(createParcelSchema), asyncHandler(postParcel));
+router.get("/huertas/:id", dbRequired, asyncHandler(getParcel));
+
+router.post("/seed", dbRequired, validate(seedSchema), asyncHandler(seedHuertas));
+router.post("/huertas/reference/:referenceCode/auditoria-reporte", dbRequired, validate(auditReportSchema), asyncHandler(createAuditReport));
+router.get("/huertas/:id/comparaciones", dbRequired, asyncHandler(getComparisons));
+router.post("/huertas/:id/comparaciones", dbRequired, validate(comparisonSchema), asyncHandler(confrontHuerta));
+router.get("/expedientes", dbRequired, asyncHandler(getExpedientes));
+router.get("/expedientes/:folio", dbRequired, asyncHandler(getExpediente));
+router.post("/expedientes/:folio/aprobar", dbRequired, validate(approvalSchema), asyncHandler(approve));
+router.post("/expedientes/:folio/generar-pdf", dbRequired, asyncHandler(generatePdf));
+router.get("/expedientes/:folio/pdf", dbRequired, asyncHandler(downloadPdf));
+router.get("/public/verificacion/:folio", dbRequired, asyncHandler(publicVerification));
 
 router.post("/satellite/search", validate(satelliteSearchSchema), asyncHandler(searchSatellite));
 router.post("/satellite/process", validate(processImageSchema), asyncHandler(processSatelliteImage));

@@ -202,7 +202,6 @@ export default function MapApp(): ReactElement {
           onSelectParcel={handleSelectParcel}
           currentYear={currentYear}
           comparisonYear={comparisonYear}
-          onParcelBlocked={handleParcelBlocked}
         />
 
         <TimeSlider

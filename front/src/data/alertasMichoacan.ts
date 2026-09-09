@@ -92,21 +92,6 @@ export const alertasMichoacan: AlertaMichoacan[] = [
     parcelaRelacionada: 'MCH-014'
   },
   {
-    id: 'ALT-007',
-    tipo: 'critico',
-    municipio: 'Tancítaro',
-    sector: 'Apo del Rosario',
-    titulo: 'Intento de subdivisión en zona deforestada',
-    descripcion: 'Alteración en registros catastrales (subdivisión) en polígono con historial reciente de tala rasa.',
-    areaHa: 40.0,
-    confianza: 99.8,
-    fecha: '2026-09-07T18:00:00Z',
-    tiempoRelativo: 'Hace 5h',
-    coordenadas: { lat: 19.3400, lng: -102.3500 },
-    fuente: 'Auditoría IA Catastral',
-    parcelaRelacionada: 'MCH-012'
-  },
-  {
     id: 'ALT-008',
     tipo: 'en_observacion',
     municipio: 'Peribán',

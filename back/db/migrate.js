@@ -2,6 +2,7 @@ import "dotenv/config";
 import pg from "pg";
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 
 const MIGRATIONS_DIR = join(import.meta.dirname, "migrations");
 
@@ -66,7 +67,7 @@ export const runMigrations = async ({ silent = false } = {}) => {
 
 const isMain = () => {
   try {
-    return import.meta.url === `file://${process.argv[1]}`;
+    return import.meta.url === pathToFileURL(process.argv[1]).href;
   } catch {
     return false;
   }

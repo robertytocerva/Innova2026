@@ -24,15 +24,12 @@ export default function AiChatbot({ open, onToggle }: Props): ReactElement {
     if (inputRef.current) inputRef.current.value = "";
 
     setTimeout(() => {
-      let reply = "No comprendo la consulta. Prueba consultando por 'deforestación', 'subdivisión', o un ID como 'MCH-007'.";
+      let reply = "No comprendo la consulta. Prueba consultando por 'deforestación', 'geometría' o un ID como 'MCH-007'.";
       const q = text.toLowerCase();
 
       if (q.includes("deforest") || q.includes("alerta")) {
         const def = michoacanParcels.features.filter((f) => f.properties.historialDeforestacion?.length > 0);
         reply = `🚨 Se identifican ${def.length} predios con historial de deforestación: <strong>${def.map((f) => f.properties.id).join(", ")}</strong>. Ninguno es apto para exportar aguacate a la UE bajo reglamento EUDR.`;
-      } else if (q.includes("subdivis") || q.includes("bloquea")) {
-        const sub = michoacanParcels.features.filter((f) => f.properties.subdivisionBloqueada);
-        reply = `🛑 Predios con intento de fraccionamiento fraudulento bloqueado: <strong>${sub.map((f) => f.properties.id).join(", ")}</strong>. La regla inmutable estipula que la historia del predio completo prevalece.`;
       } else if (q.includes("geometr") || q.includes("traslape") || q.includes("intersec")) {
         const geom = michoacanParcels.features.filter((f) => f.properties.geometryIssues?.length > 0);
         reply = `📐 Predios con errores cartográficos detectados por IA (Turf.js): <strong>${geom.map((f) => f.properties.id).join(", ")}</strong> (auto-intersecciones o solapes de linderos).`;
@@ -95,9 +92,6 @@ export default function AiChatbot({ open, onToggle }: Props): ReactElement {
                 </li>
                 <li className="flex items-center gap-1.5">
                   <span className="h-1 w-1 rounded-full bg-error"></span> Parcelas con deforestación
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <span className="h-1 w-1 rounded-full bg-amber-500"></span> Intentos de subdivisión bloqueados
                 </li>
                 <li className="flex items-center gap-1.5">
                   <span className="h-1 w-1 rounded-full bg-orange-500"></span> Errores de geometría detectados

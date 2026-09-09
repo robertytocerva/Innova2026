@@ -4,90 +4,9 @@ import NavBar from "../components/landing/NavBar.astro";
 import SiteFooter from "../components/landing/SiteFooter.astro";
 import Icon from "../components/ui/Icon.astro";
 import { navData, footerData } from "../data/landing";
-
-const mockReports = [
-  {
-    id: "REP-2026-042",
-    title: "Informe Anual LULC · Meseta Purépecha",
-    category: "Cobertura Forestal",
-    icon: "forest",
-    status: "Listo",
-    statusTone: "bg-secondary text-surface",
-    date: "12/08/2026",
-    size: "2.4 MB · PDF",
-    coverage: 93,
-    coverageTone: "bg-secondary",
-  },
-  {
-    id: "REP-2026-041",
-    title: "Alertas de Conversión · Corredor Uruapan–Zamora",
-    category: "Alertas Tempranas",
-    icon: "radar",
-    status: "Listo",
-    statusTone: "bg-error-container text-on-error-container",
-    date: "05/08/2026",
-    size: "1.8 MB · PDF",
-    coverage: 41,
-    coverageTone: "bg-tertiary-fixed",
-  },
-  {
-    id: "REP-2026-040",
-    title: "Confronta de Expedientes · Ejido San Juan Nuevo",
-    category: "Expedientes",
-    icon: "verified_user",
-    status: "En proceso",
-    statusTone: "bg-tertiary-fixed text-on-tertiary",
-    date: "28/07/2026",
-    size: "3.1 MB · SHP+PDF",
-    coverage: 96,
-    coverageTone: "bg-secondary",
-  },
-  {
-    id: "REP-2026-039",
-    title: "Dinámica de Cuencas · Cupatitzio y Río Duero",
-    category: "Hidrología",
-    icon: "water_drop",
-    status: "Listo",
-    statusTone: "bg-secondary text-surface",
-    date: "19/07/2026",
-    size: "0.9 MB · PDF",
-    coverage: 78,
-    coverageTone: "bg-secondary",
-  },
-  {
-    id: "REP-2026-038",
-    title: "Índices Espectrales · Serie 2015–2025",
-    category: "Radiometría",
-    icon: "sensors",
-    status: "Listo",
-    statusTone: "bg-secondary text-surface",
-    date: "11/07/2026",
-    size: "4.2 MB · GeoTIFF",
-    coverage: 88,
-    coverageTone: "bg-secondary",
-  },
-  {
-    id: "REP-2026-037",
-    title: "Seguimiento de Compensación · Predios Restauración",
-    category: "Restauración",
-    icon: "nest_eco_leaf",
-    status: "En proceso",
-    statusTone: "bg-tertiary-fixed text-on-tertiary",
-    date: "02/07/2026",
-    size: "1.2 MB · PDF",
-    coverage: 67,
-    coverageTone: "bg-tertiary-fixed",
-  },
-];
-
-const formFields = [
-  { label: "Tipo de reporte", icon: "description", placeholder: "LULC, Alertas, Expediente…", options: ["LULC Anual", "Alertas Tempranas", "Expediente Cero Deforestación", "Índices Espectrales"] },
-  { label: "Ubicación / Predio", icon: "place", placeholder: "Uruapan, Zamora, Los Reyes…" },
-  { label: "Periodo de análisis", icon: "date_range", placeholder: "2015 – 2025" },
-];
 ---
 
-<Layout title="Reportes — TerraVision">
+<Layout title="Reportes ambientales — TerraVision">
   <NavBar
     brandName={navData.brandName}
     links={navData.links}
@@ -96,95 +15,61 @@ const formFields = [
     ctaDataPath={navData.ctaDataPath}
   />
 
-  <main class="min-h-screen">
-    <section class="max-w-7xl mx-auto px-gutter-desktop py-12">
-      <p class="font-label-md text-label-md text-secondary uppercase tracking-widest flex items-center gap-2">
-        <Icon name="query_stats" size={18} /> <span data-page="reportes">Centro de Reportes</span>
+  <main class="min-h-screen bg-surface-container-lowest">
+    <section class="mx-auto max-w-7xl px-gutter-desktop py-12">
+      <p class="flex items-center gap-2 font-label-md text-label-md uppercase tracking-widest text-secondary">
+        <Icon name="folder_open" size={18} /> Archivo de reportes
       </p>
-      <h1 class="font-headline-xl text-headline-xl text-on-surface font-bold mt-2">Reportes Geoespaciales</h1>
-      <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mt-2">
-        Genera y descarga dictámenes LULC, alertas de conversión y expedientes de cumplimiento
-        Cero Deforestación a partir de la serie histórica simulada de Michoacán.
-      </p>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-10">
-        <div class="lg:col-span-2">
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="font-headline-md text-headline-md text-on-surface font-semibold">Reportes recientes</h2>
-            <span class="font-label-md text-label-md text-on-surface-variant">6 resultados</span>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {mockReports.map((r) => (
-              <article class="bg-surface border border-surface-container-high rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-                <div class="flex items-start justify-between gap-3">
-                  <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 rounded-xl bg-secondary text-surface flex items-center justify-center shrink-0">
-                      <Icon name={r.icon} size={22} />
-                    </div>
-                    <div>
-                      <span class="font-label-sm text-label-sm text-on-surface-variant">{r.id}</span>
-                      <p class="font-label-md text-label-md text-on-surface-variant">{r.category}</p>
-                    </div>
-                  </div>
-                  <span class={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-label-sm text-label-sm ${r.statusTone}`}>
-                    <span class="w-1.5 h-1.5 rounded-full bg-current"></span>{r.status}
-                  </span>
-                </div>
-                <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold mt-4 leading-snug">{r.title}</h3>
-                <div class="mt-4">
-                  <div class="flex items-center justify-between text-xs text-on-surface-variant mb-1">
-                    <span>Completitud de datos</span>
-                    <span>{r.coverage}%</span>
-                  </div>
-                  <div class="h-1.5 w-full rounded-full bg-surface-container-high overflow-hidden">
-                    <div class={`h-full rounded-full ${r.coverageTone}`} style={{ width: `${r.coverage}%` }}></div>
-                  </div>
-                </div>
-                <div class="flex items-center justify-between mt-4 text-sm text-on-surface-variant border-t border-surface-container-high pt-3">
-                  <span class="flex items-center gap-1"><Icon name="calendar_today" size={15} /> {r.date}</span>
-                  <span class="flex items-center gap-1"><Icon name="folder" size={15} /> {r.size}</span>
-                </div>
-              </article>
-            ))}
-          </div>
+      <div class="mt-2 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h1 class="font-headline-xl text-headline-xl font-bold text-on-surface">Expedientes generados</h1>
+          <p class="mt-2 max-w-3xl font-body-md text-body-md text-on-surface-variant">
+            Consulta, filtra y descarga los reportes creados desde la auditoría multitemporal de los polígonos del mapa interactivo.
+          </p>
         </div>
-
-        <aside class="bg-inverse-surface text-surface rounded-2xl p-6 h-fit sticky top-24">
-          <h2 class="font-headline-md text-headline-md font-semibold flex items-center gap-2">
-            <Icon name="add_circle" size={22} /> Generar reporte
-          </h2>
-          <p class="font-body-sm text-body-sm text-inverse-on-surface/70 mt-1">Solicita un reporte simulado al instante.</p>
-
-          <form class="mt-5 space-y-4" data-mock-form>
-            {formFields.map((f) => (
-              <label class="block">
-                <span class="font-label-md text-label-md text-inverse-on-surface/80 flex items-center gap-2 mb-1.5">
-                  <Icon name={f.icon} size={16} /> {f.label}
-                </span>
-                {f.options ? (
-                  <select class="w-full rounded-xl bg-surface/10 border border-surface/20 px-3 py-2.5 text-sm text-surface focus:outline-none focus:ring-2 focus:ring-tertiary">
-                    {f.options.map((o) => <option class="text-on-surface">{o}</option>)}
-                  </select>
-                ) : (
-                  <input
-                    placeholder={f.placeholder}
-                    class="w-full rounded-xl bg-surface/10 border border-surface/20 px-3 py-2.5 text-sm text-surface placeholder:text-surface/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
-                  />
-                )}
-              </label>
-            ))}
-            <button
-              type="submit"
-              class="w-full rounded-xl bg-tertiary text-on-tertiary font-semibold py-3 flex items-center justify-center gap-2 hover:bg-tertiary-fixed transition-colors"
-            >
-              <Icon name="bolt" size={18} /> Generar reporte simulado
-            </button>
-            <p class="text-xs text-inverse-on-surface/60 text-center" data-generate-status>
-              Los datos mostrados son de demostración (simulados).
-            </p>
-          </form>
-        </aside>
+        <a href="/visor" class="inline-flex items-center justify-center gap-2 rounded-xl bg-secondary px-4 py-3 font-semibold text-surface transition-colors hover:bg-primary">
+          <Icon name="map" size={18} /> Volver al mapa
+        </a>
       </div>
+
+      <div id="reportStatus" class="mt-6 hidden rounded-xl border p-4 text-sm" role="status"></div>
+
+      <section class="mt-8 rounded-2xl border border-surface-container-high bg-surface p-5 shadow-sm">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end">
+          <label class="min-w-0 flex-1">
+            <span class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface-variant">Buscar</span>
+            <div class="relative">
+              <Icon name="search" size={18} class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+              <input id="reportSearch" type="search" placeholder="Folio, código, huerta o municipio" class="w-full rounded-xl border border-outline-variant bg-surface-container-low py-3 pl-10 pr-3 text-sm text-on-surface outline-none focus:ring-2 focus:ring-secondary" />
+            </div>
+          </label>
+          <label class="w-full lg:w-52">
+            <span class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface-variant">Veredicto</span>
+            <select id="verdictFilter" class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3 py-3 text-sm text-on-surface outline-none focus:ring-2 focus:ring-secondary">
+              <option value="">Todos</option>
+              <option value="cumple">Cumple</option>
+              <option value="no cumple">No cumple</option>
+              <option value="requiere revision">Requiere revisión</option>
+            </select>
+          </label>
+          <label class="w-full lg:w-52">
+            <span class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface-variant">Estado</span>
+            <select id="statusFilter" class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3 py-3 text-sm text-on-surface outline-none focus:ring-2 focus:ring-secondary">
+              <option value="">Todos</option>
+              <option value="generated">PDF generado</option>
+              <option value="approved">Aprobado</option>
+              <option value="draft">Borrador</option>
+            </select>
+          </label>
+          <button id="clearFilters" type="button" class="rounded-xl border border-outline-variant px-4 py-3 text-sm font-semibold text-on-surface-variant transition-colors hover:bg-surface-container-low">Limpiar</button>
+        </div>
+      </section>
+
+      <div class="mt-6 flex items-center justify-between gap-3">
+        <h2 class="font-headline-md text-headline-md font-semibold text-on-surface">Resultados</h2>
+        <span id="reportCount" class="text-sm text-on-surface-variant">Cargando...</span>
+      </div>
+      <div id="reportsList" class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
     </section>
   </main>
 
@@ -192,19 +77,73 @@ const formFields = [
 </Layout>
 
 <script>
-  const form = document.querySelector<HTMLFormElement>("[data-mock-form]");
-  const status = document.querySelector<HTMLParagraphElement>("[data-generate-status]");
-  form?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (status) {
-      status.textContent = "✓ Reporte simulado generado correctamente. (Demostración)";
-      status.classList.add("!text-tertiary");
+  import { listExpedientes, pdfUrl } from "../lib/reportApi";
+  import type { Expediente } from "../types/reports";
+
+  let reports: Expediente[] = [];
+  const list = document.querySelector<HTMLElement>("#reportsList");
+  const count = document.querySelector<HTMLElement>("#reportCount");
+  const status = document.querySelector<HTMLElement>("#reportStatus");
+  const search = document.querySelector<HTMLInputElement>("#reportSearch");
+  const verdict = document.querySelector<HTMLSelectElement>("#verdictFilter");
+  const state = document.querySelector<HTMLSelectElement>("#statusFilter");
+
+  const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char] || char);
+  const formatDate = (value?: string) => value ? new Date(value).toLocaleDateString("es-MX") : "Sin fecha";
+  const verdictLabel = (value: string) => value === "cumple" ? "Cumple" : value === "no cumple" ? "No cumple" : "Requiere revisión";
+  const verdictClass = (value: string) => value === "cumple" ? "bg-emerald-100 text-emerald-800" : value === "no cumple" ? "bg-red-100 text-red-800" : "bg-amber-100 text-amber-800";
+
+  function renderReports() {
+    const term = search?.value.trim().toLowerCase() || "";
+    const filtered = reports.filter((report) => {
+      const searchable = [report.folio, report.reference_code, report.name, report.municipality].join(" ").toLowerCase();
+      return (!term || searchable.includes(term)) && (!verdict?.value || report.verdict === verdict.value) && (!state?.value || report.status === state.value);
+    });
+    if (count) count.textContent = `${filtered.length} de ${reports.length} expediente${reports.length === 1 ? "" : "s"}`;
+    if (!list) return;
+    list.innerHTML = filtered.length ? filtered.map((report) => `
+      <article class="flex flex-col rounded-2xl border border-surface-container-high bg-surface p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <span class="font-mono text-xs text-on-surface-variant">${escapeHtml(report.folio)}</span>
+            <h3 class="mt-1 font-headline-sm text-headline-sm font-semibold text-on-surface">${escapeHtml(report.name || report.reference_code || report.parcel_id)}</h3>
+          </div>
+          <span class="rounded-full px-2.5 py-1 text-[11px] font-bold ${verdictClass(report.verdict)}">${verdictLabel(report.verdict)}</span>
+        </div>
+        <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
+          <div><span class="block text-on-surface-variant">Municipio</span><strong class="text-on-surface">${escapeHtml(report.municipality || "Michoacán")}</strong></div>
+          <div><span class="block text-on-surface-variant">Estado</span><strong class="text-on-surface">${escapeHtml(report.status)}</strong></div>
+          <div><span class="block text-on-surface-variant">Auditoría</span><strong class="text-on-surface">${report.audit_from_year && report.audit_to_year ? `${report.audit_from_year}–${report.audit_to_year}` : "Ambiental"}</strong></div>
+          <div><span class="block text-on-surface-variant">Emisión</span><strong class="text-on-surface">${formatDate(report.issued_at || report.created_at)}</strong></div>
+        </div>
+        <div class="mt-5 flex flex-wrap gap-2 border-t border-surface-container-high pt-4">
+          ${report.status === "generated" ? `<a href="${escapeHtml(pdfUrl(report.folio))}" target="_blank" rel="noreferrer" class="inline-flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-2 text-xs font-bold text-surface hover:bg-primary"><span class="material-symbols-outlined text-[16px]">download</span>Descargar PDF</a>` : '<span class="text-xs text-on-surface-variant">PDF pendiente de generación</span>'}
+          ${report.status === "generated" ? `<a href="/verificar?folio=${encodeURIComponent(report.folio)}" class="inline-flex items-center gap-1.5 rounded-lg border border-outline-variant px-3 py-2 text-xs font-semibold text-on-surface-variant hover:bg-surface-container-low"><span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>Verificar</a>` : ""}
+        </div>
+      </article>`).join("") : '<div class="rounded-2xl border border-dashed border-outline-variant p-10 text-center text-sm text-on-surface-variant md:col-span-2 xl:col-span-3">No hay reportes que coincidan con los filtros.</div>';
+  }
+
+  async function loadReports() {
+    try {
+      reports = await listExpedientes();
+      renderReports();
+    } catch (error) {
+      if (status) {
+        status.textContent = error instanceof Error ? error.message : "No fue posible cargar los reportes.";
+        status.className = "mt-6 rounded-xl border border-error bg-error-container p-4 text-sm text-on-error-container";
+      }
     }
-    const btn = form.querySelector<HTMLButtonElement>("button[type=submit]");
-    if (btn) btn.disabled = true;
-    setTimeout(() => {
-      if (status) status.textContent = "Tu reporte simulado está listo para descarga. (Demo)";
-      if (btn) btn.disabled = false;
-    }, 1200);
+  }
+
+  [search, verdict, state].forEach((control) => {
+    control?.addEventListener("input", renderReports);
+    control?.addEventListener("change", renderReports);
   });
+  document.querySelector<HTMLButtonElement>("#clearFilters")?.addEventListener("click", () => {
+    if (search) search.value = "";
+    if (verdict) verdict.value = "";
+    if (state) state.value = "";
+    renderReports();
+  });
+  loadReports();
 </script>

@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo, type ReactElement } from "react";
 import { michoacanParcels } from "../../data/michoacanParcels";
-import { canSubdivide } from "../../lib/subdivisionBlocker";
 import { validatePolygon } from "../../lib/geometryValidator";
 import { calculateVedaForestal, getParcelFireRecords } from "../../lib/nasaFirms";
 import { auditParcelYears } from "../../lib/localImageAudit";
 import { getParcelTimeSeriesUrls, SATELLITE_HISTORY_START } from "../../lib/satelliteHistory";
-import type { ParcelFeature, AuditData } from "../../types/mapa";
+import { approveExpediente, createAuditReport, generatePdf, pdfUrl } from "../../lib/reportApi";
+import type { ParcelFeature, AuditData, AuditResponse } from "../../types/mapa";
+import type { Expediente } from "../../types/reports";
 
 interface Props {
   feature: ParcelFeature | null;
@@ -14,7 +15,6 @@ interface Props {
   onSelectParcel: (f: ParcelFeature) => void;
   currentYear: number;
   comparisonYear: number;
-  onParcelBlocked: () => void;
 }
 
 const STATUS_STYLES: Record<string, { class: string; text: string; iconBg: string }> = {
@@ -31,11 +31,14 @@ function SectionIcon({ name, gradient }: { name: string; gradient: string }): Re
   );
 }
 
-export default function ParcelDrawer({ feature, open, onClose, currentYear, comparisonYear, onParcelBlocked }: Props): ReactElement {
+export default function ParcelDrawer({ feature, open, onClose, currentYear, comparisonYear }: Props): ReactElement {
   const [geminiLoading, setGeminiLoading] = useState(false);
   const [geminiAlert, setGeminiAlert] = useState<string | null>(null);
   const [geminiResult, setGeminiResult] = useState<AuditData | null>(null);
-  const [subdivisionResult, setSubdivisionResult] = useState<{ allowed: boolean; reason: string | null } | null>(null);
+  const [auditResponse, setAuditResponse] = useState<AuditResponse | null>(null);
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportError, setReportError] = useState<string | null>(null);
+  const [generatedReport, setGeneratedReport] = useState<Expediente | null>(null);
 
   const timeSeries = useMemo(() => (feature ? getParcelTimeSeriesUrls(feature) : null), [feature]);
   const fireRecords = useMemo(() => (feature ? getParcelFireRecords(feature) : []), [feature]);
@@ -45,7 +48,9 @@ export default function ParcelDrawer({ feature, open, onClose, currentYear, comp
   useEffect(() => {
     setGeminiResult(null);
     setGeminiAlert(null);
-    setSubdivisionResult(null);
+    setAuditResponse(null);
+    setReportError(null);
+    setGeneratedReport(null);
   }, [feature]);
 
   if (!feature) return <></>;
@@ -64,13 +69,8 @@ export default function ParcelDrawer({ feature, open, onClose, currentYear, comp
     setGeminiResult(null);
     try {
       const result = await auditParcelYears(feature, comparisonYear, currentYear);
+      setAuditResponse(result);
       setGeminiResult(result.data);
-      if (result.data.cambio_detectado || result.data.veda_art97_activa) {
-        p.deforestacionDetectada = true;
-        p.exportacion = "bloqueada";
-        p.subdivisionBloqueada = true;
-        onParcelBlocked();
-      }
     } catch (error) {
       setGeminiAlert(error instanceof Error ? error.message : "No fue posible ejecutar la auditoría Gemini.");
     } finally {
@@ -78,9 +78,24 @@ export default function ParcelDrawer({ feature, open, onClose, currentYear, comp
     }
   };
 
-  const testSubdivision = (): void => {
-    const res = canSubdivide(feature);
-    setSubdivisionResult({ allowed: res.allowed, reason: res.reason });
+  const generateReport = async (): Promise<void> => {
+    if (!auditResponse || reportLoading) return;
+    setReportLoading(true);
+    setReportError(null);
+    try {
+      const reportFeature = {
+        ...feature,
+        properties: { ...feature.properties, exportacion: statusKey },
+      };
+      const draft = await createAuditReport(p.id, reportFeature, comparisonYear, currentYear, auditResponse);
+      await approveExpediente(draft.expediente.folio, "Perito demostración", "auditor_demo");
+      const generated = await generatePdf(draft.expediente.folio);
+      setGeneratedReport(generated);
+    } catch (error) {
+      setReportError(error instanceof Error ? error.message : "No fue posible generar el reporte.");
+    } finally {
+      setReportLoading(false);
+    }
   };
 
   return (
@@ -226,6 +241,31 @@ export default function ParcelDrawer({ feature, open, onClose, currentYear, comp
               <p className="rounded-lg bg-error/20 p-2.5 leading-relaxed text-red-200">{geminiResult.conclusion_legal}</p>
             </div>
           )}
+          {geminiResult && !generatedReport && (
+            <button
+              type="button"
+              disabled={reportLoading}
+              onClick={generateReport}
+              className="w-full rounded-xl bg-gradient-to-r from-tertiary to-secondary-fixed px-3 py-2.5 text-[11px] font-bold text-on-tertiary shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <span className="inline-flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px]">picture_as_pdf</span>
+                {reportLoading ? "Generando reporte..." : "Generar reporte"}
+              </span>
+            </button>
+          )}
+          {reportError && <div className="rounded-lg border border-error/50 bg-error/10 p-2.5 text-[10px] text-red-200">{reportError}</div>}
+          {generatedReport && (
+            <a
+              href={pdfUrl(generatedReport.folio)}
+              target="_blank"
+              rel="noreferrer"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-container px-3 py-2.5 text-[11px] font-bold text-on-primary shadow-md transition-all hover:shadow-lg"
+            >
+              <span className="material-symbols-outlined text-[16px]">download</span>
+              Descargar reporte {generatedReport.folio}
+            </a>
+          )}
         </section>
 
         <section className="space-y-2.5">
@@ -321,54 +361,6 @@ export default function ParcelDrawer({ feature, open, onClose, currentYear, comp
           })()}
         </section>
 
-        <section className="space-y-2.5 pt-3 border-t border-outline-variant/30">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <SectionIcon name="gavel" gradient="from-error/40 to-error/10" />
-              <h3 className="text-[11px] font-bold uppercase tracking-[0.12em] text-on-surface">Regla Anti-Subdivisión</h3>
-            </div>
-            <span className="text-[9px] px-2 py-0.5 rounded-full bg-gradient-to-r from-error-container to-error/20 text-error font-bold ring-1 ring-error/30">Art. 15días</span>
-          </div>
-          <p className="text-[11px] text-on-surface-variant leading-relaxed">
-            Si un predio registra tala o cambio de uso de suelo, el sistema <strong>impide fraccionarlo</strong> para que partes limpias puedan exportar.
-          </p>
-
-          <button
-            type="button"
-            onClick={testSubdivision}
-            className="w-full py-3 px-3 rounded-xl bg-gradient-to-r from-inverse-surface to-primary-container text-surface font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg hover:from-primary-container hover:to-inverse-surface transition-all"
-          >
-            <span className="material-symbols-outlined text-[16px]">call_split</span>
-            <span>Simular Intento de Subdivisión</span>
-          </button>
-
-          {subdivisionResult && (
-            subdivisionResult.allowed ? (
-              <div className="p-3 rounded-xl border bg-gradient-to-br from-primary-container/30 to-tertiary/10 border-primary/50 space-y-1.5 shadow-sm">
-                <div className="font-bold flex items-center gap-2 text-primary">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/20">
-                    <span className="material-symbols-outlined text-[16px]">check_circle</span>
-                  </span>
-                  SUBDIVISIÓN PERMITIDA
-                </div>
-                <p className="text-[11px] leading-tight text-on-surface/90">{subdivisionResult.reason}</p>
-              </div>
-            ) : (
-              <div className="p-3 rounded-xl border bg-gradient-to-br from-error-container/40 to-error/10 border-error/50 space-y-1.5 shadow-sm">
-                <div className="font-bold flex items-center gap-2 text-error">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-error/20">
-                    <span className="material-symbols-outlined text-[16px]">block</span>
-                  </span>
-                  SUBDIVISIÓN DENEGADA
-                </div>
-                <p className="text-[11px] leading-tight text-error/90">{subdivisionResult.reason}</p>
-                <div className="mt-1.5 text-[10px] font-mono bg-error/10 p-2 rounded-lg text-error/80 border border-error/20">
-                  Dictamen: El predio no puede ser fraccionado para eludir restricciones EUDR/SENASICA.
-                </div>
-              </div>
-            )
-          )}
-        </section>
       </div>
     </div>
   );

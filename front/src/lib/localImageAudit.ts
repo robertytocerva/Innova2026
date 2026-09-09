@@ -247,8 +247,8 @@ export async function auditParcelYears(
   const conclusionLegal = vedaInfo.vedaActiva
     ? `ALERTA LEGAL: Veda forestal obligatoria activa por Art. 97 de la Ley General de Desarrollo Forestal Sustentable (LGDFS) hasta el año ${vedaInfo.anoFinVeda}. Prohibido cualquier trámite de cambio de uso de suelo o certificación de exportación.`
     : cambioDetectado
-      ? `RESTRICCIÓN PREVENTIVA: Se identificó alteración de la cobertura natural. Conforme a las salvaguardas fitosanitarias y de deforestación cero (EUDR / SENASICA), el predio queda condicionado y con restricción de subdivisión.`
-      : `DICTAMEN FAVORABLE: Sin indicios de deforestación reciente ni incendios forestales vinculados. Cumple con los criterios de cobertura histórica y no fraccionamiento fraudulento.`;
+      ? `RESTRICCIÓN PREVENTIVA: Se identificó alteración de la cobertura natural. Conforme a las salvaguardas fitosanitarias y de deforestación cero (EUDR / SENASICA), el predio queda condicionado a revisión pericial.`
+      : `DICTAMEN FAVORABLE: Sin indicios de deforestación reciente ni incendios forestales vinculados. Cumple con los criterios de cobertura histórica evaluados.`;
 
   return {
     data: {

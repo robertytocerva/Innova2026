@@ -10,6 +10,20 @@ export const getFireAlerts = async ({ bbox, days = 5, source = "VIIRS_NOAA20_NRT
   return { source, rows: parseCsv(data) };
 };
 
+export const getFireAlertsForPeriod = async ({ bbox, startDate, endDate, source = "VIIRS_NOAA20_NRT" }) => {
+  const from = new Date(`${startDate}T00:00:00Z`).getTime();
+  const to = new Date(`${endDate}T23:59:59Z`).getTime();
+  const days = Math.ceil((to - from) / 86400000);
+
+  // The FIRMS area endpoint only supports a short recent window. Historical
+  // evidence must come from the local fire_alerts cache or an archive export.
+  if (!Number.isFinite(days) || days < 1 || days > 10) {
+    throw new AppError("NASA FIRMS requiere un cache histórico o un export de archivo para este periodo", 503, "FIRMS_ARCHIVE_REQUIRED");
+  }
+
+  return getFireAlerts({ bbox, days, source });
+};
+
 const parseCsv = (text) => {
   const [header, ...lines] = text.trim().split(/\r?\n/);
   if (!header) return [];

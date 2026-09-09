@@ -156,11 +156,7 @@ function getPolygonStyle(feature: ParcelFeature): L.PathOptions {
     fillOpacity = 0.4;
   }
 
-  if (p.subdivisionBloqueada) {
-    color = "#dc2626";
-    dashArray = "6, 6";
-    weight = 3;
-  } else if (hasGeometryIssues) {
+  if (hasGeometryIssues) {
     color = "#ea580c";
     weight = 3;
   }

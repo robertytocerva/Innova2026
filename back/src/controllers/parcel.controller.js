@@ -5,7 +5,7 @@ import { notFound } from "../utils/errors.js";
 import { success } from "../utils/response.js";
 
 export const parcelQuerySchema = z.object({ limit: z.coerce.number().int().min(1).max(100).default(20), offset: z.coerce.number().int().min(0).default(0), status: z.enum(["active", "archived"]).default("active") });
-export const createParcelSchema = z.object({ name: z.string().trim().min(2).max(160), cropType: z.enum(["avocado", "berries", "other"]), municipality: z.string().trim().max(120).optional(), state: z.string().trim().max(120).default("Michoacan"), geometry: z.object({ type: z.literal("Polygon"), coordinates: z.array(z.array(z.array(z.number()))).min(1) }), metadata: z.record(z.string(), z.unknown()).optional() });
+export const createParcelSchema = z.object({ referenceCode: z.string().trim().max(60).optional(), name: z.string().trim().min(2).max(160), cropType: z.enum(["avocado", "berries", "other"]), municipality: z.string().trim().max(120).optional(), state: z.string().trim().max(120).default("Michoacan"), geometry: z.object({ type: z.literal("Polygon"), coordinates: z.array(z.array(z.array(z.number()))).min(1) }), metadata: z.record(z.string(), z.unknown()).optional() });
 
 export const getParcels = async (req, res) => {
   const { data, count } = await listParcels(req.query);

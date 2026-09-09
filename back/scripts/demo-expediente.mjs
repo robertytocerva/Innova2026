@@ -18,7 +18,6 @@
  */
 
 import { buildAssessment, buildCoverageSeries } from "../src/services/assessment.service.js";
-import { canSubdivide } from "../src/services/subdivision.service.js";
 
 const BASE = process.env.BACKEND_URL || "http://localhost:3000";
 
@@ -49,7 +48,7 @@ const DEMO_PARCEL = {
 };
 
 async function tryHttp(parcelId) {
-  const res = await fetch(`${BASE}/parcels/${parcelId}/expediente`, {
+  const res = await fetch(`${BASE}/api/v1/huertas/${parcelId}/comparaciones`, {
     headers: { accept: "application/json" },
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -57,7 +56,7 @@ async function tryHttp(parcelId) {
 }
 
 async function seedParcel() {
-  const res = await fetch(`${BASE}/parcels`, {
+  const res = await fetch(`${BASE}/api/v1/parcels`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(DEMO_PARCEL),
@@ -69,7 +68,7 @@ async function seedParcel() {
 
 async function removeParcel(parcelId) {
   try {
-    await fetch(`${BASE}/parcels/${parcelId}`, { method: "DELETE" });
+    await fetch(`${BASE}/api/v1/parcels/${parcelId}`, { method: "DELETE" });
   } catch {
     /* noop */
   }
@@ -85,8 +84,7 @@ function buildLocalExpediente() {
     fireAlerts: 0,
   });
   const coverageSeries = buildCoverageSeries({ currentCoverage: meta.current_coverage });
-  const subdivision = canSubdivide({ id: "DEMO-001", ...meta });
-  const conforme = assessment.score < 25 && subdivision.allowed;
+  const conforme = assessment.score < 25;
   return {
     id: "EXP-DEMO-LOCAL",
     fuente: "DEMO LOCAL (backend no disponible) — mismas funciones del endpoint real",
@@ -94,7 +92,6 @@ function buildLocalExpediente() {
     conforme,
     assessment,
     coverageSeries,
-    subdivision,
     normativa: [
       "Decreto de Certificación de Cero Deforestación (Michoacán, 2024)",
       "Reglamento EUDR – Unión Europea",

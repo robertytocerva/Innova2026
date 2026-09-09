@@ -1,0 +1,63 @@
+---
+import Layout from "../layouts/Layout.astro";
+import NavBar from "../components/landing/NavBar.astro";
+import SiteFooter from "../components/landing/SiteFooter.astro";
+import Icon from "../components/ui/Icon.astro";
+import { navData, footerData } from "../data/landing";
+---
+
+<Layout title="Verificación pública — TerraVision">
+  <NavBar
+    brandName={navData.brandName}
+    links={navData.links}
+    ctaLabel={navData.ctaLabel}
+    ctaHref={navData.ctaHref}
+    ctaDataPath={navData.ctaDataPath}
+  />
+  <main class="min-h-screen bg-surface-container-lowest px-4 py-16">
+    <section class="mx-auto max-w-2xl">
+      <p class="font-label-md text-label-md text-secondary uppercase tracking-widest flex items-center gap-2"><Icon name="qr_code_scanner" size={18} /> Verificación pública</p>
+      <h1 class="font-headline-xl text-headline-xl text-on-surface font-bold mt-2">Consulta de folio ambiental</h1>
+      <p class="mt-2 text-on-surface-variant">Valida el estado de un expediente emitido por la Plataforma de Auditoría Ambiental.</p>
+      <form id="verifyForm" class="mt-8 flex flex-col sm:flex-row gap-3">
+        <label class="flex-1"><span class="sr-only">Folio</span><input id="folioInput" required placeholder="EXP-2026-..." class="w-full rounded-xl border border-outline-variant bg-surface px-4 py-3 text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary" /></label>
+        <button class="rounded-xl bg-secondary px-5 py-3 font-semibold text-surface hover:bg-primary transition-colors" type="submit">Verificar</button>
+      </form>
+      <div id="verificationResult" class="hidden mt-8 rounded-2xl bg-surface border border-surface-container-high p-6"></div>
+    </section>
+  </main>
+  <SiteFooter brand={footerData.brand} columns={footerData.columns} legal={footerData.legal} />
+</Layout>
+
+<script>
+  import { pdfUrl, verifyFolio } from "../lib/reportApi";
+  import type { PublicVerification } from "../types/reports";
+
+  const form = document.querySelector<HTMLFormElement>("#verifyForm");
+  const input = document.querySelector<HTMLInputElement>("#folioInput");
+  const result = document.querySelector<HTMLElement>("#verificationResult");
+  const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char] || char);
+  const label = (verdict: string) => verdict === "cumple" ? "Cumple" : verdict === "no cumple" ? "No cumple" : "Requiere revisión";
+  const tone = (verdict: string) => verdict === "cumple" ? "text-emerald-700 bg-emerald-50 border-emerald-200" : verdict === "no cumple" ? "text-red-700 bg-red-50 border-red-200" : "text-amber-800 bg-amber-50 border-amber-200";
+
+  function render(data: PublicVerification) {
+    if (!result) return;
+    result.innerHTML = `
+      <div class="flex items-center gap-3"><span class="flex h-11 w-11 items-center justify-center rounded-full bg-secondary-fixed text-secondary"><span class="material-symbols-outlined">verified</span></span><div><p class="text-xs uppercase tracking-widest text-on-surface-variant">Folio verificado</p><h2 class="font-mono text-lg font-bold text-on-surface">${escapeHtml(data.folio)}</h2></div></div>
+      <div class="mt-6 rounded-xl border p-4 ${tone(data.verdict)}"><p class="text-xs uppercase tracking-widest font-bold">Veredicto</p><p class="text-2xl font-bold mt-1">${label(data.verdict)}</p>${data.boundaryFlag ? '<p class="text-sm mt-2">Caso límite marcado para revisión pericial.</p>' : ""}</div>
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 text-sm"><div><dt class="text-on-surface-variant">Huerta</dt><dd class="font-semibold text-on-surface">${escapeHtml(data.huerta.name)}</dd></div><div><dt class="text-on-surface-variant">Referencia</dt><dd class="font-semibold text-on-surface">${escapeHtml(data.huerta.referenceCode || "No disponible")}</dd></div><div><dt class="text-on-surface-variant">Municipio</dt><dd class="font-semibold text-on-surface">${escapeHtml(data.huerta.municipality || "No disponible")}</dd></div><div><dt class="text-on-surface-variant">Emisión</dt><dd class="font-semibold text-on-surface">${data.issuedAt ? new Date(data.issuedAt).toLocaleString("es-MX") : "No disponible"}</dd></div><div><dt class="text-on-surface-variant">Aprobado por</dt><dd class="font-semibold text-on-surface">${escapeHtml(data.approvedBy || "No disponible")}</dd></div><div><dt class="text-on-surface-variant">Rol</dt><dd class="font-semibold text-on-surface">${escapeHtml(data.approverRole || "No disponible")}</dd></div></dl>
+      <a href="${escapeHtml(pdfUrl(data.folio))}" class="mt-7 inline-flex rounded-xl bg-secondary px-4 py-3 font-semibold text-surface hover:bg-primary transition-colors">Descargar expediente PDF</a>`;
+    result.classList.remove("hidden");
+  }
+
+  async function verify(folio: string) {
+    try { render(await verifyFolio(folio)); }
+    catch (error) {
+      if (result) { result.className = "mt-8 rounded-2xl border border-error bg-error-container p-6 text-on-error-container"; result.textContent = error instanceof Error ? error.message : "Folio no encontrado"; }
+    }
+  }
+
+  form?.addEventListener("submit", (event) => { event.preventDefault(); const folio = input?.value.trim(); if (folio) verify(folio); });
+  const folioFromQr = new URLSearchParams(window.location.search).get("folio");
+  if (folioFromQr && input) { input.value = folioFromQr; verify(folioFromQr); }
+</script>

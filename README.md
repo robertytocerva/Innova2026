@@ -33,6 +33,8 @@ Plataforma de monitoreo satelital de suelos y cobertura vegetal en tiempo real.
 
 ## Frontend (front/)
 
+Para conectar los reportes al backend, define `PUBLIC_API_URL`, por ejemplo `http://localhost:3000/api/v1`. Si no se define, esa URL se usa por defecto.
+
 ```sh
 cd front
 npm install

@@ -50,14 +50,6 @@ export default function MapLegend({ onClose }: Props): ReactElement {
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5 rounded-lg p-2 transition-colors hover:bg-error/5">
-          <span className="h-5 w-5 shrink-0 rounded-md border-2 border-dashed border-error bg-error/20"></span>
-          <div className="flex-1">
-            <div className="font-semibold text-error text-[12px]">Subdivisión Bloqueada</div>
-            <div className="text-[10px] text-on-surface-variant">Intento de fragmentar predio sancionado</div>
-          </div>
-        </div>
-
         <div className="flex items-center gap-2.5 rounded-lg p-2 transition-colors hover:bg-orange-500/5">
           <span className="h-5 w-5 shrink-0 rounded-md border-2 border-orange-500 bg-orange-500/20"></span>
           <div className="flex-1">
