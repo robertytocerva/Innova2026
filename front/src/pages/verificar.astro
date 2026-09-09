@@ -33,39 +33,41 @@ import { navData, footerData } from "../data/landing";
   import { pdfUrl, verifyFolio } from "../lib/reportApi";
   import type { PublicVerification } from "../types/reports";
 
-  const form = document.querySelector<HTMLFormElement>("#verifyForm");
-  const input = document.querySelector<HTMLInputElement>("#folioInput");
-  const result = document.querySelector<HTMLElement>("#verificationResult");
-  const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char] || char);
-  const label = (verdict: string) => verdict === "cumple" ? "Cumple" : verdict === "no cumple" ? "No cumple" : "Requiere revisión";
-  const tone = (verdict: string) => verdict === "cumple" ? "text-emerald-700 bg-emerald-50 border-emerald-200" : verdict === "no cumple" ? "text-red-700 bg-red-50 border-red-200" : "text-amber-800 bg-amber-50 border-amber-200";
-  const renderSource = (source: NonNullable<PublicVerification["findings"]>[number]["sources"][number]) => {
-    const url = source.url && /^https?:\/\//i.test(source.url) ? source.url : "";
-    return `${escapeHtml(source.type === "normativa" ? "Normativa" : "Evidencia")}: ${escapeHtml(source.title || "Fuente no identificada")}${source.organization ? ` (${escapeHtml(source.organization)})` : ""}${source.status ? ` · Estado: ${escapeHtml(source.status)}` : ""}${source.reference ? ` · ${escapeHtml(source.reference)}` : ""}${source.quote ? ` · Cita: &quot;${escapeHtml(source.quote)}&quot;` : ""}${url ? ` · <a href="${escapeHtml(url)}" target="_blank" rel="noreferrer" class="text-primary underline">Ver fuente</a>` : ""}`;
-  };
+  function initVerification() {
+    const form = document.querySelector<HTMLFormElement>("#verifyForm");
+    const input = document.querySelector<HTMLInputElement>("#folioInput");
+    const result = document.querySelector<HTMLElement>("#verificationResult");
+    if (!form || !input || !result) return;
 
-  function render(data: PublicVerification) {
-    if (!result) return;
-    const findings = data.findings || [];
-    const findingsHtml = findings.length ? `<section class="mt-6 space-y-3"><h3 class="text-xs uppercase tracking-widest font-bold text-on-surface-variant">Por qué tiene este estado</h3>${findings.map((finding) => `<article class="rounded-xl border p-4 ${tone(finding.status)}"><div class="flex items-start justify-between gap-3"><h4 class="font-bold text-on-surface">${escapeHtml(finding.criterion)}</h4><span class="text-[10px] font-bold uppercase">${label(finding.status)}</span></div><p class="mt-2 text-sm leading-relaxed text-on-surface">${escapeHtml(finding.reason)}</p>${finding.observation ? `<p class="mt-2 text-xs leading-relaxed text-on-surface-variant"><strong>Dato observado:</strong> ${escapeHtml(finding.observation)}</p>` : ""}${finding.rule ? `<p class="mt-1 text-xs leading-relaxed text-on-surface-variant"><strong>Regla aplicada:</strong> ${escapeHtml(finding.rule)}</p>` : ""}${finding.sources?.length ? `<div class="mt-3 border-t border-current/10 pt-3 text-xs leading-relaxed text-on-surface-variant"><strong>Fuentes:</strong><br>${finding.sources.map(renderSource).join("<br>")}</div>` : ""}</article>`).join("")}</section>` : data.reasons?.length ? `<section class="mt-6 rounded-xl border border-outline-variant bg-surface-container-low p-4"><h3 class="text-xs uppercase tracking-widest font-bold text-on-surface-variant">Razones registradas</h3><p class="mt-2 text-sm leading-relaxed text-on-surface">${data.reasons.map(escapeHtml).join(" ")}</p><p class="mt-3 text-xs text-on-surface-variant">Fundamento: criterios oficiales de certificación ambiental de Michoacán.</p></section>` : "";
-    result.innerHTML = `
-      <div class="flex items-center gap-3"><span class="flex h-11 w-11 items-center justify-center rounded-full bg-secondary-fixed text-secondary"><span class="material-symbols-outlined">verified</span></span><div><p class="text-xs uppercase tracking-widest text-on-surface-variant">Folio verificado</p><h2 class="font-mono text-lg font-bold text-on-surface">${escapeHtml(data.folio)}</h2></div></div>
-      <div class="mt-6 rounded-xl border p-4 ${tone(data.verdict)}"><p class="text-xs uppercase tracking-widest font-bold">Veredicto</p><p class="text-2xl font-bold mt-1">${label(data.verdict)}</p>${data.boundaryFlag ? '<p class="text-sm mt-2">Caso límite marcado para revisión pericial.</p>' : ""}<p class="mt-2 text-xs leading-relaxed">El estado se determinó con los criterios normativos y la evidencia que se detallan abajo.</p></div>
-      ${findingsHtml}
-      ${data.regulatoryNotice ? `<p class="mt-5 rounded-xl bg-surface-container-low p-4 text-xs leading-relaxed text-on-surface-variant"><strong>Alcance:</strong> ${escapeHtml(data.regulatoryNotice)}</p>` : ""}
-      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 text-sm"><div><dt class="text-on-surface-variant">Huerta</dt><dd class="font-semibold text-on-surface">${escapeHtml(data.huerta.name)}</dd></div><div><dt class="text-on-surface-variant">Referencia</dt><dd class="font-semibold text-on-surface">${escapeHtml(data.huerta.referenceCode || "No disponible")}</dd></div><div><dt class="text-on-surface-variant">Municipio</dt><dd class="font-semibold text-on-surface">${escapeHtml(data.huerta.municipality || "No disponible")}</dd></div><div><dt class="text-on-surface-variant">Emisión</dt><dd class="font-semibold text-on-surface">${data.issuedAt ? new Date(data.issuedAt).toLocaleString("es-MX") : "No disponible"}</dd></div><div><dt class="text-on-surface-variant">Aprobado por</dt><dd class="font-semibold text-on-surface">${escapeHtml(data.approvedBy || "No disponible")}</dd></div><div><dt class="text-on-surface-variant">Rol</dt><dd class="font-semibold text-on-surface">${escapeHtml(data.approverRole || "No disponible")}</dd></div></dl>
-      <a href="${escapeHtml(pdfUrl(data.folio))}" class="mt-7 inline-flex rounded-xl bg-secondary px-4 py-3 font-semibold text-surface hover:bg-primary transition-colors">Descargar expediente PDF</a>`;
-    result.classList.remove("hidden");
-  }
+    const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char] || char);
+    const label = (verdict: string) => verdict === "cumple" ? "Cumple" : verdict === "no cumple" ? "No cumple" : "Requiere revisión";
+    const tone = (verdict: string) => verdict === "cumple" ? "text-emerald-700 bg-emerald-50 border-emerald-200" : verdict === "no cumple" ? "text-red-700 bg-red-50 border-red-200" : "text-amber-800 bg-amber-50 border-amber-200";
 
-  async function verify(folio: string) {
-    try { render(await verifyFolio(folio)); }
-    catch (error) {
-      if (result) { result.className = "mt-8 rounded-2xl border border-error bg-error-container p-6 text-on-error-container"; result.textContent = error instanceof Error ? error.message : "Folio no encontrado"; }
+    function render(data: PublicVerification) {
+      if (!result) return;
+      const findings = data.findings || [];
+      const findingsHtml = findings.length ? `<section class="mt-6 space-y-3"><h3 class="text-xs uppercase tracking-widest font-bold text-on-surface-variant">Por qué tiene este estado</h3>${findings.map((finding) => `<article class="rounded-xl border p-4 ${tone(finding.status)}"><div class="flex items-start justify-between gap-3"><h4 class="font-bold text-on-surface">${escapeHtml(finding.criterion)}</h4><span class="text-[10px] font-bold uppercase">${label(finding.status)}</span></div><p class="mt-2 text-sm leading-relaxed text-on-surface">${escapeHtml(finding.reason)}</p>${finding.observation ? `<p class="mt-2 text-xs leading-relaxed text-on-surface-variant"><strong>Dato observado:</strong> ${escapeHtml(finding.observation)}</p>` : ""}${finding.rule ? `<p class="mt-1 text-xs leading-relaxed text-on-surface-variant"><strong>Regla aplicada:</strong> ${escapeHtml(finding.rule)}</p>` : ""}${finding.sources?.length ? `<div class="mt-3 border-t border-current/10 pt-3 text-xs leading-relaxed text-on-surface-variant"><strong>Fuentes:</strong><br>${finding.sources.map((source) => `${escapeHtml(source.type === "normativa" ? "Normativa" : "Evidencia")}: ${escapeHtml(source.title || "Fuente no identificada")}${source.organization ? ` (${escapeHtml(source.organization)})` : ""}${source.status ? ` · Estado: ${escapeHtml(source.status)}` : ""}${source.reference ? ` · ${escapeHtml(source.reference)}` : ""}${source.detail ? ` · ${escapeHtml(source.detail)}` : ""}`).join("<br>")}</div>` : ""}</article>`).join("")}</section>` : data.reasons?.length ? `<section class="mt-6 rounded-xl border border-outline-variant bg-surface-container-low p-4"><h3 class="text-xs uppercase tracking-widest font-bold text-on-surface-variant">Razones registradas</h3><p class="mt-2 text-sm leading-relaxed text-on-surface">${data.reasons.map(escapeHtml).join(" ")}</p><p class="mt-3 text-xs text-on-surface-variant">Fundamento de referencia: normas.md, sección 1.1.</p></section>` : "";
+      result.innerHTML = `
+        <div class="flex items-center gap-3"><span class="flex h-11 w-11 items-center justify-center rounded-full bg-secondary-fixed text-secondary"><span class="material-symbols-outlined">verified</span></span><div><p class="text-xs uppercase tracking-widest text-on-surface-variant">Folio verificado</p><h2 class="font-mono text-lg font-bold text-on-surface">${escapeHtml(data.folio)}</h2></div></div>
+        <div class="mt-6 rounded-xl border p-4 ${tone(data.verdict)}"><p class="text-xs uppercase tracking-widest font-bold">Veredicto</p><p class="text-2xl font-bold mt-1">${label(data.verdict)}</p>${data.boundaryFlag ? '<p class="text-sm mt-2">Caso límite marcado para revisión pericial.</p>' : ""}<p class="mt-2 text-xs leading-relaxed">El estado se determinó con los criterios normativos y la evidencia que se detallan abajo.</p></div>
+        ${findingsHtml}
+        ${data.regulatoryNotice ? `<p class="mt-5 rounded-xl bg-surface-container-low p-4 text-xs leading-relaxed text-on-surface-variant"><strong>Alcance:</strong> ${escapeHtml(data.regulatoryNotice)}</p>` : ""}
+        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 text-sm"><div><dt class="text-on-surface-variant">Huerta</dt><dd class="font-semibold text-on-surface">${escapeHtml(data.huerta.name)}</dd></div><div><dt class="text-on-surface-variant">Referencia</dt><dd class="font-semibold text-on-surface">${escapeHtml(data.huerta.referenceCode || "No disponible")}</dd></div><div><dt class="text-on-surface-variant">Municipio</dt><dd class="font-semibold text-on-surface">${escapeHtml(data.huerta.municipality || "No disponible")}</dd></div><div><dt class="text-on-surface-variant">Emisión</dt><dd class="font-semibold text-on-surface">${data.issuedAt ? new Date(data.issuedAt).toLocaleString("es-MX") : "No disponible"}</dd></div><div><dt class="text-on-surface-variant">Aprobado por</dt><dd class="font-semibold text-on-surface">${escapeHtml(data.approvedBy || "No disponible")}</dd></div><div><dt class="text-on-surface-variant">Rol</dt><dd class="font-semibold text-on-surface">${escapeHtml(data.approverRole || "No disponible")}</dd></div></dl>
+        <a href="${escapeHtml(pdfUrl(data.folio))}" class="mt-7 inline-flex rounded-xl bg-secondary px-4 py-3 font-semibold text-surface hover:bg-primary transition-colors">Descargar expediente PDF</a>`;
+      result.classList.remove("hidden");
     }
+
+    async function verify(folio: string) {
+      try { render(await verifyFolio(folio)); }
+      catch (error) {
+        if (result) { result.className = "mt-8 rounded-2xl border border-error bg-error-container p-6 text-on-error-container"; result.textContent = error instanceof Error ? error.message : "Folio no encontrado"; }
+      }
+    }
+
+    form.addEventListener("submit", (event) => { event.preventDefault(); const folio = input.value.trim(); if (folio) verify(folio); });
+    const folioFromQr = new URLSearchParams(window.location.search).get("folio");
+    if (folioFromQr) { input.value = folioFromQr; verify(folioFromQr); }
   }
 
-  form?.addEventListener("submit", (event) => { event.preventDefault(); const folio = input?.value.trim(); if (folio) verify(folio); });
-  const folioFromQr = new URLSearchParams(window.location.search).get("folio");
-  if (folioFromQr && input) { input.value = folioFromQr; verify(folioFromQr); }
+  document.addEventListener("astro:page-load", initVerification);
 </script>

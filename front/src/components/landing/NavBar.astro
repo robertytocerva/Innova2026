@@ -72,11 +72,15 @@ const isActive = (href: string) => {
 </header>
 
 <script>
-  const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
-  const menu = document.querySelector<HTMLDivElement>("[data-nav-menu]");
-  if (toggle && menu) {
-    toggle.addEventListener("click", () => {
-      menu.classList.toggle("hidden");
-    });
+  function initNav() {
+    const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
+    const menu = document.querySelector<HTMLDivElement>("[data-nav-menu]");
+    if (toggle && menu) {
+      toggle.onclick = () => {
+        menu.classList.toggle("hidden");
+      };
+    }
   }
+  document.addEventListener("astro:page-load", initNav);
 </script>
+
