@@ -48,12 +48,12 @@ export function YearImage({ label, src, tone }: YearImageProps): ReactElement {
         {label} · {tone === "initial" ? "Inicial" : "Final"}
       </div>
       <div
-        className={`h-24 overflow-hidden rounded-xl border ${borderClass} bg-gradient-to-br from-black/60 to-black/30 shadow-inner`}
+        className={`overflow-hidden rounded-xl border ${borderClass} bg-gradient-to-br from-black/60 to-black/30 shadow-inner`}
       >
         {src ? (
-          <img src={src} alt={`Imagen satelital ${label}`} className="h-full w-full object-cover" />
+          <img src={src} alt={`Imagen satelital ${label}`} className="w-full object-contain" />
         ) : (
-          <div className="h-full w-full flex items-center justify-center text-[10px] text-inverse-on-surface/40">
+          <div className="flex h-24 w-full items-center justify-center text-[10px] text-inverse-on-surface/40">
             Sin imagen
           </div>
         )}
