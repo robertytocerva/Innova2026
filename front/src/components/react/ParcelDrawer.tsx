@@ -1,12 +1,14 @@
-import { useState, useEffect, useMemo, type ReactElement } from "react";
-import { michoacanParcels } from "../../data/michoacanParcels";
-import { validatePolygon } from "../../lib/geometryValidator";
-import { calculateVedaForestal, getParcelFireRecords } from "../../lib/nasaFirms";
-import { auditParcelYears } from "../../lib/localImageAudit";
-import { getParcelTimeSeriesUrls, SATELLITE_HISTORY_START } from "../../lib/satelliteHistory";
-import { approveExpediente, createAuditReport, generatePdf, pdfUrl } from "../../lib/reportApi";
-import type { ParcelFeature, AuditData, AuditResponse } from "../../types/mapa";
-import type { Expediente } from "../../types/reports";
+import { useMemo, type ReactElement } from "react";
+import { getParcelFireRecords } from "../../lib/nasaFirms";
+import { calculateVedaForestal } from "../../lib/nasaFirms";
+import type { ParcelFeature } from "../../types/mapa";
+import { DEFAULT_STATUS_STYLE, resolveStatusKey, type StatusStyle } from "./drawer/drawer-styles";
+import ParcelDrawerHeader from "./drawer/ParcelDrawerHeader";
+import ParcelFicha from "./drawer/ParcelFicha";
+import ParcelHistorial from "./drawer/ParcelHistorial";
+import ParcelComparativa from "./drawer/ParcelComparativa";
+import ParcelFirms from "./drawer/ParcelFirms";
+import ParcelGeometry from "./drawer/ParcelGeometry";
 
 interface Props {
   feature: ParcelFeature | null;
@@ -15,22 +17,16 @@ interface Props {
   onSelectParcel: (f: ParcelFeature) => void;
   currentYear: number;
   comparisonYear: number;
+  onParcelBlocked?: () => void;
 }
 
-const STATUS_STYLES: Record<string, { class: string; text: string; iconBg: string }> = {
-  bloqueada: { class: "bg-error/20 text-error border border-error/40", text: "BLOQUEADA", iconBg: "from-error/40 to-error/10" },
-  aprobada: { class: "bg-primary/20 text-primary border border-primary/40", text: "APROBADA", iconBg: "from-primary/40 to-primary/10" },
-  en_revision: { class: "bg-amber-500/20 text-amber-700 border border-amber-600/40", text: "EN REVISIÓN", iconBg: "from-amber-500/40 to-amber-600/10" },
-};
-
-function SectionIcon({ name, gradient }: { name: string; gradient: string }): ReactElement {
-  return (
-    <span className={`flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br ${gradient} ring-1 ring-inset ring-white/10`}>
-      <span className="material-symbols-outlined text-[14px] text-on-primary">{name}</span>
-    </span>
+export default function ParcelDrawer({ feature, open, onClose, currentYear, comparisonYear, onParcelBlocked }: Props): ReactElement {
+  const vedaInfo = useMemo(
+    () => (feature ? calculateVedaForestal(getParcelFireRecords(feature)) : null),
+    [feature],
   );
-}
 
+<<<<<<< HEAD
 const verdictLabel = (value: string) => value === "cumple" ? "Cumple" : value === "no cumple" ? "No cumple" : "Requiere revisión";
 const findingTone = (value: string) => value === "cumple" ? "border-emerald-400/30 bg-emerald-950/30" : value === "no cumple" ? "border-red-400/30 bg-red-950/30" : "border-amber-400/30 bg-amber-950/30";
 
@@ -42,101 +38,32 @@ export default function ParcelDrawer({ feature, open, onClose, currentYear, comp
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState<string | null>(null);
   const [generatedReport, setGeneratedReport] = useState<Expediente | null>(null);
+=======
+  const statusKey = feature
+    ? resolveStatusKey({
+        exportacion: feature.properties.exportacion,
+        deforestacionDetectada: feature.properties.deforestacionDetectada,
+        vedaActiva: vedaInfo?.vedaActiva ?? false,
+      })
+    : "en_revision";
+>>>>>>> 34b228c9ff770416fab3758a8b61c0ba1feed953
 
-  const timeSeries = useMemo(() => (feature ? getParcelTimeSeriesUrls(feature) : null), [feature]);
-  const fireRecords = useMemo(() => (feature ? getParcelFireRecords(feature) : []), [feature]);
-  const vedaInfo = useMemo(() => calculateVedaForestal(fireRecords), [fireRecords]);
-  const geometryValidation = useMemo(() => (feature ? validatePolygon(feature, michoacanParcels) : null), [feature]);
+  const status: StatusStyle = DEFAULT_STATUS_STYLE;
 
-  useEffect(() => {
-    setGeminiResult(null);
-    setGeminiAlert(null);
-    setAuditResponse(null);
-    setReportError(null);
-    setGeneratedReport(null);
-  }, [feature]);
-
-  if (!feature) return <></>;
-
-  const p = feature.properties;
-  const fromUrl = timeSeries?.series[comparisonYear];
-  const toUrl = timeSeries?.series[currentYear];
-  const hasSatelliteComparison = comparisonYear >= SATELLITE_HISTORY_START && currentYear >= SATELLITE_HISTORY_START;
-  const statusKey = (p.exportacion === "bloqueada" || p.deforestacionDetectada || vedaInfo.vedaActiva) ? "bloqueada" : p.exportacion;
-  const status = STATUS_STYLES[statusKey] ?? STATUS_STYLES.en_revision;
-
-  const runGemini = async (): Promise<void> => {
-    if (!hasSatelliteComparison || comparisonYear >= currentYear) return;
-    setGeminiLoading(true);
-    setGeminiAlert(null);
-    setGeminiResult(null);
-    try {
-      const result = await auditParcelYears(feature, comparisonYear, currentYear);
-      setAuditResponse(result);
-      setGeminiResult(result.data);
-    } catch (error) {
-      setGeminiAlert(error instanceof Error ? error.message : "No fue posible ejecutar la auditoría Gemini.");
-    } finally {
-      setGeminiLoading(false);
-    }
-  };
-
-  const generateReport = async (): Promise<void> => {
-    if (!auditResponse || reportLoading) return;
-    setReportLoading(true);
-    setReportError(null);
-    try {
-      const reportFeature = {
-        ...feature,
-        properties: { ...feature.properties, exportacion: statusKey },
-      };
-      const draft = await createAuditReport(p.id, reportFeature, comparisonYear, currentYear, auditResponse);
-      await approveExpediente(draft.expediente.folio, "Perito demostración", "auditor_demo");
-      const generated = await generatePdf(draft.expediente.folio);
-      setGeneratedReport(generated);
-    } catch (error) {
-      setReportError(error instanceof Error ? error.message : "No fue posible generar el reporte.");
-    } finally {
-      setReportLoading(false);
-    }
-  };
+  const containerClass = `absolute top-0 right-0 h-full w-96 max-w-full bg-gradient-to-b from-surface-container-lowest to-surface-container-low text-on-surface shadow-[-8px_0_30px_-5px_rgba(0,0,0,0.3)] z-[1000] transition-transform duration-300 flex flex-col border-l border-outline-variant/40 ${
+    open ? "translate-x-0" : "translate-x-full"
+  }`;
 
   return (
-    <div
-      className={`absolute top-0 right-0 h-full w-96 max-w-full bg-gradient-to-b from-surface-container-lowest to-surface-container-low text-on-surface shadow-[-8px_0_30px_-5px_rgba(0,0,0,0.3)] z-[1000] transition-transform duration-300 flex flex-col border-l border-outline-variant/40 ${
-        open ? "translate-x-0" : "translate-x-full"
-      }`}
-    >
-      <div className="relative p-5 bg-gradient-to-br from-primary via-primary-container to-inverse-surface text-surface">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(200,212,90,0.15),transparent_60%)] pointer-events-none"></div>
-        <div className="relative flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 rounded-lg bg-surface/15 backdrop-blur-sm px-2.5 py-1 font-mono text-sm font-bold text-surface ring-1 ring-surface/20">
-                <span className="material-symbols-outlined text-[14px] text-tertiary">tag</span>
-                {p.id}
-              </span>
-              <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full backdrop-blur-sm ${status.class}`}>
-                {status.text}
-              </span>
-            </div>
-            <p className="text-label-sm font-label-sm text-on-primary/80 mt-2 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[14px]">place</span>
-              {p.municipio} · Michoacán
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-xl text-on-primary/70 hover:text-surface hover:bg-surface/15 transition-colors"
-            aria-label="Cerrar panel"
-          >
-            <span className="material-symbols-outlined text-[20px]">close</span>
-          </button>
-        </div>
-      </div>
+    <div className={containerClass} aria-hidden={!open}>
+      <ParcelDrawerHeader
+        feature={feature ?? PLACEHOLDER_FEATURE}
+        status={status}
+        onClose={onClose}
+      />
 
       <div className="flex-1 overflow-y-auto p-4 space-y-5 text-label-sm font-label-sm">
+<<<<<<< HEAD
         <section className="space-y-2.5">
           <div className="flex items-center gap-2">
             <SectionIcon name="badge" gradient={status.iconBg} />
@@ -401,8 +328,48 @@ function YearImage({ label, src, tone }: { label: string; src: string | undefine
           <img src={src} alt={`Imagen satelital ${label}`} className="h-full w-full object-cover" />
         ) : (
           <div className="h-full w-full flex items-center justify-center text-[10px] text-inverse-on-surface/40">Sin imagen</div>
+=======
+        {feature && (
+          <>
+            <ParcelFicha feature={feature} status={status} />
+            <ParcelHistorial feature={feature} />
+            <ParcelComparativa
+              key={feature.properties.id}
+              feature={feature}
+              currentYear={currentYear}
+              comparisonYear={comparisonYear}
+              statusKey={statusKey}
+              onParcelBlocked={onParcelBlocked}
+            />
+            <ParcelFirms key={`firms-${feature.properties.id}`} feature={feature} />
+            <ParcelGeometry key={`geometry-${feature.properties.id}`} feature={feature} />
+          </>
+>>>>>>> 34b228c9ff770416fab3758a8b61c0ba1feed953
         )}
       </div>
     </div>
   );
 }
+
+const PLACEHOLDER_FEATURE: ParcelFeature = {
+  type: "Feature",
+  id: "MCH-000",
+  geometry: { type: "Polygon", coordinates: [[]] },
+  properties: {
+    id: "MCH-000",
+    propietario: "",
+    municipio: "",
+    superficieHa: 0,
+    cultivo: "",
+    fechaAlta: "",
+    exportacion: "aprobada",
+    deforestacionDetectada: false,
+    historialDeforestacion: [],
+    geometryIssues: [],
+    subdivisionBloqueada: false,
+    parentId: null,
+    ndviPromedio: 0,
+    ultimaRevision: "",
+    confianzaIA: 0,
+  },
+};

@@ -38,7 +38,7 @@ const results = await Promise.all(
 <section id="equipo" class="relative w-full py-20 px-gutter-desktop overflow-hidden" data-page="equipo">
   <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[640px] h-[640px] rounded-full bg-gradient-to-br from-secondary-fixed/20 to-tertiary-fixed/15 blur-3xl pointer-events-none tv-aurora"></div>
 
-  <div class="max-w-4xl mx-auto relative">
+  <div class="max-w-5xl mx-auto relative">
     <div class="text-center tv-reveal">
       <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-inverse-surface text-surface font-label-sm text-label-sm tracking-widest uppercase font-semibold shadow-lg shadow-inverse-surface/30">
         <span class="relative flex h-2 w-2">
@@ -63,13 +63,22 @@ const results = await Promise.all(
       </div>
     </div>
 
-    <!-- Carrusel -->
-    <div class="mt-12 relative tc-carousel" data-team-carousel>
-      <!-- Tarjetas -->
-      <div class="grid" data-slides>
+    <!-- Carrusel Coverflow -->
+    <div class="mt-14 relative" data-team-carousel>
+      <!-- Contador -->
+      <div class="flex justify-center mb-6">
+        <span class="tc-counter font-mono text-label-md text-on-surface-variant" data-counter>
+          <span class="tc-counter-current text-secondary font-bold">01</span>
+          <span class="mx-1.5 text-outline">/</span>
+          <span class="tc-counter-total">{String(results.length).padStart(2, "0")}</span>
+        </span>
+      </div>
+
+      <!-- Track de slides -->
+      <div class="tc-track" data-slides>
         {results.map((m, i) => (
           <article
-            class={`tc-slide ${i === 0 ? "tc-active" : ""}`}
+            class="tc-slide"
             data-slide
             data-index={i}
           >
@@ -89,17 +98,14 @@ const results = await Promise.all(
               </div>
 
               <div class="absolute -top-8 left-1/2 -translate-x-1/2 z-10">
-                <div class="relative tv-glow">
-                  <span class="absolute -inset-2 rounded-full bg-tertiary-fixed/50 blur-lg"></span>
-                  <img
-                    src={m.gh?.avatar ?? `https://github.com/${m.handle}.png?size=240`}
-                    alt={m.name}
-                    class="relative w-24 h-24 rounded-full object-cover ring-4 ring-surface shadow-2xl transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                    width={96}
-                    height={96}
-                  />
-                </div>
+                <img
+                  src={m.gh?.avatar ?? `https://github.com/${m.handle}.png?size=240`}
+                  alt={m.name}
+                  class="w-24 h-24 rounded-full object-cover ring-4 ring-surface shadow-2xl"
+                  loading="lazy"
+                  width={96}
+                  height={96}
+                />
               </div>
 
               <div class="pt-20 px-6 pb-7 text-center">
@@ -147,36 +153,55 @@ const results = await Promise.all(
       </div>
 
       <!-- Controles: flechas -->
-      <button type="button" class="tc-arrow tc-prev absolute top-1/2 -translate-y-1/2 -left-4 md:-left-8 z-20 w-12 h-12 rounded-full bg-inverse-surface text-surface shadow-xl shadow-inverse-surface/40 flex items-center justify-center hover:bg-tertiary hover:text-on-tertiary hover:scale-110 transition-all border border-surface/10" data-prev aria-label="Anterior">
+      <button type="button" class="tc-arrow tc-prev absolute top-1/2 -translate-y-1/2 -left-2 md:-left-6 lg:-left-14 z-20 w-11 h-11 md:w-12 md:h-12 rounded-full bg-inverse-surface text-surface shadow-xl shadow-inverse-surface/40 flex items-center justify-center hover:bg-tertiary hover:text-on-tertiary hover:scale-110 transition-all duration-300 border border-surface/10" data-prev aria-label="Anterior">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
       </button>
-      <button type="button" class="tc-arrow tc-next absolute top-1/2 -translate-y-1/2 -right-4 md:-right-8 z-20 w-12 h-12 rounded-full bg-inverse-surface text-surface shadow-xl shadow-inverse-surface/40 flex items-center justify-center hover:bg-tertiary hover:text-on-tertiary hover:scale-110 transition-all border border-surface/10" data-next aria-label="Siguiente">
+      <button type="button" class="tc-arrow tc-next absolute top-1/2 -translate-y-1/2 -right-2 md:-right-6 lg:-right-14 z-20 w-11 h-11 md:w-12 md:h-12 rounded-full bg-inverse-surface text-surface shadow-xl shadow-inverse-surface/40 flex items-center justify-center hover:bg-tertiary hover:text-on-tertiary hover:scale-110 transition-all duration-300 border border-surface/10" data-next aria-label="Siguiente">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
       </button>
 
       <!-- Dots -->
-      <div class="flex justify-center gap-2 mt-7" data-dots></div>
+      <div class="flex justify-center gap-2.5 mt-8" data-dots></div>
     </div>
   </div>
 </section>
 
 <script>
   (() => {
-    const el = document.querySelector<HTMLElement>("[data-team-carousel]");
-    if (!el) return;
-    if (el.dataset.bound) return;
-    el.dataset.bound = "1";
-    const root = el as HTMLElement;
+    const root = document.querySelector<HTMLElement>("[data-team-carousel]");
+    if (!root || root.dataset.bound) return;
+    root.dataset.bound = "1";
 
     const slides = Array.from(root.querySelectorAll<HTMLElement>("[data-slide]"));
-    if (slides.length < 2) return;
+    const n = slides.length;
+    if (n < 2) return;
+
     const dotsWrap = root.querySelector("[data-dots]");
-
+    const counterEl = root.querySelector<HTMLElement>("[data-counter]");
     let current = 0;
-    let timer: number | undefined;
+    let timer: ReturnType<typeof setInterval> | undefined;
 
-    const FIRST = "tc-active", LAST = "tc-leave", ANIM = 420;
+    /* ── Posiciones del coverflow ── */
+    const KEYS: Record<number, string> = {
+      0: "tc-pos-center",
+      1: "tc-pos-right",
+      [-1 + n]: "tc-pos-left",
+    };
 
+    function layout() {
+      slides.forEach((s, i) => {
+        s.classList.remove("tc-pos-center", "tc-pos-left", "tc-pos-right", "tc-pos-hidden");
+        const diff = ((i - current) % n + n) % n;
+        const key = diff <= 1 ? diff : diff === n - 1 ? -1 + n : null;
+        const cls = key !== null && KEYS[key] ? KEYS[key] : "tc-pos-hidden";
+        s.classList.add(cls);
+        s.style.zIndex = cls === "tc-pos-center" ? "3" : cls === "tc-pos-left" || cls === "tc-pos-right" ? "1" : "0";
+      });
+      updateDots();
+      updateCounter();
+    }
+
+    /* ── Dots ── */
     function buildDots() {
       if (!dotsWrap) return;
       dotsWrap.innerHTML = "";
@@ -184,96 +209,127 @@ const results = await Promise.all(
         const dot = document.createElement("button");
         dot.type = "button";
         dot.setAttribute("aria-label", `Ir a colaborador ${i + 1}`);
-        dot.className = `tc-dot ${i === 0 ? "tc-dot-active" : ""}`;
+        dot.className = `tc-dot${i === 0 ? " tc-dot-active" : ""}`;
         dot.addEventListener("click", () => go(i));
         dotsWrap.appendChild(dot);
       });
     }
 
-    function show(idx: number) {
-      slides.forEach((s) => s.classList.remove(FIRST, LAST));
-
-      const currentEl = slides[current];
-      currentEl.classList.add(LAST);
-      currentEl.classList.remove(FIRST);
-
-      setTimeout(() => {
-        currentEl.classList.remove(LAST);
-        currentEl.style.visibility = "hidden";
-        currentEl.style.pointerEvents = "none";
-
-        current = (idx + slides.length) % slides.length;
-        const next = slides[current];
-        next.style.visibility = "visible";
-        next.style.pointerEvents = "auto";
-        next.classList.add(FIRST);
-        updateDots();
-      }, ANIM);
-    }
-
     function updateDots() {
-      root.querySelectorAll<HTMLButtonElement>(".tc-dot").forEach((d, i) => {
+      if (!dotsWrap) return;
+      dotsWrap.querySelectorAll<HTMLButtonElement>(".tc-dot").forEach((d, i) => {
         d.classList.toggle("tc-dot-active", i === current);
       });
     }
 
+    /* ── Contador ── */
+    function updateCounter() {
+      if (!counterEl) return;
+      const span = counterEl.querySelector(".tc-counter-current");
+      if (span) span.textContent = String(current + 1).padStart(2, "0");
+    }
+
+    /* ── Navegación ── */
     function go(idx: number) {
       if (idx === current) return;
-      show(idx);
+      current = ((idx % n) + n) % n;
+      layout();
       restart();
     }
-    function next() { go((current + 1) % slides.length); }
-    function prev() { go((current - 1 + slides.length) % slides.length); }
+    function next() { go(current + 1); }
+    function prev() { go(current - 1); }
 
-    function start() {
-      stop();
-      timer = window.setInterval(() => next(), 4200);
-    }
-    function stop() {
-      if (timer) window.clearInterval(timer);
-      timer = undefined;
-    }
-    function restart() {
-      start();
-    }
+    function start() { stop(); timer = setInterval(next, 4500); }
+    function stop() { if (timer) clearInterval(timer); timer = undefined; }
+    function restart() { start(); }
 
     root.querySelector("[data-prev]")?.addEventListener("click", () => { prev(); restart(); });
     root.querySelector("[data-next]")?.addEventListener("click", () => { next(); restart(); });
     root.addEventListener("mouseenter", stop);
     root.addEventListener("mouseleave", start);
 
-    buildDots();
-    slides.forEach((s, i) => {
-      s.style.visibility = i === 0 ? "visible" : "hidden";
-      if (i !== 0) s.style.pointerEvents = "none";
-    });
-    start();
+    /* ── Touch / swipe ── */
+    let touchX = 0;
+    root.addEventListener("touchstart", (e) => { touchX = e.touches[0].clientX; stop(); }, { passive: true });
+    root.addEventListener("touchend", (e) => {
+      const dx = e.changedTouches[0].clientX - touchX;
+      if (Math.abs(dx) > 50) dx < 0 ? next() : prev();
+      start();
+    }, { passive: true });
 
-    document.addEventListener("astro:page-load", stop);
+    buildDots();
+    layout();
+    start();
   })();
 </script>
 
 <style>
-  /* ===== Estilos del carrusel de equipo ===== */
+  /* ===== Track del carrusel ===== */
+  .tc-track {
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr;
+    position: relative;
+    min-height: 500px;
+    perspective: 1200px;
+  }
+
+  /* ===== Slide: transiciones suaves ===== */
   .tc-slide {
     grid-area: 1 / 1;
+    transition:
+      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      z-index 0s;
+    will-change: transform, opacity, filter;
   }
 
-  .tc-slide.tc-active {
-    animation: tcIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  .tc-slide.tc-leave {
-    animation: tcOut 0.42s cubic-bezier(0.4, 0, 0.2, 1) both;
+  /* ── Posiciones ── */
+  .tc-pos-center {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+    filter: blur(0px);
+    z-index: 3;
+    pointer-events: auto;
   }
 
+  .tc-pos-left {
+    transform: translateX(calc(-50% - 20px)) scale(0.82);
+    opacity: 0.5;
+    filter: blur(1.5px);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .tc-pos-right {
+    transform: translateX(calc(50% + 20px)) scale(0.82);
+    opacity: 0.5;
+    filter: blur(1.5px);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .tc-pos-hidden {
+    transform: translateX(0) scale(0.55);
+    opacity: 0;
+    filter: blur(4px);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── Tarjeta: hover elevación ── */
   .tc-card {
     transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
   }
-  .tc-slide:hover .tc-card {
-    transform: translateY(-6px);
-    box-shadow: 0 22px 45px -18px rgba(31, 61, 46, 0.4);
+  .tc-pos-center .tc-card:hover {
+    transform: translateY(-8px);
+    box-shadow:
+      0 25px 50px -15px rgba(31, 61, 46, 0.35),
+      0 0 0 1px rgba(60, 107, 73, 0.08);
   }
 
+  /* ── CTA Button shimmer ── */
   .tc-cta {
     background: linear-gradient(90deg, var(--color-secondary), #2f5a3c, var(--color-secondary));
     background-size: 200% 100%;
@@ -295,60 +351,81 @@ const results = await Promise.all(
   .tc-cta:hover::after {
     transform: translateX(100%);
   }
+  .tc-cta *, .tc-cta::after {
+    position: relative;
+    z-index: 1;
+  }
 
+  /* ── Grid pattern ── */
   .tv-grid-pattern {
     background-image:
       linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
     background-size: 24px 24px;
   }
-  .tc-cta * , .tc-cta::after, .tc-cta::before {
-    position: relative;
-    z-index: 1;
+
+  /* ── Contador ── */
+  .tc-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 16px;
+    border-radius: 9999px;
+    background: var(--color-surface-container-low);
+    border: 1px solid var(--color-surface-container-high);
+    font-variant-numeric: tabular-nums;
+  }
+  .tc-counter-current {
+    transition: opacity 0.25s ease, transform 0.25s ease;
   }
 
-  @keyframes tcIn {
-    from {
-      opacity: 0;
-      transform: translateX(48px) scale(0.96);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0) scale(1);
-    }
-  }
-  @keyframes tcOut {
-    from {
-      opacity: 1;
-      transform: translateX(0) scale(1);
-    }
-    to {
-      opacity: 0;
-      transform: translateX(-48px) scale(0.96);
-    }
-  }
-
+  /* ── Dots ── */
   .tc-dot {
     width: 10px;
     height: 10px;
     border-radius: 9999px;
     background: var(--color-surface-container-high);
     border: 1px solid var(--color-outline);
-    transition: all 0.3s ease;
+    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     cursor: pointer;
   }
+  .tc-dot:hover {
+    background: var(--color-outline);
+    transform: scale(1.2);
+  }
   .tc-dot-active {
-    width: 30px;
+    width: 32px;
     background: var(--color-secondary);
     border-color: var(--color-secondary);
     box-shadow: 0 0 0 3px rgba(60, 107, 73, 0.18);
   }
 
+  /* ── Responsive: 1 tarjeta en móvil ── */
+  @media (max-width: 768px) {
+    .tc-track {
+      min-height: 420px;
+    }
+    .tc-pos-left,
+    .tc-pos-right {
+      transform: translateX(0) scale(0.85);
+      opacity: 0;
+      filter: blur(3px);
+      pointer-events: none;
+    }
+  }
+
+  /* ── Reduced motion ── */
   @media (prefers-reduced-motion: reduce) {
-    .tc-slide.tc-active, .tc-slide.tc-leave {
-      animation: none;
+    .tc-slide {
+      transition: none;
     }
     .tc-card {
+      transition: none;
+    }
+    .tc-cta::after {
+      transition: none;
+    }
+    .tc-dot {
       transition: none;
     }
   }

@@ -13,8 +13,7 @@ import type {
 
 export const heroData = {
   badge: { icon: "verified_user", label: "Plataforma de Auditoría Ambiental · Cero Deforestación" },
-  headline: "Auditoría satelital del cambio de uso de suelo en el cinturón aguacatero y berries de",
-  headlineHighlight: "Michoacán",
+  headline: "Auditoría satelital del cambio de uso de suelo en el cinturón aguacatero y berries de Michoacán",
   paragraph:
     "Confrontamos los polígonos de huertas registradas de aguacate y berries (Uruapan, Zamora, Los Reyes y la Meseta Purépecha) contra la serie histórica de cobertura forestal Landsat/Sentinel para automatizar la emisión de expedientes de cumplimiento ambiental, en apego al Decreto estatal de Cero Deforestación.",
   primaryCta: { label: "Auditar Mi Predio", href: "#expedientes", dataPath: "expedientes", icon: "verified_user" },
