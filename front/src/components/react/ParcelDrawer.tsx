@@ -66,7 +66,7 @@ export default function ParcelDrawer({ feature, open, onClose, currentYear, comp
         role="dialog"
         aria-modal="true"
         aria-labelledby="parcel-modal-title"
-        className={`relative w-full max-w-2xl my-auto flex flex-col bg-gradient-to-b from-surface-container-lowest to-surface-container-low text-on-surface rounded-3xl shadow-[-12px_0_60px_-15px_rgba(0,0,0,0.5)] border border-outline-variant/40 backdrop-blur-xl max-h-[calc(100vh-7.5rem)] sm:max-h-[calc(100vh-9rem)] transition-all duration-300 ease-out ${
+        className={`relative w-full max-w-2xl my-auto flex flex-col bg-gradient-to-b from-surface-container-lowest to-surface-container-low text-on-surface rounded-3xl shadow-[-12px_0_60px_-15px_rgba(0,0,0,0.5)] border border-outline-variant/40 backdrop-blur-xl overflow-hidden max-h-[calc(100vh-7.5rem)] sm:max-h-[calc(100vh-9rem)] transition-all duration-300 ease-out ${
           open ? "scale-100 opacity-100 translate-y-0" : "scale-95 opacity-0 translate-y-4"
       }`}
       >
