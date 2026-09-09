@@ -134,8 +134,11 @@ function getPolygonStyle(feature: ParcelFeature): L.PathOptions {
   const p = feature.properties;
   const fireRecords = getParcelFireRecords(feature);
   const vedaInfo = calculateVedaForestal(fireRecords);
-  const geometryValidation = validatePolygon(feature, michoacanParcels);
-  const hasGeometryIssues = Boolean(p.geometryIssues?.length || geometryValidation.issues.length);
+  const hasGeometryIssues = Boolean(
+    p.geometryIssues !== undefined
+      ? p.geometryIssues.length > 0
+      : validatePolygon(feature, michoacanParcels).issues.length > 0,
+  );
 
   let fillColor = "#22c55e";
   let fillOpacity = 0.35;
@@ -214,14 +217,17 @@ function computeInitialBounds(features: ParcelFeatureCollection): L.LatLngBounds
 
 function MapEvents({ onMapReady, initialBounds }: { onMapReady: (map: LeafletMap) => void; initialBounds: L.LatLngBoundsExpression }): null {
   const map = useMap();
+  const hasFittedRef = useRef(false);
+
   useEffect(() => {
     onMapReady(map);
-    const handle = window.setTimeout(() => {
-      map.invalidateSize();
+    map.invalidateSize();
+
+    if (!hasFittedRef.current) {
+      hasFittedRef.current = true;
       map.fitBounds(initialBounds, { padding: [40, 40], animate: false });
-    }, 200);
-    return () => window.clearTimeout(handle);
-  }, [map, onMapReady, initialBounds]);
+    }
+  }, [map, onMapReady]);
   return null;
 }
 
@@ -276,15 +282,23 @@ export default function MapLeaflet({ currentYear, onMapReady, onParcelsLayer, on
       center={[19.42, -102.05]}
       zoom={10}
       zoomControl={true}
-      fadeAnimation={false}
-      zoomAnimation={false}
-      style={{ height: "100%", width: "100%", background: "var(--color-inverse-surface)" }}
+      fadeAnimation={true}
+      zoomAnimation={true}
+      style={{ height: "100%", width: "100%", background: "#0f1f17" }}
       className={drawingActive ? "cursor-crosshair" : ""}
     >
       <MapEvents onMapReady={onMapReady} initialBounds={initialBounds} />
       <DrawingHandler drawingState={drawingState} onMapClick={onMapClick} />
       <DrawingLayer drawingState={drawingState} />
-      <TileLayer key={currentYear} url={tileUrl} maxZoom={18} attribution="Tiles &copy; Esri Wayback" />
+      <TileLayer
+        key={currentYear}
+        url={tileUrl}
+        maxZoom={18}
+        attribution="Tiles &copy; Esri Wayback"
+        keepBuffer={8}
+        updateWhenZooming={false}
+        updateWhenIdle={false}
+      />
       <GeoJSON
         key={parcels.features.length}
         ref={handleLayerRef}
