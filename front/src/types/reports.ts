@@ -1,5 +1,24 @@
 export type Verdict = "cumple" | "no cumple" | "requiere revision";
 
+export interface ReportSource {
+  type?: "normativa" | "evidencia" | string;
+  title?: string;
+  organization?: string;
+  status?: string;
+  reference?: string;
+  detail?: string;
+}
+
+export interface ReportFinding {
+  id: string;
+  criterion: string;
+  status: Verdict;
+  reason: string;
+  observation?: string;
+  rule?: string;
+  sources: ReportSource[];
+}
+
 export interface HuertaGeometry {
   type: "Polygon";
   coordinates: [number, number][][];
@@ -41,6 +60,8 @@ export interface Expediente {
   verdict: Verdict;
   boundary_flag: boolean;
   reasons: string[];
+  findings: ReportFinding[];
+  regulatory_notice?: string;
   status: "draft" | "approved" | "generated";
   approved_by?: string;
   approver_role?: string;
@@ -65,6 +86,10 @@ export interface PublicVerification {
   issuedAt?: string;
   verdict: Verdict;
   boundaryFlag: boolean;
+  reasons?: string[];
+  findings?: ReportFinding[];
+  regulatoryNotice?: string;
+  normativeSources?: ReportSource[];
   huerta: {
     referenceCode?: string;
     name: string;

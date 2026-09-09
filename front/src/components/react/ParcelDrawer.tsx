@@ -31,6 +31,9 @@ function SectionIcon({ name, gradient }: { name: string; gradient: string }): Re
   );
 }
 
+const verdictLabel = (value: string) => value === "cumple" ? "Cumple" : value === "no cumple" ? "No cumple" : "Requiere revisión";
+const findingTone = (value: string) => value === "cumple" ? "border-emerald-400/30 bg-emerald-950/30" : value === "no cumple" ? "border-red-400/30 bg-red-950/30" : "border-amber-400/30 bg-amber-950/30";
+
 export default function ParcelDrawer({ feature, open, onClose, currentYear, comparisonYear }: Props): ReactElement {
   const [geminiLoading, setGeminiLoading] = useState(false);
   const [geminiAlert, setGeminiAlert] = useState<string | null>(null);
@@ -256,15 +259,27 @@ export default function ParcelDrawer({ feature, open, onClose, currentYear, comp
           )}
           {reportError && <div className="rounded-lg border border-error/50 bg-error/10 p-2.5 text-[10px] text-red-200">{reportError}</div>}
           {generatedReport && (
-            <a
-              href={pdfUrl(generatedReport.folio)}
-              target="_blank"
-              rel="noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-container px-3 py-2.5 text-[11px] font-bold text-on-primary shadow-md transition-all hover:shadow-lg"
-            >
-              <span className="material-symbols-outlined text-[16px]">download</span>
-              Descargar reporte {generatedReport.folio}
-            </a>
+            <div className="space-y-2">
+              <div className="rounded-xl border border-tertiary/30 bg-black/20 p-3 text-[10px]">
+                <p className="mb-2 font-bold uppercase tracking-wider text-tertiary">Por qué tiene este estado</p>
+                {generatedReport.findings?.map((finding) => (
+                  <article key={finding.id} className={`mb-2 rounded-lg border p-2.5 last:mb-0 ${findingTone(finding.status)}`}>
+                    <div className="flex items-start justify-between gap-2"><strong className="text-surface">{finding.criterion}</strong><span className="font-bold uppercase text-tertiary">{verdictLabel(finding.status)}</span></div>
+                    <p className="mt-1 leading-relaxed text-inverse-on-surface/80">{finding.reason}</p>
+                    {finding.sources?.length ? <p className="mt-1 leading-relaxed text-inverse-on-surface/60"><strong>Fuentes:</strong> {finding.sources.map((source) => `${source.type === "normativa" ? "Normativa" : "Evidencia"}: ${source.title || "Fuente no identificada"}${source.status ? ` · Estado: ${source.status}` : ""} · ${source.reference || ""}${source.detail ? ` · ${source.detail}` : ""}`).join(" | ")}</p> : null}
+                  </article>
+                ))}
+              </div>
+              <a
+                href={pdfUrl(generatedReport.folio)}
+                target="_blank"
+                rel="noreferrer"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-container px-3 py-2.5 text-[11px] font-bold text-on-primary shadow-md transition-all hover:shadow-lg"
+              >
+                <span className="material-symbols-outlined text-[16px]">download</span>
+                Descargar reporte {generatedReport.folio}
+              </a>
+            </div>
           )}
         </section>
 

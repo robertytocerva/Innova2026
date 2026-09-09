@@ -178,7 +178,7 @@ const getFireResult = async ({ parcelId, geometry, metadata, cutoffDate, imageAu
 
   const alerts = await getFireAlertsForPeriod({
     bbox: geometryToBbox(geometry),
-    startDate: cutoffDate,
+    startDate: "2012-01-01",
     endDate: cutoffDate,
   });
   const rows = alerts?.rows || [];
@@ -246,24 +246,18 @@ export const confrontParcel = async ({ parcelId, geometry: suppliedGeometry, ima
   const calculatedDecision = evaluateComparison({
     forestLossPct: forest.lossPct ?? null,
     forestStatus: forest.status,
+    forestSource: forest.source,
     fireDetected: fires.detected,
     fireStatus: fires.status,
+    fireSource: fires.source,
+    fireCount: fires.count,
+    fireLastDate: fires.lastDate,
     anpOverlap: anp.overlap,
     anpOverlapPct: anp.overlapPct,
     anpStatus: anp.status,
+    anpSource: anp.source,
   });
-  const mapVerdict = verdictFromMapStatus(mapSnapshot?.exportacion);
-  const decision = mapVerdict
-    ? {
-      ...calculatedDecision,
-      verdict: mapVerdict,
-      boundaryFlag: mapSnapshot.exportacion === "en_revision",
-      reasons: [
-        `Estado del polígono seleccionado en el mapa: ${mapSnapshot.exportacion}.`,
-        "El resultado visual del mapa es la clasificación principal del expediente.",
-      ],
-    }
-    : calculatedDecision;
+  const decision = calculatedDecision;
 
   const result = await createComparisonResult({
     parcelId,
@@ -302,6 +296,7 @@ export const confrontParcel = async ({ parcelId, geometry: suppliedGeometry, ima
     verdict: decision.verdict,
     boundaryFlag: decision.boundaryFlag,
     reasons: decision.reasons,
+    findings: decision.findings,
   });
 
   return {

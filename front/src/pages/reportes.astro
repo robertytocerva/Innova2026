@@ -52,15 +52,7 @@ import { navData, footerData } from "../data/landing";
               <option value="requiere revision">Requiere revisión</option>
             </select>
           </label>
-          <label class="w-full lg:w-52">
-            <span class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface-variant">Estado</span>
-            <select id="statusFilter" class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3 py-3 text-sm text-on-surface outline-none focus:ring-2 focus:ring-secondary">
-              <option value="">Todos</option>
-              <option value="generated">PDF generado</option>
-              <option value="approved">Aprobado</option>
-              <option value="draft">Borrador</option>
-            </select>
-          </label>
+
           <button id="clearFilters" type="button" class="rounded-xl border border-outline-variant px-4 py-3 text-sm font-semibold text-on-surface-variant transition-colors hover:bg-surface-container-low">Limpiar</button>
         </div>
       </section>
@@ -78,7 +70,7 @@ import { navData, footerData } from "../data/landing";
 
 <script>
   import { listExpedientes, pdfUrl } from "../lib/reportApi";
-  import type { Expediente } from "../types/reports";
+  import type { Expediente, ReportFinding } from "../types/reports";
 
   let reports: Expediente[] = [];
   const list = document.querySelector<HTMLElement>("#reportsList");
@@ -92,6 +84,36 @@ import { navData, footerData } from "../data/landing";
   const formatDate = (value?: string) => value ? new Date(value).toLocaleDateString("es-MX") : "Sin fecha";
   const verdictLabel = (value: string) => value === "cumple" ? "Cumple" : value === "no cumple" ? "No cumple" : "Requiere revisión";
   const verdictClass = (value: string) => value === "cumple" ? "bg-emerald-100 text-emerald-800" : value === "no cumple" ? "bg-red-100 text-red-800" : "bg-amber-100 text-amber-800";
+  const findingStatusClass = (value: string) => value === "cumple" ? "text-emerald-800" : value === "no cumple" ? "text-red-800" : "text-amber-800";
+  const findingDotClass = (value: string) => value === "cumple" ? "bg-emerald-500" : value === "no cumple" ? "bg-red-500" : "bg-amber-500";
+
+  const criterionRule = (criterion: string) => criterion === "Deforestación" ? "Sin deforestación desde 2018" : criterion === "Incendios" ? "Sin incendios desde 2012" : "Fuera de áreas naturales protegidas";
+
+  const DETAILED_CRITERIA = ["Deforestación", "Incendios", "Áreas protegidas", "Áreas naturales protegidas"];
+
+  const hasDetailedFindings = (report: Expediente) =>
+    report.findings?.some((f) => DETAILED_CRITERIA.includes(f.criterion)) ?? false;
+
+  const renderFindings = (report: Expediente) => {
+    const isBlockedOrApproved = report.verdict === "cumple" || report.verdict === "no cumple";
+    if (isBlockedOrApproved && !hasDetailedFindings(report)) return "";
+
+    if (report.findings?.length) {
+      const warnings = report.findings.filter((finding) => finding.status !== "cumple");
+      const passed = report.findings.filter((finding) => finding.status === "cumple");
+      const renderRows = (findings: ReportFinding[]) => findings.map((finding) => `
+        <div class="flex items-start gap-2 border-b border-surface-container-high pb-2 last:border-0 last:pb-0">
+          <span class="mt-1 h-2 w-2 shrink-0 rounded-full ${findingDotClass(finding.status)}"></span>
+          <div class="min-w-0 flex-1"><div class="flex items-center justify-between gap-2"><strong class="text-xs text-on-surface">${escapeHtml(finding.criterion)}</strong><span class="text-[10px] font-bold uppercase ${findingStatusClass(finding.status)}">${verdictLabel(finding.status)}</span></div><p class="mt-0.5 text-[11px] leading-relaxed text-on-surface-variant">${escapeHtml(finding.observation || criterionRule(finding.criterion))}</p><p class="text-[10px] text-on-surface-variant">Norma: ${escapeHtml(criterionRule(finding.criterion))}</p></div>
+        </div>`).join("");
+      return `<div class="mt-4 rounded-xl border border-surface-container-high bg-surface-container-low p-3">
+        <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Resumen rápido</p>
+        ${warnings.length ? `<div class="mt-2 rounded-lg border border-red-200 bg-red-50/60 p-2"><p class="mb-2 text-[10px] font-bold uppercase tracking-wider text-red-800">Advertencias detectadas</p><div class="space-y-2">${renderRows(warnings)}</div></div>` : ""}
+        ${passed.length ? `<div class="${warnings.length ? "mt-2" : "mt-2"} rounded-lg border border-emerald-200 bg-emerald-50/60 p-2"><p class="mb-2 text-[10px] font-bold uppercase tracking-wider text-emerald-800">Criterios cumplidos</p><div class="space-y-2">${renderRows(passed)}</div></div>` : ""}
+      </div>`;
+    }
+    return report.reasons?.length ? `<div class="mt-4 rounded-xl border border-surface-container-high bg-surface-container-low p-3"><p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Resumen rápido</p><p class="mt-2 text-xs leading-relaxed text-on-surface-variant">${escapeHtml(report.reasons[0])}</p></div>` : "";
+  };
 
   function renderReports() {
     const term = search?.value.trim().toLowerCase() || "";
@@ -110,13 +132,14 @@ import { navData, footerData } from "../data/landing";
           </div>
           <span class="rounded-full px-2.5 py-1 text-[11px] font-bold ${verdictClass(report.verdict)}">${verdictLabel(report.verdict)}</span>
         </div>
-        <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
+         <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
           <div><span class="block text-on-surface-variant">Municipio</span><strong class="text-on-surface">${escapeHtml(report.municipality || "Michoacán")}</strong></div>
           <div><span class="block text-on-surface-variant">Estado</span><strong class="text-on-surface">${escapeHtml(report.status)}</strong></div>
           <div><span class="block text-on-surface-variant">Auditoría</span><strong class="text-on-surface">${report.audit_from_year && report.audit_to_year ? `${report.audit_from_year}–${report.audit_to_year}` : "Ambiental"}</strong></div>
-          <div><span class="block text-on-surface-variant">Emisión</span><strong class="text-on-surface">${formatDate(report.issued_at || report.created_at)}</strong></div>
-        </div>
-        <div class="mt-5 flex flex-wrap gap-2 border-t border-surface-container-high pt-4">
+           <div><span class="block text-on-surface-variant">Emisión</span><strong class="text-on-surface">${formatDate(report.issued_at || report.created_at)}</strong></div>
+         </div>
+         ${renderFindings(report)}
+         <div class="mt-5 flex flex-wrap gap-2 border-t border-surface-container-high pt-4">
           ${report.status === "generated" ? `<a href="${escapeHtml(pdfUrl(report.folio))}" target="_blank" rel="noreferrer" class="inline-flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-2 text-xs font-bold text-surface hover:bg-primary"><span class="material-symbols-outlined text-[16px]">download</span>Descargar PDF</a>` : '<span class="text-xs text-on-surface-variant">PDF pendiente de generación</span>'}
           ${report.status === "generated" ? `<a href="/verificar?folio=${encodeURIComponent(report.folio)}" class="inline-flex items-center gap-1.5 rounded-lg border border-outline-variant px-3 py-2 text-xs font-semibold text-on-surface-variant hover:bg-surface-container-low"><span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>Verificar</a>` : ""}
         </div>

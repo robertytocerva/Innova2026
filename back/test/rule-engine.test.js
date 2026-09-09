@@ -34,6 +34,24 @@ test("does not treat unavailable sources as compliant", () => {
   assert.equal(result.verdict, "requiere revision");
 });
 
+test("returns the reason, observed value, evidence source, and normative source for each criterion", () => {
+  const result = evaluateComparison({
+    ...clean,
+    forestLossPct: 2,
+    forestStatus: "fail",
+    forestSource: { provider: "Global Forest Watch", status: "ok" },
+    fireSource: { provider: "NASA FIRMS", status: "ok" },
+    anpSource: { provider: "CONABIO", status: "ok" },
+  });
+
+  assert.equal(result.findings.length, 3);
+  assert.match(result.findings[0].reason, /2\.00%/);
+  assert.equal(result.findings[0].sources[0].type, "normativa");
+  assert.match(result.findings[0].sources[0].reference, /normas\.md/);
+  assert.equal(result.findings[0].sources[1].title, "Global Forest Watch");
+  assert.match(result.regulatoryNotice, /voluntaria/);
+});
+
 test("maps every interactive map state to the matching report verdict", () => {
   assert.equal(verdictFromMapStatus("aprobada"), "cumple");
   assert.equal(verdictFromMapStatus("bloqueada"), "no cumple");

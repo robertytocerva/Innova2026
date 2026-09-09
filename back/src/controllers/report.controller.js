@@ -4,6 +4,7 @@ import { listParcelComparisons } from "../models/comparison.model.js";
 import { approveExpediente, findExpediente, findPdf, listExpedientes } from "../models/expediente.model.js";
 import { confrontParcel } from "../services/comparison.service.js";
 import { generateExpedientePdf, getExpedienteBundle } from "../services/report.service.js";
+import { NORMATIVE_SOURCES, REGULATORY_NOTICE } from "../services/rule-engine.service.js";
 import { notFound } from "../utils/errors.js";
 import { success } from "../utils/response.js";
 
@@ -199,6 +200,10 @@ export const publicVerification = async (req, res) => {
     issuedAt: bundle.expediente.issued_at || bundle.expediente.generated_at,
     verdict: bundle.expediente.verdict,
     boundaryFlag: bundle.expediente.boundary_flag,
+    reasons: bundle.expediente.reasons,
+    findings: bundle.expediente.findings,
+    regulatoryNotice: REGULATORY_NOTICE,
+    normativeSources: Object.values(NORMATIVE_SOURCES),
     huerta: {
       referenceCode: snapshot.referenceCode || bundle.parcel.reference_code,
       name: snapshot.propietario || bundle.parcel.name,

@@ -81,6 +81,69 @@ const drawLabel = (doc, label, value, x, y, width = 240) => {
   doc.font("Helvetica").fontSize(11).fillColor("#0f172a").text(String(value ?? "No disponible"), x, y + 13, { width });
 };
 
+const verdictLabel = (value) => value === "cumple" ? "Cumple" : value === "no cumple" ? "No cumple" : "Requiere revisión";
+const findingColor = (value) => value === "cumple" ? "#166534" : value === "no cumple" ? "#991b1b" : "#92400e";
+
+const drawFindingsPage = (doc, expediente) => {
+  doc.addPage();
+  doc.font("Helvetica-Bold").fontSize(16).fillColor("#0f172a").text("Por qué se asignó este veredicto", 50, 50);
+  doc.font("Helvetica").fontSize(10).fillColor("#334155").text(
+    "Cada criterio se contrasta con el dato observado, la fuente de evidencia y el fundamento normativo usado por la plataforma.",
+    50, 80, { width: 512, lineGap: 3 }
+  );
+  let y = 120;
+  const findings = Array.isArray(expediente.findings) ? expediente.findings : [];
+  const groups = [
+    { title: "Advertencias detectadas", items: findings.filter((item) => item.status !== "cumple"), color: "#991b1b" },
+    { title: "Criterios cumplidos", items: findings.filter((item) => item.status === "cumple"), color: "#166534" },
+  ];
+
+  for (const group of groups) {
+    if (!group.items.length) continue;
+    doc.font("Helvetica-Bold").fontSize(11).fillColor(group.color).text(group.title, 50, y);
+    y += 20;
+    for (const item of group.items) {
+    const sources = Array.isArray(item.sources) ? item.sources : [];
+    const sourceText = sources.map((source) => `${source.type === "normativa" ? "Normativa" : "Evidencia"}: ${source.title || "Fuente no identificada"}${source.organization ? ` (${source.organization})` : ""}${source.status ? ` [${source.status}]` : ""}. ${source.reference || ""}${source.detail ? ` ${source.detail}` : ""}`).join("\n");
+    doc.font("Helvetica").fontSize(10);
+    const reasonHeight = doc.heightOfString(item.reason || "Sin explicación disponible.", { width: 476 });
+    const observationHeight = doc.heightOfString(`Dato observado: ${item.observation || "No disponible"}`, { width: 476 });
+    const ruleHeight = doc.heightOfString(`Regla aplicada: ${item.rule || "No disponible"}`, { width: 476 });
+    const sourceHeight = doc.heightOfString(sourceText || "Fuentes no disponibles.", { width: 476 });
+    const boxHeight = 64 + reasonHeight + observationHeight + ruleHeight + sourceHeight;
+    if (y + boxHeight > 715) {
+      doc.addPage();
+      doc.font("Helvetica-Bold").fontSize(16).fillColor("#0f172a").text("Por qué se asignó este veredicto (continuación)", 50, 50);
+      y = 95;
+    }
+    doc.roundedRect(50, y, 512, boxHeight, 8).fillAndStroke("#f8fafc", "#e2e8f0");
+    doc.font("Helvetica-Bold").fontSize(12).fillColor("#0f172a").text(item.criterion || "Criterio", 68, y + 14);
+    doc.font("Helvetica-Bold").fontSize(9).fillColor(findingColor(item.status)).text(verdictLabel(item.status).toUpperCase(), 390, y + 16, { width: 145, align: "right" });
+    let textY = y + 36;
+    doc.font("Helvetica").fontSize(10).fillColor("#334155").text(item.reason || "Sin explicación disponible.", 68, textY, { width: 476, lineGap: 2 });
+    textY += reasonHeight + 7;
+    doc.font("Helvetica").fontSize(9).fillColor("#475569").text(`Dato observado: ${item.observation || "No disponible"}`, 68, textY, { width: 476, lineGap: 2 });
+    textY += observationHeight + 5;
+    doc.text(`Regla aplicada: ${item.rule || "No disponible"}`, 68, textY, { width: 476, lineGap: 2 });
+    textY += ruleHeight + 5;
+    doc.font("Helvetica-Bold").fontSize(9).fillColor("#0f172a").text("Fuentes", 68, textY);
+    doc.font("Helvetica").fontSize(8).fillColor("#475569").text(sourceText || "Fuentes no disponibles.", 68, textY + 13, { width: 476, lineGap: 2 });
+    y += boxHeight + 14;
+    }
+  }
+
+  if (!findings.length) {
+    doc.font("Helvetica-Bold").fontSize(10).fillColor("#0f172a").text("Razones registradas", 50, y, { width: 512 });
+    doc.font("Helvetica").fontSize(9).fillColor("#475569").text((expediente.reasons || []).join("\n") || "No disponible", 50, y + 18, { width: 512, lineGap: 3 });
+    y += 70;
+  }
+  doc.font("Helvetica-Bold").fontSize(10).fillColor("#0f172a").text("Alcance normativo", 50, Math.min(y + 12, 710));
+  doc.font("Helvetica").fontSize(9).fillColor("#475569").text(
+    "La certificación Pro-Forest Avocado / Guardián Forestal es voluntaria. Este resultado no certifica por sí solo la legalidad del predio ni reemplaza una inspección o las atribuciones de SEMARNAT/PROFEPA.",
+    50, Math.min(y + 30, 730), { width: 512, lineGap: 3 }
+  );
+};
+
 const buildPdf = async ({ parcel, comparison, expediente }) => {
   const verificationUrl = reportUrl(expediente.folio);
   const qr = await QRCode.toBuffer(verificationUrl, { errorCorrectionLevel: "M", margin: 1, width: 180 });
@@ -144,6 +207,7 @@ const buildPdf = async ({ parcel, comparison, expediente }) => {
     doc.font("Helvetica").fontSize(9).fillColor("#64748b").text(detail, 300, rowY + 32, { width: 235 });
     rowY += 92;
   }
+  drawFindingsPage(doc, expediente);
   const imageAudit = comparison.raw_evidence?.imageAudit;
   const auditData = imageAudit?.data;
   if (auditData) {

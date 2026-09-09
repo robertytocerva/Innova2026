@@ -1,4 +1,13 @@
-import type { ComparisonResult, Expediente, Huerta, PublicVerification } from "../types/reports";
+import type { ComparisonResult, Expediente, Huerta, PublicVerification, ReportFinding, ReportSource } from "../types/reports";
+
+export interface ReportDecision {
+  verdict: string;
+  boundaryFlag: boolean;
+  reasons: string[];
+  findings: ReportFinding[];
+  regulatoryNotice?: string;
+  normativeSources?: ReportSource[];
+}
 
 const API_BASE_URL = import.meta.env.PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
 
@@ -21,11 +30,11 @@ export async function listExpedientes(): Promise<Expediente[]> {
   return request<Expediente[]>("/expedientes");
 }
 
-export async function confrontHuerta(id: string): Promise<{ comparison: ComparisonResult; expediente: Expediente; decision: { verdict: string; boundaryFlag: boolean; reasons: string[] } }> {
+export async function confrontHuerta(id: string): Promise<{ comparison: ComparisonResult; expediente: Expediente; decision: ReportDecision }> {
   return request(`/huertas/${id}/comparaciones`, { method: "POST", body: JSON.stringify({}) });
 }
 
-export async function createAuditReport(referenceCode: string, feature: unknown, fromYear: number, toYear: number, audit: unknown): Promise<{ comparison: ComparisonResult; expediente: Expediente; decision: { verdict: string; boundaryFlag: boolean; reasons: string[] } }> {
+export async function createAuditReport(referenceCode: string, feature: unknown, fromYear: number, toYear: number, audit: unknown): Promise<{ comparison: ComparisonResult; expediente: Expediente; decision: ReportDecision }> {
   return request(`/huertas/reference/${encodeURIComponent(referenceCode)}/auditoria-reporte`, {
     method: "POST",
     body: JSON.stringify({ feature, fromYear, toYear, audit }),
