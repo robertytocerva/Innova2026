@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect, type ReactElement } from "react";
-import type { Map as LeafletMap, Layer, Path } from "leaflet";
+import type { Map as LeafletMap, Layer } from "leaflet";
 import type { ParcelFeature, ParcelFeatureCollection, DrawingPoint, DrawingState } from "../../types/mapa";
 import { michoacanParcels } from "../../data/michoacanParcels";
 import { fetchParcels, type ApiParcel } from "../../lib/apiClient";
@@ -202,6 +202,7 @@ export default function MapApp(): ReactElement {
           onSelectParcel={handleSelectParcel}
           currentYear={currentYear}
           comparisonYear={comparisonYear}
+          onParcelBlocked={handleParcelBlocked}
         />
 
         <TimeSlider
