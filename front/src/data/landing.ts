@@ -384,7 +384,6 @@ export const navData: NavProps = {
     { label: "Mapa Interactivo", href: "/mapa-interactivo", dataPath: "mapa-interactivo" },
     { label: "Casos de Uso", href: "/casos-de-uso", dataPath: "casos-de-uso" },
     { label: "Reportes", href: "/reportes", dataPath: "reportes" },
-    { label: "Monitoreo", href: "/monitoreo", dataPath: "monitoreo" },
   ],
   ctaLabel: "Abrir Visor",
   ctaHref: "/mapa-interactivo",
