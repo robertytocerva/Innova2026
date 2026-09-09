@@ -156,44 +156,12 @@
   }
 }
 
-/* ===== View Transitions (navegación entre pestañas) ===== */
-::view-transition-old(root) {
-  animation: tv-exit 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-::view-transition-new(root) {
-  animation: tv-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes tv-exit {
-  from {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-24px) scale(0.985);
-    filter: blur(4px);
-  }
-}
-
-@keyframes tv-enter {
-  from {
-    opacity: 0;
-    transform: translateY(28px) scale(0.985);
-    filter: blur(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-}
-
-/* Transición suave del color de fondo para coherencia visual */
+/* ===== View Transitions (navegación instantánea) ===== */
+::view-transition-old(root),
+::view-transition-new(root),
 ::view-transition-group(root) {
-  animation-duration: 0.45s;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation: none !important;
+  animation-duration: 0s !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -201,19 +169,6 @@
   ::view-transition-new(root) {
     animation: none !important;
   }
-}
-
-/* Las páginas con mapa embebido (Leaflet) deben transicionar de forma
- * instantánea: durante la animación, ::view-transition-new(root) aplica
- * `transform: scale(0.985)` y `filter: blur(4px)` al pseudo-elemento raíz.
- * Leaflet mide `getBoundingClientRect()` y obtiene el tamaño escalado,
- * congelando el viewport a esa medida → "dos cuadrantes" del mapa. */
-.map-page-route ::view-transition-old(root),
-.map-page-route ::view-transition-new(root) {
-  animation: none !important;
-}
-.map-page-route ::view-transition-group(root) {
-  animation: none !important;
 }
 
 /* Crear un stacking context propio para los elementos UI del mapa.
