@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-import { useState, useCallback, useRef, type ReactElement } from "react";
-import type { Map as LeafletMap, Layer } from "leaflet";
-import type { ParcelFeature } from "../../types/mapa";
-=======
 import { useState, useCallback, useRef, useEffect, type ReactElement } from "react";
 import type { Map as LeafletMap, Layer, Path } from "leaflet";
 import type { ParcelFeature, ParcelFeatureCollection, DrawingPoint, DrawingState } from "../../types/mapa";
 import { michoacanParcels } from "../../data/michoacanParcels";
 import { fetchParcels, type ApiParcel } from "../../lib/apiClient";
->>>>>>> 79d7fc8 (creacion de polingonos manuales para el mapa)
 import MapLeaflet from "./MapLeaflet";
 import MapControls from "./MapControls";
 import MapLegend from "./MapLegend";
@@ -72,12 +66,9 @@ export default function MapApp(): ReactElement {
   const [showAiChat, setShowAiChat] = useState(false);
   const [currentYear, setCurrentYear] = useState<number>(SATELLITE_HISTORY_END);
   const [comparisonYear, setComparisonYear] = useState<number>(SATELLITE_HISTORY_START);
-<<<<<<< HEAD
-  const [stylesVersion, setStylesVersion] = useState(0);
-=======
   const [drawingState, setDrawingState] = useState<DrawingState>({ status: "idle", points: [] });
   const [allParcels, setAllParcels] = useState<ParcelFeatureCollection>(michoacanParcels);
->>>>>>> 79d7fc8 (creacion de polingonos manuales para el mapa)
+  const [stylesVersion, setStylesVersion] = useState(0);
 
   const mapRef = useRef<LeafletMap | null>(null);
   const parcelsLayerRef = useRef<Layer | null>(null);
@@ -180,13 +171,10 @@ export default function MapApp(): ReactElement {
           onParcelsLayer={handleParcelsLayer}
           onSelectParcel={handleSelectParcel}
           selectedFeature={selectedFeature}
-<<<<<<< HEAD
-          stylesVersion={stylesVersion}
-=======
           drawingState={drawingState}
           onMapClick={handleMapClick}
           parcels={allParcels}
->>>>>>> 79d7fc8 (creacion de polingonos manuales para el mapa)
+          stylesVersion={stylesVersion}
         />
 
         <MapControls

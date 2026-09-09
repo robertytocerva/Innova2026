@@ -85,11 +85,7 @@ export default function ParcelDrawer({ feature, open, onClose, currentYear, comp
 
   return (
     <div
-<<<<<<< HEAD
-      className={`absolute top-0 right-0 h-full w-96 max-w-full bg-gradient-to-b from-surface-container-lowest to-surface-container-low text-on-surface shadow-[-8px_0_30px_-5px_rgba(0,0,0,0.3)] z-[1100] transition-transform duration-300 flex flex-col border-l border-outline-variant/40 ${
-=======
-      className={`absolute top-0 right-0 h-full w-96 max-w-full bg-surface-container-lowest text-on-surface shadow-2xl z-[1000] transition-transform duration-300 flex flex-col border-l border-outline-variant/40 ${
->>>>>>> 79d7fc8 (creacion de polingonos manuales para el mapa)
+      className={`absolute top-0 right-0 h-full w-96 max-w-full bg-gradient-to-b from-surface-container-lowest to-surface-container-low text-on-surface shadow-[-8px_0_30px_-5px_rgba(0,0,0,0.3)] z-[1000] transition-transform duration-300 flex flex-col border-l border-outline-variant/40 ${
         open ? "translate-x-0" : "translate-x-full"
       }`}
     >

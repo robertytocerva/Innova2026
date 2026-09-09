@@ -1,12 +1,7 @@
-<<<<<<< HEAD
 import { useEffect, useMemo, useRef, useCallback, type ReactElement } from "react";
-=======
-import { useEffect, useMemo, useRef, type ReactElement } from "react";
 import { MapContainer, TileLayer, GeoJSON, useMap, useMapEvents } from "react-leaflet";
->>>>>>> 79d7fc8 (creacion de polingonos manuales para el mapa)
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import { michoacanParcels } from "../../data/michoacanParcels";
 import { getWaybackUrl } from "../../lib/satelliteHistory";
 import { getParcelFireRecords, calculateVedaForestal } from "../../lib/nasaFirms";
@@ -17,12 +12,9 @@ import type { Map as LeafletMap, Layer } from "leaflet";
 interface Props {
   currentYear: number;
   selectedFeature: ParcelFeature | null;
-<<<<<<< HEAD
-  stylesVersion: number;
-=======
   drawingState: DrawingState;
   parcels: ParcelFeatureCollection;
->>>>>>> 79d7fc8 (creacion de polingonos manuales para el mapa)
+  stylesVersion: number;
   onMapReady: (map: LeafletMap) => void;
   onParcelsLayer: (layer: Layer) => void;
   onSelectParcel: (feature: ParcelFeature) => void;
@@ -31,9 +23,6 @@ interface Props {
 
 type MapStyle = L.PathOptions;
 
-<<<<<<< HEAD
-function getStyleForFeature(feature: ParcelFeature): MapStyle {
-=======
 function DrawingHandler({ drawingState, onMapClick }: { drawingState: DrawingState; onMapClick: (p: DrawingPoint) => void }): null {
   const statusRef = useRef(drawingState.status);
   const onMapClickRef = useRef(onMapClick);
@@ -142,7 +131,6 @@ function DrawingLayer({ drawingState }: { drawingState: DrawingState }): null {
 }
 
 function getPolygonStyle(feature: ParcelFeature): L.PathOptions {
->>>>>>> 79d7fc8 (creacion de polingonos manuales para el mapa)
   const p = feature.properties;
   const fireRecords = getParcelFireRecords(feature);
   const vedaInfo = calculateVedaForestal(fireRecords);
@@ -213,14 +201,9 @@ function buildTooltip(feature: ParcelFeature): string {
   `;
 }
 
-<<<<<<< HEAD
-const TOOLTIP_CACHE = new Map<string, string>(
-  michoacanParcels.features.map((f) => [f.properties.id, buildTooltip(f as unknown as ParcelFeature)]),
-);
-
-function computeInitialBounds(): L.LatLngBoundsExpression {
+function computeInitialBounds(features: ParcelFeatureCollection): L.LatLngBoundsExpression {
   const bounds = L.latLngBounds([]);
-  for (const feature of michoacanParcels.features) {
+  for (const feature of features.features) {
     const ring = feature.geometry.coordinates[0];
     for (const point of ring) {
       bounds.extend([point[1], point[0]]);
@@ -229,33 +212,32 @@ function computeInitialBounds(): L.LatLngBoundsExpression {
   return bounds;
 }
 
-const INITIAL_BOUNDS = computeInitialBounds();
-
-function MapEvents({ onMapReady }: { onMapReady: (map: LeafletMap) => void }): null {
+function MapEvents({ onMapReady, initialBounds }: { onMapReady: (map: LeafletMap) => void; initialBounds: L.LatLngBoundsExpression }): null {
   const map = useMap();
   useEffect(() => {
     onMapReady(map);
     const handle = window.setTimeout(() => {
       map.invalidateSize();
-      map.fitBounds(INITIAL_BOUNDS, { padding: [40, 40], animate: false });
+      map.fitBounds(initialBounds, { padding: [40, 40], animate: false });
     }, 200);
     return () => window.clearTimeout(handle);
-  }, [map, onMapReady]);
+  }, [map, onMapReady, initialBounds]);
   return null;
 }
 
-export default function MapLeaflet({ currentYear, stylesVersion, onMapReady, onParcelsLayer, onSelectParcel }: Props): ReactElement {
-  const parcelsLayerRef = useRef<L.GeoJSON | null>(null);
+export default function MapLeaflet({ currentYear, onMapReady, onParcelsLayer, onSelectParcel, drawingState, onMapClick, parcels, stylesVersion }: Props): ReactElement {
+  const geoJsonRef = useRef<L.GeoJSON | null>(null);
   const tileUrl = useMemo(() => getWaybackUrl(currentYear), [currentYear]);
+  const initialBounds = useMemo(() => computeInitialBounds(parcels), [parcels]);
 
   const styles = useMemo<Map<string, MapStyle>>(() => {
     const next = new Map<string, MapStyle>();
-    for (const feature of michoacanParcels.features) {
+    for (const feature of parcels.features) {
       const parcel = feature as unknown as ParcelFeature;
-      next.set(parcel.properties.id, getStyleForFeature(parcel));
+      next.set(parcel.properties.id, getPolygonStyle(parcel));
     }
     return next;
-  }, [stylesVersion]);
+  }, [stylesVersion, parcels]);
 
   const styleFn = useCallback(
     (feature?: GeoJSON.Feature): MapStyle => {
@@ -269,37 +251,23 @@ export default function MapLeaflet({ currentYear, stylesVersion, onMapReady, onP
   const onEachFeature = useCallback(
     (feature: GeoJSON.Feature, layer: L.Layer): void => {
       const parcel = feature as unknown as ParcelFeature;
-      const html = TOOLTIP_CACHE.get(parcel.properties.id);
-      if (html) {
-        (layer as L.Path).bindTooltip(html, { sticky: true, className: "leaflet-tooltip-custom" });
-      }
-      (layer as L.Path).on("click", () => onSelectParcel(parcel));
+      const html = buildTooltip(parcel);
+      (layer as L.Path).bindTooltip(html, { sticky: true, className: "leaflet-tooltip-custom" });
+      (layer as L.Path).on("click", (e: L.LeafletMouseEvent) => {
+        L.DomEvent.stopPropagation(e.originalEvent);
+        onSelectParcel(parcel);
+      });
     },
     [onSelectParcel],
   );
 
   const handleLayerRef = useCallback(
     (layer: L.GeoJSON | null): void => {
-      parcelsLayerRef.current = layer;
+      geoJsonRef.current = layer;
       if (layer) onParcelsLayer(layer);
     },
     [onParcelsLayer],
   );
-=======
-export default function MapLeaflet({ currentYear, onMapReady, onParcelsLayer, onSelectParcel, drawingState, onMapClick, parcels }: Props): ReactElement {
-  const geoJsonRef = useRef<L.GeoJSON | null>(null);
-  const tileUrl = useMemo(() => getWaybackUrl(currentYear), [currentYear]);
-
-  const handleEachFeature = (feature: GeoJSON.Feature, layer: L.Layer): void => {
-    const path = layer as L.Path;
-    const parcelFeature = feature as unknown as ParcelFeature;
-    path.bindTooltip(buildTooltip(parcelFeature), { sticky: true, className: "leaflet-tooltip-custom" });
-    path.on("click", (e: L.LeafletMouseEvent) => {
-      L.DomEvent.stopPropagation(e.originalEvent);
-      onSelectParcel(parcelFeature);
-    });
-  };
->>>>>>> 79d7fc8 (creacion de polingonos manuales para el mapa)
 
   const drawingActive = drawingState.status === "drawing";
 
@@ -313,35 +281,16 @@ export default function MapLeaflet({ currentYear, onMapReady, onParcelsLayer, on
       style={{ height: "100%", width: "100%", background: "var(--color-inverse-surface)" }}
       className={drawingActive ? "cursor-crosshair" : ""}
     >
-      <MapEvents onMapReady={onMapReady} />
+      <MapEvents onMapReady={onMapReady} initialBounds={initialBounds} />
       <DrawingHandler drawingState={drawingState} onMapClick={onMapClick} />
       <DrawingLayer drawingState={drawingState} />
       <TileLayer key={currentYear} url={tileUrl} maxZoom={18} attribution="Tiles &copy; Esri Wayback" />
       <GeoJSON
-<<<<<<< HEAD
+        key={parcels.features.length}
         ref={handleLayerRef}
-        data={michoacanParcels as unknown as GeoJSON.FeatureCollection}
+        data={parcels as unknown as GeoJSON.FeatureCollection}
         style={styleFn}
         onEachFeature={onEachFeature}
-=======
-        key={parcels.features.length}
-        ref={(layer) => {
-          if (layer) {
-            geoJsonRef.current = layer;
-            onParcelsLayer(layer);
-            setTimeout(() => {
-              try {
-                layer.getBounds && layer.getBounds().isValid() && layer.getBounds();
-              } catch {
-                // ignore
-              }
-            }, 200);
-          }
-        }}
-        data={parcels as unknown as GeoJSON.FeatureCollection}
-        style={(feature) => getPolygonStyle(feature as unknown as ParcelFeature)}
-        onEachFeature={handleEachFeature}
->>>>>>> 79d7fc8 (creacion de polingonos manuales para el mapa)
       />
     </MapContainer>
   );

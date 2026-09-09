@@ -6,19 +6,12 @@ interface Props {
 
 export default function MapLegend({ onClose }: Props): ReactElement {
   return (
-<<<<<<< HEAD
     <div className="absolute top-24 right-4 z-[1000] bg-gradient-to-br from-surface-container-lowest/98 to-surface-container/95 backdrop-blur-xl text-on-surface p-4 rounded-2xl shadow-2xl border border-outline-variant/40 w-72 ring-1 ring-primary/10">
       <div className="relative flex items-center justify-between pb-3 mb-3">
         <span className="font-bold uppercase tracking-[0.15em] text-[11px] text-on-surface flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-tertiary/20 ring-1 ring-primary/30">
             <span className="material-symbols-outlined text-primary text-[16px]">layers</span>
           </span>
-=======
-    <div className="absolute top-24 right-4 z-[1000] bg-surface-container-lowest/95 backdrop-blur-md text-on-surface p-4 rounded-xl shadow-2xl border border-outline-variant/40 text-label-sm font-label-sm w-72">
-      <div className="flex items-center justify-between pb-2 border-b border-outline-variant/40 mb-2.5">
-        <span className="font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1.5">
-          <span className="material-symbols-outlined text-primary text-[16px]">layers</span>
->>>>>>> 79d7fc8 (creacion de polingonos manuales para el mapa)
           Estados de Predios
         </span>
         <button
