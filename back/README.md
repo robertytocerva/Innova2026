@@ -70,6 +70,7 @@ El script crea la tabla `_migrations` para rastrear que archivos ya se ejecutaro
 - `GET /api/v1/huertas/:id/comparaciones` - Historial de comparaciones
 - `GET /api/v1/expedientes` - Listar expedientes
 - `GET /api/v1/expedientes/:folio` - Consultar un expediente
+- `DELETE /api/v1/expedientes/:folio` - Eliminar un expediente
 - `POST /api/v1/expedientes/:folio/aprobar` - Registrar aprobación pericial simulada
 - `POST /api/v1/expedientes/:folio/generar-pdf` - Generar el documento PDF
 - `GET /api/v1/expedientes/:folio/pdf` - Descargar el PDF

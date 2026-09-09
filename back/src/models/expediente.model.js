@@ -100,3 +100,13 @@ export const findPdf = async (folio) => {
   );
   return rows[0] || null;
 };
+
+export const deleteExpediente = async (folio) => {
+  const { rows } = await query(
+    `delete from expedientes where folio = $1
+     returning id, folio`,
+    [folio]
+  );
+  if (!rows[0]) throw new AppError("Expediente no encontrado", 404, "EXPEDIENTE_NOT_FOUND");
+  return rows[0];
+};

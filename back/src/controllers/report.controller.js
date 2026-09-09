@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createParcel, findParcelByReferenceCode } from "../models/parcel.model.js";
 import { listParcelComparisons } from "../models/comparison.model.js";
-import { approveExpediente, findExpediente, findPdf, listExpedientes } from "../models/expediente.model.js";
+import { approveExpediente, deleteExpediente, findExpediente, findPdf, listExpedientes } from "../models/expediente.model.js";
 import { confrontParcel } from "../services/comparison.service.js";
 import { generateExpedientePdf, getExpedienteBundle } from "../services/report.service.js";
 import { NORMATIVE_SOURCES, REGULATORY_NOTICE } from "../services/rule-engine.service.js";
@@ -215,4 +215,9 @@ export const publicVerification = async (req, res) => {
     approvedAt: bundle.expediente.approved_at,
     pdfSha256: bundle.expediente.pdf_sha256,
   });
+};
+
+export const removeExpediente = async (req, res) => {
+  const result = await deleteExpediente(req.params.folio);
+  success(res, result);
 };

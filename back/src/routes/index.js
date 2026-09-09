@@ -19,7 +19,7 @@ import { auditGemini, geminiAuditSchema } from "../controllers/gemini.controller
 import {
   seedHuertas, seedSchema, confrontHuerta, comparisonSchema, auditReportSchema, createAuditReport, getComparisons,
   getExpedientes, getExpediente, approvalSchema, approve, generatePdf, downloadPdf,
-  publicVerification,
+  publicVerification, removeExpediente,
 } from "../controllers/report.controller.js";
 
 const router = Router();
@@ -45,6 +45,7 @@ router.get("/huertas/:id/comparaciones", dbRequired, asyncHandler(getComparisons
 router.post("/huertas/:id/comparaciones", dbRequired, validate(comparisonSchema), asyncHandler(confrontHuerta));
 router.get("/expedientes", dbRequired, asyncHandler(getExpedientes));
 router.get("/expedientes/:folio", dbRequired, asyncHandler(getExpediente));
+router.delete("/expedientes/:folio", dbRequired, asyncHandler(removeExpediente));
 router.post("/expedientes/:folio/aprobar", dbRequired, validate(approvalSchema), asyncHandler(approve));
 router.post("/expedientes/:folio/generar-pdf", dbRequired, asyncHandler(generatePdf));
 router.get("/expedientes/:folio/pdf", dbRequired, asyncHandler(downloadPdf));

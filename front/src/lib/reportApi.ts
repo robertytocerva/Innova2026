@@ -59,3 +59,7 @@ export function pdfUrl(folio: string) {
 export async function verifyFolio(folio: string): Promise<PublicVerification> {
   return request(`/public/verificacion/${encodeURIComponent(folio)}`);
 }
+
+export async function deleteExpediente(folio: string): Promise<{ id: string; folio: string }> {
+  return request(`/expedientes/${encodeURIComponent(folio)}`, { method: "DELETE" });
+}

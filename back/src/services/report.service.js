@@ -61,7 +61,7 @@ const loadSatellitePhoto = async (geometry, year) => {
   }
 };
 
-const drawSatellitePhotos = (doc, photos, fromYear, toYear) => {
+const drawSatellitePhotos = (doc, photos, fromYear, toYear, comparisonSummary) => {
   doc.font("Helvetica-Bold").fontSize(16).fillColor("#0f172a").text("Imágenes satelitales del área seleccionada", 50, 50);
   doc.font("Helvetica").fontSize(9).fillColor("#64748b").text("Teselas Esri World Imagery centradas en el polígono seleccionado.", 50, 78);
   const panels = [
@@ -78,6 +78,8 @@ const drawSatellitePhotos = (doc, photos, fromYear, toYear) => {
     }
     doc.font("Helvetica").fontSize(8).fillColor("#64748b").text("Esri World Imagery · área seleccionada", panel.x + 14, 390, { width: 219, align: "center" });
   }
+  doc.font("Helvetica-Bold").fontSize(11).fillColor("#0f172a").text("Resumen de cambios", 50, 440);
+  doc.font("Helvetica").fontSize(9).fillColor("#334155").text(comparisonSummary || "No disponible", 50, 462, { width: 512, lineGap: 3 });
 };
 
 const drawLabel = (doc, label, value, x, y, width = 240) => {
@@ -177,6 +179,8 @@ const buildPdf = async ({ parcel, comparison, expediente }) => {
   const displayArea = mapSnapshot.superficieHa ?? parcel.area_ha;
   const displayCrop = mapSnapshot.cultivo || parcel.crop_type;
   const auditYears = comparison.layers?.auditYears || {};
+  const imageAudit = comparison.raw_evidence?.imageAudit;
+  const auditData = imageAudit?.data;
   const [qr, satellitePhotos] = await Promise.all([
     QRCode.toBuffer(verificationUrl, { errorCorrectionLevel: "M", margin: 1, width: 180 }),
     Promise.all([
@@ -213,8 +217,13 @@ const buildPdf = async ({ parcel, comparison, expediente }) => {
   drawLabel(doc, "Coordenadas", coordinates.map(([lng, lat]) => `${lat.toFixed(6)}, ${lng.toFixed(6)}`).join("; "), 310, 470, 250);
 
   doc.addPage();
-  drawSatellitePhotos(doc, satellitePhotos, auditYears.fromYear || 2018, auditYears.toYear || 2026);
-  doc.font("Helvetica").fontSize(9).fillColor("#64748b").text("Las fotografías corresponden al centro del polígono seleccionado. Las coordenadas y capas ambientales se detallan en las siguientes secciones.", 50, 450, { width: 512 });
+  drawSatellitePhotos(
+    doc,
+    satellitePhotos,
+    auditYears.fromYear || 2018,
+    auditYears.toYear || 2026,
+    auditData?.comparativa?.resumen,
+  );
 
   doc.addPage();
   doc.font("Helvetica-Bold").fontSize(16).fillColor("#0f172a").text("Resultados de la comparación", 50, 50);
@@ -232,8 +241,6 @@ const buildPdf = async ({ parcel, comparison, expediente }) => {
     rowY += 92;
   }
   drawFindingsPage(doc, expediente);
-  const imageAudit = comparison.raw_evidence?.imageAudit;
-  const auditData = imageAudit?.data;
   if (auditData) {
     doc.addPage();
     doc.font("Helvetica-Bold").fontSize(16).fillColor("#0f172a").text("Auditoría multitemporal del polígono", 50, 50);

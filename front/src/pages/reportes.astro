@@ -69,8 +69,8 @@ import { navData, footerData } from "../data/landing";
 </Layout>
 
 <script>
-  import { listExpedientes, pdfUrl } from "../lib/reportApi";
-  import type { Expediente, ReportFinding } from "../types/reports";
+  import { listExpedientes, pdfUrl, deleteExpediente } from "../lib/reportApi";
+  import type { Expediente } from "../types/reports";
 
   let reports: Expediente[] = [];
 
@@ -78,20 +78,12 @@ import { navData, footerData } from "../data/landing";
   const formatDate = (value?: string) => value ? new Date(value).toLocaleDateString("es-MX") : "Sin fecha";
   const verdictLabel = (value: string) => value === "cumple" ? "Cumple" : value === "no cumple" ? "No cumple" : "Requiere revisión";
   const verdictClass = (value: string) => value === "cumple" ? "bg-emerald-100 text-emerald-800" : value === "no cumple" ? "bg-red-100 text-red-800" : "bg-amber-100 text-amber-800";
-  const findingStatusClass = (value: string) => value === "cumple" ? "text-emerald-800" : value === "no cumple" ? "text-red-800" : "text-amber-800";
   const findingDotClass = (value: string) => value === "cumple" ? "bg-emerald-500" : value === "no cumple" ? "bg-red-500" : "bg-amber-500";
-
-  const criterionRule = (criterion: string) => criterion === "Deforestación" ? "Sin deforestación desde 2018" : criterion === "Incendios" ? "Sin incendios desde 2012" : "Fuera de áreas naturales protegidas";
 
   const DETAILED_CRITERIA = ["Deforestación", "Incendios", "Áreas protegidas", "Áreas naturales protegidas"];
 
   const hasDetailedFindings = (report: Expediente) =>
     report.findings?.some((f) => DETAILED_CRITERIA.includes(f.criterion)) ?? false;
-
-  const renderFindingSources = (finding: ReportFinding) => finding.sources?.length ? `<div class="mt-1 text-[10px] text-on-surface-variant">${finding.sources.map((source) => {
-    const url = source.url && /^https?:\/\//i.test(source.url) ? source.url : "";
-    return `<div>${escapeHtml(source.type === "normativa" ? "Normativa" : "Evidencia")}: ${escapeHtml(source.title || "Fuente no identificada")}${source.reference ? ` · ${escapeHtml(source.reference)}` : ""}${source.quote ? ` · Cita: &quot;${escapeHtml(source.quote)}&quot;` : ""}${url ? ` · <a href="${escapeHtml(url)}" target="_blank" rel="noreferrer" class="text-primary underline">Ver fuente</a>` : ""}</div>`;
-  }).join("")}</div>` : "";
 
   const renderFindings = (report: Expediente) => {
     const isBlockedOrApproved = report.verdict === "cumple" || report.verdict === "no cumple";
@@ -99,16 +91,15 @@ import { navData, footerData } from "../data/landing";
 
     if (report.findings?.length) {
       const warnings = report.findings.filter((finding) => finding.status !== "cumple");
-      const passed = report.findings.filter((finding) => finding.status === "cumple");
-      const renderRows = (findings: ReportFinding[]) => findings.map((finding) => `
-        <div class="flex items-start gap-2 border-b border-surface-container-high pb-2 last:border-0 last:pb-0">
-          <span class="mt-1 h-2 w-2 shrink-0 rounded-full ${findingDotClass(finding.status)}"></span>
-          <div class="min-w-0 flex-1"><div class="flex items-center justify-between gap-2"><strong class="text-xs text-on-surface">${escapeHtml(finding.criterion)}</strong><span class="text-[10px] font-bold uppercase ${findingStatusClass(finding.status)}">${verdictLabel(finding.status)}</span></div><p class="mt-0.5 text-[11px] leading-relaxed text-on-surface-variant">${escapeHtml(finding.observation || criterionRule(finding.criterion))}</p><p class="text-[10px] text-on-surface-variant">Norma: ${escapeHtml(criterionRule(finding.criterion))}</p>${renderFindingSources(finding)}</div>
-        </div>`).join("");
-      return `<div class="mt-4 rounded-xl border border-surface-container-high bg-surface-container-low p-3">
-        <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Resumen rápido</p>
-        ${warnings.length ? `<div class="mt-2 rounded-lg border border-red-200 bg-red-50/60 p-2"><p class="mb-2 text-[10px] font-bold uppercase tracking-wider text-red-800">Advertencias detectadas</p><div class="space-y-2">${renderRows(warnings)}</div></div>` : ""}
-        ${passed.length ? `<div class="${warnings.length ? "mt-2" : "mt-2"} rounded-lg border border-emerald-200 bg-emerald-50/60 p-2"><p class="mb-2 text-[10px] font-bold uppercase tracking-wider text-emerald-800">Criterios cumplidos</p><div class="space-y-2">${renderRows(passed)}</div></div>` : ""}
+      if (!warnings.length) return "";
+      const renderRows = warnings.map((finding) => `
+        <li class="flex items-center gap-2 text-xs text-on-surface-variant">
+          <span class="h-2 w-2 shrink-0 rounded-full ${findingDotClass(finding.status)}"></span>
+          <span>${escapeHtml(finding.criterion)}</span>
+        </li>`).join("");
+      return `<div class="mt-4 rounded-xl border border-red-200 bg-red-50/60 p-3">
+        <p class="text-xs font-bold uppercase tracking-wider text-red-800">Advertencias detectadas</p>
+        <ul class="mt-2 space-y-1.5">${renderRows}</ul>
       </div>`;
     }
     return report.reasons?.length ? `<div class="mt-4 rounded-xl border border-surface-container-high bg-surface-container-low p-3"><p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Resumen rápido</p><p class="mt-2 text-xs leading-relaxed text-on-surface-variant">${escapeHtml(report.reasons[0])}</p></div>` : "";
@@ -134,7 +125,12 @@ import { navData, footerData } from "../data/landing";
             <span class="font-mono text-xs text-on-surface-variant">${escapeHtml(report.folio)}</span>
             <h3 class="mt-1 font-headline-sm text-headline-sm font-semibold text-on-surface">${escapeHtml(report.name || report.reference_code || report.parcel_id)}</h3>
           </div>
-          <span class="rounded-full px-2.5 py-1 text-[11px] font-bold ${verdictClass(report.verdict)}">${verdictLabel(report.verdict)}</span>
+          <div class="flex items-center gap-2">
+            <span class="rounded-full px-2.5 py-1 text-[11px] font-bold ${verdictClass(report.verdict)}">${verdictLabel(report.verdict)}</span>
+            <button data-delete="${escapeHtml(report.folio)}" title="Eliminar expediente" class="delete-btn flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-red-100 hover:text-red-600">
+              <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+          </div>
         </div>
          <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
           <div><span class="block text-on-surface-variant">Municipio</span><strong class="text-on-surface">${escapeHtml(report.municipality || "Michoacán")}</strong></div>
@@ -145,7 +141,7 @@ import { navData, footerData } from "../data/landing";
          ${renderFindings(report)}
          <div class="mt-5 flex flex-wrap gap-2 border-t border-surface-container-high pt-4">
           ${report.status === "generated" ? `<a href="${escapeHtml(pdfUrl(report.folio))}" target="_blank" rel="noreferrer" class="inline-flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-2 text-xs font-bold text-surface hover:bg-primary"><span class="material-symbols-outlined text-[16px]">download</span>Descargar PDF</a>` : '<span class="text-xs text-on-surface-variant">PDF pendiente de generación</span>'}
-          ${report.status === "generated" ? `<a href="/verificar?folio=${encodeURIComponent(report.folio)}" class="inline-flex items-center gap-1.5 rounded-lg border border-outline-variant px-3 py-2 text-xs font-semibold text-on-surface-variant hover:bg-surface-container-low"><span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>Verificar</a>` : ""}
+           ${report.status === "generated" ? `<a href="/verificar?folio=${encodeURIComponent(report.folio)}" class="inline-flex items-center gap-1.5 rounded-lg border border-outline-variant px-3 py-2 text-xs font-semibold text-on-surface-variant hover:bg-surface-container-low"><span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>Verificar</a>` : ""}
         </div>
       </article>`).join("") : '<div class="rounded-2xl border border-dashed border-outline-variant p-10 text-center text-sm text-on-surface-variant md:col-span-2 xl:col-span-3">No hay reportes que coincidan con los filtros.</div>';
   }
@@ -169,6 +165,25 @@ import { navData, footerData } from "../data/landing";
       if (search) search.value = "";
       if (verdict) verdict.value = "";
       doRender();
+    });
+
+    list.addEventListener("click", async (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>("[data-delete]");
+      if (!btn) return;
+      const folio = btn.dataset.delete;
+      if (!folio) return;
+      if (!confirm(`¿Eliminar el expediente ${folio}? Esta acción no se puede deshacer.`)) return;
+      btn.disabled = true;
+      btn.classList.add("opacity-50");
+      try {
+        await deleteExpediente(folio);
+        reports = reports.filter((r) => r.folio !== folio);
+        doRender();
+      } catch (err) {
+        alert(err instanceof Error ? err.message : "No se pudo eliminar el expediente.");
+        btn.disabled = false;
+        btn.classList.remove("opacity-50");
+      }
     });
 
     if (reports.length > 0) {
