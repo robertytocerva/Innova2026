@@ -126,7 +126,6 @@ const drawFindingsPage = (doc, expediente) => {
     const boxHeight = 64 + reasonHeight + observationHeight + ruleHeight + sourceHeight;
     if (y + boxHeight > 715) {
       doc.addPage();
-      doc.font("Helvetica-Bold").fontSize(16).fillColor("#0f172a").text("Por qué se asignó este veredicto (continuación)", 50, 50);
       y = 95;
     }
     doc.roundedRect(50, y, 512, boxHeight, 8).fillAndStroke("#f8fafc", "#e2e8f0");
