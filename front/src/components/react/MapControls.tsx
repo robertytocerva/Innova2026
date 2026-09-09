@@ -1,12 +1,36 @@
 import type { ReactElement } from "react";
+import type { DrawingStatus } from "../../types/mapa";
 
 interface Props {
   onToggleLegend: () => void;
+  drawingStatus: DrawingStatus;
+  onToggleDrawing: () => void;
 }
 
-export default function MapControls({ onToggleLegend }: Props): ReactElement {
+export default function MapControls({ onToggleLegend, drawingStatus, onToggleDrawing }: Props): ReactElement {
+  const isDrawing = drawingStatus !== "idle";
+
   return (
+<<<<<<< HEAD
     <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2.5">
+=======
+    <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-space-xs">
+      <button
+        type="button"
+        onClick={onToggleDrawing}
+        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl backdrop-blur-md text-label-sm font-label-sm font-semibold shadow-lg transition-all border ${
+          isDrawing
+            ? "bg-primary text-on-primary border-primary/40"
+            : "bg-surface-container-lowest/95 hover:bg-surface-container text-on-surface border-outline-variant/40"
+        }`}
+        aria-label={isDrawing ? "Salir del modo dibujo" : "Dibujar polígono"}
+      >
+        <span className={`material-symbols-outlined text-[18px]`}>
+          {isDrawing ? "draw" : "polyline"}
+        </span>
+        <span>{isDrawing ? "Modo Dibujo" : "Dibujar"}</span>
+      </button>
+>>>>>>> 79d7fc8 (creacion de polingonos manuales para el mapa)
       <button
         type="button"
         onClick={onToggleLegend}

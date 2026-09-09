@@ -31,7 +31,11 @@ export default function TimeSlider({ currentYear, comparisonYear, onCurrentYearC
   };
 
   return (
+<<<<<<< HEAD
     <div className="absolute bottom-4 left-4 right-4 z-[1000] mx-auto max-w-2xl rounded-3xl border border-tertiary/30 bg-gradient-to-br from-primary-container/95 via-inverse-surface/95 to-inverse-surface/95 px-5 py-4 text-surface shadow-2xl backdrop-blur-xl ring-1 ring-tertiary/10 md:left-1/2 md:right-auto md:w-[92%] md:-translate-x-1/2">
+=======
+    <div className="absolute bottom-4 left-4 right-4 z-[1000] mx-auto max-w-2xl rounded-2xl border border-secondary-fixed/40 bg-inverse-surface/95 px-4 py-3 text-surface shadow-2xl backdrop-blur-md md:left-1/2 md:right-auto md:w-[92%] md:-translate-x-1/2">
+>>>>>>> 79d7fc8 (creacion de polingonos manuales para el mapa)
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <div className="relative flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-br from-tertiary/30 to-secondary-fixed/20 ring-1 ring-tertiary/40">

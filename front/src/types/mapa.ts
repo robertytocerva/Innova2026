@@ -141,3 +141,15 @@ export interface SubdivisionResult {
     historial?: HistorialDeforestacion[];
   } | null;
 }
+
+export interface DrawingPoint {
+  lat: number;
+  lng: number;
+}
+
+export type DrawingStatus = "idle" | "drawing" | "preview" | "saving";
+
+export interface DrawingState {
+  status: DrawingStatus;
+  points: DrawingPoint[];
+}
