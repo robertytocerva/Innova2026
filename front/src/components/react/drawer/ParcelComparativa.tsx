@@ -1,7 +1,7 @@
 import { useState, type ReactElement } from "react";
 import type { ParcelFeature, AuditData, AuditResponse } from "../../../types/mapa";
 import { getParcelTimeSeriesUrls, SATELLITE_HISTORY_START } from "../../../lib/satelliteHistory";
-import { auditParcelYears } from "../../../lib/localImageAudit";
+import { auditParcelYears, type AuditProgressStage } from "../../../lib/localImageAudit";
 import { approveExpediente, createAuditReport, generatePdf, pdfUrl } from "../../../lib/reportApi";
 import type { Expediente } from "../../../types/reports";
 import { YearImage } from "./DrawerPrimitives";
@@ -19,6 +19,20 @@ const findingTone = (value: string): string =>
 
 const sourceLabel = (type: string | undefined): string => (type === "normativa" ? "Normativa" : "Evidencia");
 
+type ReportStage = "sources" | "approval" | "pdf";
+
+const auditStageLabel = (stage: AuditProgressStage): string => {
+  if (stage === "downloading") return "Descargando imágenes...";
+  if (stage === "correlating") return "Consultando incendios...";
+  return "Analizando...";
+};
+
+const reportStageLabel = (stage: ReportStage): string => {
+  if (stage === "sources") return "Consultando fuentes ambientales...";
+  if (stage === "approval") return "Registrando aprobación...";
+  return "Generando PDF...";
+};
+
 function ReportFindings({ expediente }: { expediente: Expediente }): ReactElement | null {
   const findings = expediente.findings;
   if (!findings || findings.length === 0) return null;
@@ -33,17 +47,25 @@ function ReportFindings({ expediente }: { expediente: Expediente }): ReactElemen
           </div>
           <p className="mt-1 leading-relaxed text-inverse-on-surface/80">{finding.reason}</p>
           {finding.sources && finding.sources.length > 0 && (
-            <p className="mt-1 leading-relaxed text-inverse-on-surface/60">
-              <strong>Fuentes:</strong>{" "}
-              {finding.sources
-                .map(
-                  (source) =>
-                    `${sourceLabel(source.type)}: ${source.title || "Fuente no identificada"}${
-                      source.status ? ` · Estado: ${source.status}` : ""
-                    } · ${source.reference || ""}${source.detail ? ` · ${source.detail}` : ""}`,
-                )
-                .join(" | ")}
-            </p>
+            <div className="mt-1 space-y-1 leading-relaxed text-inverse-on-surface/60">
+              <strong>Fuentes:</strong>
+              {finding.sources.map((source) => (
+                <div key={`${source.url || source.title}-${source.reference}`}>
+                  <span>
+                    {sourceLabel(source.type)}: {source.title || "Fuente no identificada"}
+                    {source.status ? ` · Estado: ${source.status}` : ""}
+                    {source.reference ? ` · ${source.reference}` : ""}
+                    {source.detail ? ` · ${source.detail}` : ""}
+                    {source.quote ? ` · Cita: "${source.quote}"` : ""}
+                  </span>
+                  {source.url && (
+                    <a href={source.url} target="_blank" rel="noreferrer" className="ml-1 text-tertiary underline underline-offset-2">
+                      Ver fuente
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
         </article>
       ))}
@@ -61,10 +83,14 @@ interface Props {
 
 export default function ParcelComparativa({ feature, currentYear, comparisonYear, statusKey, onParcelBlocked }: Props): ReactElement {
   const [geminiLoading, setGeminiLoading] = useState(false);
+  const [auditProgress, setAuditProgress] = useState(0);
+  const [auditStage, setAuditStage] = useState<AuditProgressStage>("downloading");
   const [geminiAlert, setGeminiAlert] = useState<string | null>(null);
   const [geminiResult, setGeminiResult] = useState<AuditData | null>(null);
   const [auditResponse, setAuditResponse] = useState<AuditResponse | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
+  const [reportProgress, setReportProgress] = useState(0);
+  const [reportStage, setReportStage] = useState<ReportStage>("sources");
   const [reportError, setReportError] = useState<string | null>(null);
   const [generatedReport, setGeneratedReport] = useState<Expediente | null>(null);
 
@@ -78,10 +104,15 @@ export default function ParcelComparativa({ feature, currentYear, comparisonYear
   const runGemini = async (): Promise<void> => {
     if (!canRunGemini) return;
     setGeminiLoading(true);
+    setAuditProgress(5);
+    setAuditStage("downloading");
     setGeminiAlert(null);
     setGeminiResult(null);
     try {
-      const result = await auditParcelYears(feature, comparisonYear, currentYear);
+      const result = await auditParcelYears(feature, comparisonYear, currentYear, ({ stage, progress }) => {
+        setAuditStage(stage);
+        setAuditProgress(progress);
+      });
       setAuditResponse(result);
       setGeminiResult(result.data);
 
@@ -101,6 +132,8 @@ export default function ParcelComparativa({ feature, currentYear, comparisonYear
   const generateReport = async (): Promise<void> => {
     if (!auditResponse) return;
     setReportLoading(true);
+    setReportProgress(10);
+    setReportStage("sources");
     setReportError(null);
     try {
       const reportFeature = {
@@ -108,8 +141,13 @@ export default function ParcelComparativa({ feature, currentYear, comparisonYear
         properties: { ...feature.properties, exportacion: statusKey },
       };
       const draft = await createAuditReport(feature.properties.id, reportFeature, comparisonYear, currentYear, auditResponse);
+      setReportStage("approval");
+      setReportProgress(45);
       await approveExpediente(draft.expediente.folio, "Perito demostración", "auditor_demo");
+      setReportStage("pdf");
+      setReportProgress(70);
       const generated = await generatePdf(draft.expediente.folio);
+      setReportProgress(100);
       setGeneratedReport(generated);
     } catch (error) {
       setReportError(error instanceof Error ? error.message : "No fue posible generar el reporte.");
@@ -148,15 +186,23 @@ export default function ParcelComparativa({ feature, currentYear, comparisonYear
         <span className="block rounded-[11px] bg-gradient-to-r from-primary to-primary-container px-3 py-2.5 text-[11px] font-bold text-on-primary transition-all group-hover:from-primary-container group-hover:to-primary group-disabled:opacity-50">
           <span className="inline-flex items-center gap-2">
             <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
-            {geminiLoading ? "Analizando con Gemini..." : "Auditar ambos años"}
+            {geminiLoading ? "Analizando..." : "Auditar ambos años"}
           </span>
         </span>
       </button>
 
       {geminiLoading && (
-        <div className="flex items-center gap-2 rounded-lg border border-tertiary/30 bg-tertiary/10 p-2.5 text-[10px] text-tertiary">
-          <span className="inline-block h-2 w-2 rounded-full bg-tertiary animate-pulse"></span>
-          Analizando las dos imágenes y los incendios NASA FIRMS...
+        <div className="space-y-2 rounded-lg border border-tertiary/30 bg-tertiary/10 p-2.5 text-[10px] text-tertiary" role="status" aria-live="polite">
+          <div className="flex items-center justify-between gap-2">
+            <span className="inline-flex items-center gap-2">
+              <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-tertiary"></span>
+              {auditStageLabel(auditStage)}
+            </span>
+            <span className="font-mono">{auditProgress}%</span>
+          </div>
+          <div className="h-1 overflow-hidden rounded-full bg-black/30" role="progressbar" aria-label="Progreso de auditoría" aria-valuemin={0} aria-valuemax={100} aria-valuenow={auditProgress}>
+            <div className="h-full rounded-full bg-tertiary transition-[width] duration-300" style={{ width: `${auditProgress}%` }} />
+          </div>
         </div>
       )}
       {geminiAlert && (
@@ -176,6 +222,20 @@ export default function ParcelComparativa({ feature, currentYear, comparisonYear
             {reportLoading ? "Generando reporte..." : "Generar reporte"}
           </span>
         </button>
+      )}
+      {reportLoading && (
+        <div className="space-y-2 rounded-lg border border-secondary-fixed/30 bg-secondary-fixed/10 p-2.5 text-[10px] text-secondary-fixed" role="status" aria-live="polite">
+          <div className="flex items-center justify-between gap-2">
+            <span className="inline-flex items-center gap-2">
+              <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-secondary-fixed"></span>
+              {reportStageLabel(reportStage)}
+            </span>
+            <span className="font-mono">{reportProgress}%</span>
+          </div>
+          <div className="h-1 overflow-hidden rounded-full bg-black/30" role="progressbar" aria-label="Progreso de generación del reporte" aria-valuemin={0} aria-valuemax={100} aria-valuenow={reportProgress}>
+            <div className="h-full rounded-full bg-secondary-fixed transition-[width] duration-300" style={{ width: `${reportProgress}%` }} />
+          </div>
+        </div>
       )}
       {reportError && <div className="rounded-lg border border-error/50 bg-error/10 p-2.5 text-[10px] text-red-200">{reportError}</div>}
       {generatedReport && (

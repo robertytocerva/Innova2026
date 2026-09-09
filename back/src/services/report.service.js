@@ -47,13 +47,17 @@ const getTileUrl = (geometry, year, zoom = 16) => {
 const loadSatellitePhoto = async (geometry, year) => {
   const url = getTileUrl(geometry, year);
   if (!url) return null;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), config.REQUEST_TIMEOUT_MS);
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { signal: controller.signal });
     const contentType = response.headers.get("content-type") || "";
     if (!response.ok || !contentType.startsWith("image/")) return null;
     return Buffer.from(await response.arrayBuffer());
   } catch {
     return null;
+  } finally {
+    clearTimeout(timeoutId);
   }
 };
 
@@ -83,6 +87,13 @@ const drawLabel = (doc, label, value, x, y, width = 240) => {
 
 const verdictLabel = (value) => value === "cumple" ? "Cumple" : value === "no cumple" ? "No cumple" : "Requiere revisión";
 const findingColor = (value) => value === "cumple" ? "#166534" : value === "no cumple" ? "#991b1b" : "#92400e";
+const formatFindingSource = (source) => [
+  `${source.type === "normativa" ? "Normativa" : "Evidencia"}: ${source.title || "Fuente no identificada"}${source.organization ? ` (${source.organization})` : ""}${source.status ? ` [${source.status}]` : ""}`,
+  source.reference,
+  source.detail,
+  source.quote ? `Cita textual: "${source.quote}"` : null,
+  source.url ? `Enlace: ${source.url}` : null,
+].filter(Boolean).join("\n");
 
 const drawFindingsPage = (doc, expediente) => {
   doc.addPage();
@@ -104,16 +115,17 @@ const drawFindingsPage = (doc, expediente) => {
     y += 20;
     for (const item of group.items) {
     const sources = Array.isArray(item.sources) ? item.sources : [];
-    const sourceText = sources.map((source) => `${source.type === "normativa" ? "Normativa" : "Evidencia"}: ${source.title || "Fuente no identificada"}${source.organization ? ` (${source.organization})` : ""}${source.status ? ` [${source.status}]` : ""}. ${source.reference || ""}${source.detail ? ` ${source.detail}` : ""}`).join("\n");
+    const sourceEntries = sources.map((source) => ({ text: formatFindingSource(source), url: source.url }));
     doc.font("Helvetica").fontSize(10);
     const reasonHeight = doc.heightOfString(item.reason || "Sin explicación disponible.", { width: 476 });
     const observationHeight = doc.heightOfString(`Dato observado: ${item.observation || "No disponible"}`, { width: 476 });
     const ruleHeight = doc.heightOfString(`Regla aplicada: ${item.rule || "No disponible"}`, { width: 476 });
-    const sourceHeight = doc.heightOfString(sourceText || "Fuentes no disponibles.", { width: 476 });
+    const sourceHeight = sourceEntries.length
+      ? sourceEntries.reduce((height, entry) => height + doc.heightOfString(entry.text, { width: 476, lineGap: 2 }) + 4, -4)
+      : doc.heightOfString("Fuentes no disponibles.", { width: 476 });
     const boxHeight = 64 + reasonHeight + observationHeight + ruleHeight + sourceHeight;
     if (y + boxHeight > 715) {
       doc.addPage();
-      doc.font("Helvetica-Bold").fontSize(16).fillColor("#0f172a").text("Por qué se asignó este veredicto (continuación)", 50, 50);
       y = 95;
     }
     doc.roundedRect(50, y, 512, boxHeight, 8).fillAndStroke("#f8fafc", "#e2e8f0");
@@ -127,7 +139,17 @@ const drawFindingsPage = (doc, expediente) => {
     doc.text(`Regla aplicada: ${item.rule || "No disponible"}`, 68, textY, { width: 476, lineGap: 2 });
     textY += ruleHeight + 5;
     doc.font("Helvetica-Bold").fontSize(9).fillColor("#0f172a").text("Fuentes", 68, textY);
-    doc.font("Helvetica").fontSize(8).fillColor("#475569").text(sourceText || "Fuentes no disponibles.", 68, textY + 13, { width: 476, lineGap: 2 });
+    if (!sourceEntries.length) {
+      doc.font("Helvetica").fontSize(8).fillColor("#475569").text("Fuentes no disponibles.", 68, textY + 13, { width: 476, lineGap: 2 });
+    } else {
+      let sourceY = textY + 13;
+      for (const entry of sourceEntries) {
+        const entryHeight = doc.heightOfString(entry.text, { width: 476, lineGap: 2 });
+        doc.font("Helvetica").fontSize(8).fillColor("#475569").text(entry.text, 68, sourceY, { width: 476, lineGap: 2 });
+        if (entry.url) doc.link(68, sourceY, 476, entryHeight, entry.url);
+        sourceY += entryHeight + 4;
+      }
+    }
     y += boxHeight + 14;
     }
   }
@@ -146,7 +168,6 @@ const drawFindingsPage = (doc, expediente) => {
 
 const buildPdf = async ({ parcel, comparison, expediente }) => {
   const verificationUrl = reportUrl(expediente.folio);
-  const qr = await QRCode.toBuffer(verificationUrl, { errorCorrectionLevel: "M", margin: 1, width: 180 });
   const geometry = comparison.layers?.geometry || parcel.geometry;
   const coordinates = geometry?.coordinates?.[0]?.slice(0, -1) || [];
   const mapSnapshot = comparison.raw_evidence?.mapSnapshot || {};
@@ -156,10 +177,13 @@ const buildPdf = async ({ parcel, comparison, expediente }) => {
   const displayArea = mapSnapshot.superficieHa ?? parcel.area_ha;
   const displayCrop = mapSnapshot.cultivo || parcel.crop_type;
   const auditYears = comparison.layers?.auditYears || {};
-  const satellitePhotos = await Promise.all([
-    loadSatellitePhoto(geometry, auditYears.fromYear || 2018),
-    loadSatellitePhoto(geometry, auditYears.toYear || 2026),
-  ]).then(([from, to]) => ({ from, to }));
+  const [qr, satellitePhotos] = await Promise.all([
+    QRCode.toBuffer(verificationUrl, { errorCorrectionLevel: "M", margin: 1, width: 180 }),
+    Promise.all([
+      loadSatellitePhoto(geometry, auditYears.fromYear || 2018),
+      loadSatellitePhoto(geometry, auditYears.toYear || 2026),
+    ]).then(([from, to]) => ({ from, to })),
+  ]);
   const doc = new PDFDocument({ size: "LETTER", margin: 50, info: { Title: `Expediente ${expediente.folio}`, Author: "TerraVision" } });
   const chunks = [];
   doc.on("data", (chunk) => chunks.push(chunk));

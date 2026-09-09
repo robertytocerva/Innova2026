@@ -15,38 +15,76 @@ export interface PixelDiffResult {
   avgExgFinal: number;
 }
 
+export type AuditProgressStage = "downloading" | "analyzing" | "correlating" | "complete";
+
+export interface AuditProgress {
+  stage: AuditProgressStage;
+  progress: number;
+}
+
+const SATELLITE_IMAGE_TIMEOUT_MS = 15000;
+
 /**
  * Carga una imagen de forma asíncrona permitiendo CORS anónimo.
  * Si la carga falla por restricciones de red/CORS, intenta fallback vía Blob.
  */
 export function loadSatelliteImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
+    const controller = new AbortController();
     const img = new Image();
+    let blobUrl: string | null = null;
+    let settled = false;
+
+    const finishResolve = (value: HTMLImageElement): void => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeoutId);
+      if (blobUrl) {
+        URL.revokeObjectURL(blobUrl);
+        blobUrl = null;
+      }
+      resolve(value);
+    };
+
+    const finishReject = (error: Error): void => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeoutId);
+      if (blobUrl) URL.revokeObjectURL(blobUrl);
+      reject(error);
+    };
+
+    const timeoutId = window.setTimeout(() => {
+      controller.abort();
+      img.src = "";
+      finishReject(new Error("La imagen satelital tardó demasiado en responder."));
+    }, SATELLITE_IMAGE_TIMEOUT_MS);
+
     img.crossOrigin = "anonymous";
 
-    img.onload = () => resolve(img);
+    img.onload = () => finishResolve(img);
     img.onerror = () => {
       // Intento de descarga alternativa vía fetch blob
-      fetch(url, { mode: "cors" })
+      fetch(url, { mode: "cors", signal: controller.signal })
         .then((res) => {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           return res.blob();
         })
         .then((blob) => {
-          const blobUrl = URL.createObjectURL(blob);
+          blobUrl = URL.createObjectURL(blob);
           const fallbackImg = new Image();
-          fallbackImg.onload = () => {
-            URL.revokeObjectURL(blobUrl);
-            resolve(fallbackImg);
-          };
+          fallbackImg.onload = () => finishResolve(fallbackImg);
           fallbackImg.onerror = () => {
-            URL.revokeObjectURL(blobUrl);
-            reject(new Error("No fue posible procesar la imagen satelital mediante Blob."));
+            finishReject(new Error("No fue posible procesar la imagen satelital mediante Blob."));
           };
           fallbackImg.src = blobUrl;
         })
-        .catch(() => {
-          reject(new Error(`No fue posible cargar la tesela satelital desde: ${url}`));
+        .catch((error: unknown) => {
+          if (error instanceof DOMException && error.name === "AbortError") {
+            finishReject(new Error("La imagen satelital tardó demasiado en responder."));
+            return;
+          }
+          finishReject(new Error(`No fue posible cargar la tesela satelital desde: ${url}`));
         });
     };
 
@@ -156,6 +194,7 @@ export async function auditParcelYears(
   parcel: ParcelFeature,
   fromYear: number,
   toYear: number,
+  onProgress?: (progress: AuditProgress) => void,
 ): Promise<AuditResponse> {
   const timeSeries = getParcelTimeSeriesUrls(parcel);
   const fromUrl = timeSeries.series[fromYear];
@@ -166,16 +205,19 @@ export async function auditParcelYears(
   }
 
   // Descarga y análisis de píxeles en el navegador
+  onProgress?.({ stage: "downloading", progress: 10 });
   const [imgFrom, imgTo] = await Promise.all([
     loadSatelliteImage(fromUrl),
     loadSatelliteImage(toUrl),
   ]);
 
+  onProgress?.({ stage: "analyzing", progress: 45 });
   const dataFrom = extractImageData(imgFrom);
   const dataTo = extractImageData(imgTo);
   const diff = compareSatelliteImages(dataFrom, dataTo);
 
   // Consulta de focos de calor y cálculo legal de veda
+  onProgress?.({ stage: "correlating", progress: 75 });
   const fireRecords = getParcelFireRecords(parcel);
   const vedaInfo = calculateVedaForestal(fireRecords);
 
@@ -250,7 +292,7 @@ export async function auditParcelYears(
       ? `RESTRICCIÓN PREVENTIVA: Se identificó alteración de la cobertura natural. Conforme a las salvaguardas fitosanitarias y de deforestación cero (EUDR / SENASICA), el predio queda condicionado a revisión pericial.`
       : `DICTAMEN FAVORABLE: Sin indicios de deforestación reciente ni incendios forestales vinculados. Cumple con los criterios de cobertura histórica evaluados.`;
 
-  return {
+  const response = {
     data: {
       cambio_detectado: cambioDetectado,
       ano_deforestacion_estimado: anoDeforestacionEstimado,
@@ -274,4 +316,7 @@ export async function auditParcelYears(
     timestamp: new Date().toISOString(),
     method: "local-pixel-diff",
   };
+
+  onProgress?.({ stage: "complete", progress: 100 });
+  return response;
 }
