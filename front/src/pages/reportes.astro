@@ -73,12 +73,6 @@ import { navData, footerData } from "../data/landing";
   import type { Expediente, ReportFinding } from "../types/reports";
 
   let reports: Expediente[] = [];
-  const list = document.querySelector<HTMLElement>("#reportsList");
-  const count = document.querySelector<HTMLElement>("#reportCount");
-  const status = document.querySelector<HTMLElement>("#reportStatus");
-  const search = document.querySelector<HTMLInputElement>("#reportSearch");
-  const verdict = document.querySelector<HTMLSelectElement>("#verdictFilter");
-  const state = document.querySelector<HTMLSelectElement>("#statusFilter");
 
   const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char] || char);
   const formatDate = (value?: string) => value ? new Date(value).toLocaleDateString("es-MX") : "Sin fecha";
@@ -115,14 +109,19 @@ import { navData, footerData } from "../data/landing";
     return report.reasons?.length ? `<div class="mt-4 rounded-xl border border-surface-container-high bg-surface-container-low p-3"><p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Resumen rápido</p><p class="mt-2 text-xs leading-relaxed text-on-surface-variant">${escapeHtml(report.reasons[0])}</p></div>` : "";
   };
 
-  function renderReports() {
+  function renderReports(
+    list: HTMLElement | null,
+    count: HTMLElement | null,
+    search: HTMLInputElement | null,
+    verdict: HTMLSelectElement | null,
+  ) {
+    if (!list) return;
     const term = search?.value.trim().toLowerCase() || "";
     const filtered = reports.filter((report) => {
       const searchable = [report.folio, report.reference_code, report.name, report.municipality].join(" ").toLowerCase();
-      return (!term || searchable.includes(term)) && (!verdict?.value || report.verdict === verdict.value) && (!state?.value || report.status === state.value);
+      return (!term || searchable.includes(term)) && (!verdict?.value || report.verdict === verdict.value);
     });
     if (count) count.textContent = `${filtered.length} de ${reports.length} expediente${reports.length === 1 ? "" : "s"}`;
-    if (!list) return;
     list.innerHTML = filtered.length ? filtered.map((report) => `
       <article class="flex flex-col rounded-2xl border border-surface-container-high bg-surface p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
         <div class="flex items-start justify-between gap-3">
@@ -146,27 +145,47 @@ import { navData, footerData } from "../data/landing";
       </article>`).join("") : '<div class="rounded-2xl border border-dashed border-outline-variant p-10 text-center text-sm text-on-surface-variant md:col-span-2 xl:col-span-3">No hay reportes que coincidan con los filtros.</div>';
   }
 
-  async function loadReports() {
+  async function initReports() {
+    const list = document.querySelector<HTMLElement>("#reportsList");
+    if (!list) return;
+
+    const count = document.querySelector<HTMLElement>("#reportCount");
+    const status = document.querySelector<HTMLElement>("#reportStatus");
+    const search = document.querySelector<HTMLInputElement>("#reportSearch");
+    const verdict = document.querySelector<HTMLSelectElement>("#verdictFilter");
+    const clearBtn = document.querySelector<HTMLButtonElement>("#clearFilters");
+
+    const doRender = () => renderReports(list, count, search, verdict);
+
+    search?.addEventListener("input", doRender);
+    verdict?.addEventListener("change", doRender);
+
+    clearBtn?.addEventListener("click", () => {
+      if (search) search.value = "";
+      if (verdict) verdict.value = "";
+      doRender();
+    });
+
+    if (reports.length > 0) {
+      doRender();
+    } else if (count) {
+      count.textContent = "Cargando...";
+    }
+
     try {
       reports = await listExpedientes();
-      renderReports();
+      if (status) status.classList.add("hidden");
+      doRender();
     } catch (error) {
       if (status) {
         status.textContent = error instanceof Error ? error.message : "No fue posible cargar los reportes.";
         status.className = "mt-6 rounded-xl border border-error bg-error-container p-4 text-sm text-on-error-container";
+        status.classList.remove("hidden");
       }
+      if (count) count.textContent = "0 expedientes";
     }
   }
 
-  [search, verdict, state].forEach((control) => {
-    control?.addEventListener("input", renderReports);
-    control?.addEventListener("change", renderReports);
-  });
-  document.querySelector<HTMLButtonElement>("#clearFilters")?.addEventListener("click", () => {
-    if (search) search.value = "";
-    if (verdict) verdict.value = "";
-    if (state) state.value = "";
-    renderReports();
-  });
-  loadReports();
+  // Se ejecuta en la carga inicial y en cada navegación de Astro ClientRouter
+  document.addEventListener("astro:page-load", initReports);
 </script>
