@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useCallback, type ReactElement } from "react";
-import { MapContainer, TileLayer, GeoJSON, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, CircleMarker, Popup, Tooltip, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { michoacanParcels } from "../../data/michoacanParcels";
@@ -7,6 +7,7 @@ import { getWaybackUrl } from "../../lib/satelliteHistory";
 import { getParcelFireRecords, calculateVedaForestal } from "../../lib/nasaFirms";
 import { validatePolygon } from "../../lib/geometryValidator";
 import type { ParcelFeature, ParcelFeatureCollection, DrawingPoint, DrawingState } from "../../types/mapa";
+import type { SensorPoint } from "../../lib/sensorPoints";
 import type { Map as LeafletMap, Layer } from "leaflet";
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
   selectedFeature: ParcelFeature | null;
   drawingState: DrawingState;
   parcels: ParcelFeatureCollection;
+  sensorPoints: SensorPoint[];
   stylesVersion: number;
   onMapReady: (map: LeafletMap) => void;
   onParcelsLayer: (layer: Layer) => void;
@@ -22,6 +24,54 @@ interface Props {
 }
 
 type MapStyle = L.PathOptions;
+
+const SENSOR_STATUS_LABEL: Record<SensorPoint["status"], string> = {
+  active: "Activo",
+  no_fix: "Sin fix GPS",
+  offline: "Sin comunicacion",
+};
+
+function PhysicalSensorLayer({ points }: { points: SensorPoint[] }): ReactElement {
+  const physicalPoints = points.filter(
+    (point): point is SensorPoint & { lat: number; lon: number } =>
+      point.sourceType === "physical" && point.lat !== null && point.lon !== null,
+  );
+
+  return (
+    <>
+      {physicalPoints.map((point) => (
+        <CircleMarker
+          key={point.id}
+          center={[point.lat, point.lon]}
+          radius={8}
+          pathOptions={{
+            color: "#1d4ed8",
+            fillColor: "#3b82f6",
+            fillOpacity: point.status === "active" ? 0.95 : 0.5,
+            opacity: 1,
+            weight: 2,
+            bubblingMouseEvents: false,
+          }}
+        >
+          <Tooltip direction="top" offset={[0, -8]}>
+            Sensor GPS · {point.deviceId}
+          </Tooltip>
+          <Popup>
+            <div className="min-w-40 space-y-1 text-xs">
+              <strong className="block">{point.deviceId}</strong>
+              <div>Tipo: sensor físico (GPS)</div>
+              <div>Estado: {SENSOR_STATUS_LABEL[point.status]}</div>
+              <div>Orden: {point.order}</div>
+              <div>Lat: {point.lat.toFixed(6)}</div>
+              <div>Lon: {point.lon.toFixed(6)}</div>
+              {point.lastSeenAt && <div>Último reporte: {new Date(point.lastSeenAt).toLocaleString()}</div>}
+            </div>
+          </Popup>
+        </CircleMarker>
+      ))}
+    </>
+  );
+}
 
 function DrawingHandler({ drawingState, onMapClick }: { drawingState: DrawingState; onMapClick: (p: DrawingPoint) => void }): null {
   const statusRef = useRef(drawingState.status);
@@ -227,7 +277,7 @@ function MapEvents({ onMapReady, initialBounds }: { onMapReady: (map: LeafletMap
   return null;
 }
 
-export default function MapLeaflet({ currentYear, onMapReady, onParcelsLayer, onSelectParcel, drawingState, onMapClick, parcels, stylesVersion }: Props): ReactElement {
+export default function MapLeaflet({ currentYear, onMapReady, onParcelsLayer, onSelectParcel, drawingState, onMapClick, parcels, sensorPoints, stylesVersion }: Props): ReactElement {
   const geoJsonRef = useRef<L.GeoJSON | null>(null);
   const tileUrl = useMemo(() => getWaybackUrl(currentYear), [currentYear]);
   const initialBounds = useMemo(() => computeInitialBounds(parcels), [parcels]);
@@ -302,6 +352,7 @@ export default function MapLeaflet({ currentYear, onMapReady, onParcelsLayer, on
         style={styleFn}
         onEachFeature={onEachFeature}
       />
+      <PhysicalSensorLayer points={sensorPoints} />
     </MapContainer>
   );
 }

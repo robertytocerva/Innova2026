@@ -57,6 +57,14 @@ export default function MapLegend({ onClose }: Props): ReactElement {
             <div className="text-[10px] text-on-surface-variant">Auto-intersección / traslape catastral</div>
           </div>
         </div>
+
+        <div className="flex items-center gap-2.5 rounded-lg p-2 transition-colors hover:bg-blue-500/5">
+          <span className="h-5 w-5 shrink-0 rounded-full bg-blue-500 border-2 border-blue-700 shadow-sm"></span>
+          <div className="flex-1">
+            <div className="font-semibold text-on-surface text-[12px]">Sensores físicos (GPS)</div>
+            <div className="text-[10px] text-on-surface-variant">Última posición guardada del nodo</div>
+          </div>
+        </div>
       </div>
 
       <div className="mt-3 pt-3 border-t border-outline-variant/30 text-[10px] text-on-surface-variant flex items-center justify-between">

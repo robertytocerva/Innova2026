@@ -1,4 +1,4 @@
-const API_BASE = "https://innova2026.onrender.com/api/v1";
+export const API_BASE_URL = import.meta.env.PUBLIC_API_URL ?? "https://innova2026.onrender.com/api/v1";
 
 export interface CreateParcelPayload {
   name: string;
@@ -35,13 +35,13 @@ interface ApiResponse<T> {
 export async function createParcel(payload: CreateParcelPayload): Promise<ApiParcel> {
   let res: Response;
   try {
-    res = await fetch(`${API_BASE}/parcels`, {
+    res = await fetch(`${API_BASE_URL}/parcels`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
   } catch (networkErr) {
-    throw new Error(`No se pudo conectar con el backend (${API_BASE}). Verifica que esté corriendo.`);
+    throw new Error(`No se pudo conectar con el backend (${API_BASE_URL}). Verifica que esté corriendo.`);
   }
 
   let json: ApiResponse<ApiParcel>;
@@ -60,7 +60,7 @@ export async function createParcel(payload: CreateParcelPayload): Promise<ApiPar
 }
 
 export async function fetchParcels(limit = 50, offset = 0): Promise<{ data: ApiParcel[]; total: number }> {
-  const res = await fetch(`${API_BASE}/parcels?limit=${limit}&offset=${offset}`);
+  const res = await fetch(`${API_BASE_URL}/parcels?limit=${limit}&offset=${offset}`);
   const json = await res.json();
 
   if (!res.ok || !json.success) {

@@ -17,6 +17,10 @@ import {
 } from "../controllers/catalog.controller.js";
 import { auditGemini, geminiAuditSchema } from "../controllers/gemini.controller.js";
 import {
+  getSensorPoints, ingestSensorPoints, sensorPointIngestSchema, sensorPointQuerySchema,
+} from "../controllers/sensor-point.controller.js";
+import { sensorIngestAuth } from "../middlewares/sensor-ingest-auth.js";
+import {
   seedHuertas, seedSchema, confrontHuerta, comparisonSchema, auditReportSchema, createAuditReport, getComparisons,
   getExpedientes, getExpediente, approvalSchema, approve, generatePdf, downloadPdf,
   publicVerification, removeExpediente,
@@ -59,5 +63,8 @@ router.get("/risk/area", validate(bboxQuerySchema, "query"), asyncHandler(calcul
 router.get("/alerts/fire", validate(bboxQuerySchema, "query"), asyncHandler(fireAlerts));
 router.get("/weather", validate(weatherQuerySchema, "query"), asyncHandler(weather));
 router.post("/audits/gemini", validate(geminiAuditSchema), asyncHandler(auditGemini));
+
+router.get("/sensor-points", dbRequired, validate(sensorPointQuerySchema, "query"), asyncHandler(getSensorPoints));
+router.post("/sensor-points/ingest", sensorIngestAuth, dbRequired, validate(sensorPointIngestSchema), asyncHandler(ingestSensorPoints));
 
 export default router;

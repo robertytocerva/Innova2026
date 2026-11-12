@@ -6,6 +6,7 @@ API para monitoreo de deforestacion e impacto ambiental en huertos de aguacate y
 
 - Node.js 20 o superior
 - Cuenta en Neon (PostgreSQL con PostGIS)
+- `DATABASE_URL` y `SENSOR_INGEST_TOKEN` en `.env` para guardar telemetria de sensores
 - Credenciales de Sentinel Hub para imagenes satelitales
 - Credenciales opcionales de Global Forest Watch y NASA FIRMS
 
@@ -14,7 +15,7 @@ API para monitoreo de deforestacion e impacto ambiental en huertos de aguacate y
 ```bash
 npm install
 cp .env.example .env
-# Configurar DATABASE_URL en .env con tu string de conexion de Neon
+# Configurar DATABASE_URL y SENSOR_INGEST_TOKEN en .env
 npm run dev
 ```
 
@@ -41,6 +42,7 @@ El script crea la tabla `_migrations` para rastrear que archivos ya se ejecutaro
 - `evidence_records` - Registros de evidencia
 - `comparison_results` - Resultado trazable de pérdida forestal, incendios y ANP
 - `expedientes` - Folio, veredicto, aprobación y PDF verificable
+- `sensor_points` - Ultima coordenada y estado por modulo GPS
 
 ## Endpoints
 
@@ -75,6 +77,8 @@ El script crea la tabla `_migrations` para rastrear que archivos ya se ejecutaro
 - `POST /api/v1/expedientes/:folio/generar-pdf` - Generar el documento PDF
 - `GET /api/v1/expedientes/:folio/pdf` - Descargar el PDF
 - `GET /api/v1/public/verificacion/:folio` - Verificación pública para QR
+- `GET /api/v1/sensor-points?polygonId=P1` - Ultimas posiciones fisicas para el mapa
+- `POST /api/v1/sensor-points/ingest` - Ingesta protegida del puente Python (Bearer token)
 
 ### Configuración de reportes
 

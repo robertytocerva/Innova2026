@@ -11,6 +11,8 @@ import PolygonDrawer from "./PolygonDrawer";
 import TimeSlider from "./TimeSlider";
 import AiChatbot from "./AiChatbot";
 import { SATELLITE_HISTORY_END, SATELLITE_HISTORY_START } from "../../lib/satelliteHistory";
+import { connectSerialBridge } from "../../lib/serialBridge";
+import { fetchSensorPoints, type SensorPoint } from "../../lib/sensorPoints";
 
 function apiParcelToFeature(p: ApiParcel): ParcelFeature | null {
   try {
@@ -68,6 +70,7 @@ export default function MapApp(): ReactElement {
   const [comparisonYear, setComparisonYear] = useState<number>(SATELLITE_HISTORY_START);
   const [drawingState, setDrawingState] = useState<DrawingState>({ status: "idle", points: [] });
   const [allParcels, setAllParcels] = useState<ParcelFeatureCollection>(michoacanParcels);
+  const [sensorPoints, setSensorPoints] = useState<SensorPoint[]>([]);
   const [stylesVersion, setStylesVersion] = useState(0);
 
   const mapRef = useRef<LeafletMap | null>(null);
@@ -86,6 +89,23 @@ export default function MapApp(): ReactElement {
   useEffect(() => {
     loadParcels();
   }, [loadParcels]);
+
+  // Lee telemetria en segundo plano; no agrega controles ni altera el mapa.
+  useEffect(() => connectSerialBridge(), []);
+
+  const loadSensorPoints = useCallback(async () => {
+    try {
+      setSensorPoints(await fetchSensorPoints("P1"));
+    } catch (error) {
+      console.warn("No se pudieron cargar los sensores guardados", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadSensorPoints();
+    const interval = window.setInterval(() => void loadSensorPoints(), 5000);
+    return () => window.clearInterval(interval);
+  }, [loadSensorPoints]);
 
   const handleMapReady = useCallback((map: LeafletMap) => {
     mapRef.current = map;
@@ -174,6 +194,7 @@ export default function MapApp(): ReactElement {
           drawingState={drawingState}
           onMapClick={handleMapClick}
           parcels={allParcels}
+          sensorPoints={sensorPoints}
           stylesVersion={stylesVersion}
         />
 
